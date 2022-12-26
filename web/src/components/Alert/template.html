@@ -1,0 +1,26 @@
+<div>
+    <transition name="slide-x-reverse-transition">
+        <v-alert
+        class="alert_top_right"
+        v-show="alertSuccess"
+        border="left"
+        color="green darken-4"
+        type="success"
+        dark
+        >
+            {{alertText}}
+        </v-alert>
+    </transition>
+    <transition>
+        <v-alert
+        class="alert_top_right"
+        v-show="alertFail"
+        border="left"
+        color="red darken-4"
+        type="warning"
+        dark
+        >
+            {{alertText}}
+        </v-alert>
+    </transition>
+</div>

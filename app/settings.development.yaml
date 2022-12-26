@@ -1,0 +1,19 @@
+backend:
+    host: 127.0.0.1
+    port: "8000"
+easypick:
+    host: 127.0.0.1
+    port: "5000"
+    username: yourEasyStoreUsername
+    password: yourEasyStorePassword
+database:
+    host: 127.0.0.1
+    database: daymood
+    username: daymood
+    password: daymooddev
+trading:
+    ajeossi: 2
+    shippingFee: 7200
+    exchangeRate: 40.9
+    tariff: 35
+    markup: 1.45

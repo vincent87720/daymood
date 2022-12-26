@@ -1,0 +1,22 @@
+---
+backend:
+  host: 127.0.0.1
+  port: 8000
+easypick:
+  host: 127.0.0.1
+  port: 5000
+  username: yourEasyStoreUsername
+  password: yourEasyStorePassword
+database:
+  host: 127.0.0.1
+  database: database
+  username: username
+  password: password
+trading:
+  ajeossi: 2 #大叔費用(%)
+  shippingFee: 7200 #國際運費
+  exchangeRate: 40.9 #匯率
+  tariff: 35 #關稅
+  markup: 1.45 #定價倍率
+
+  

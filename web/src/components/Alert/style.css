@@ -1,0 +1,15 @@
+.alert {
+    position: fixed;
+    top:5px;
+    /* right: 10px; */
+    z-index: 9999;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.alert_top_right {
+    position: fixed;
+    top:2px;
+    right: 2px;
+    z-index: 9999;
+}

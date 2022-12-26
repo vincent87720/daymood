@@ -1,0 +1,5 @@
+[
+    {"type":"SupplierHeader", "key":0, "value":"廠商名稱", "remark":""},
+    {"type":"SupplierHeader", "key":1, "value":"廠商地址", "remark":""},
+    {"type":"SupplierHeader", "key":2, "value":"備註", "remark":""}
+]
