@@ -1,35 +1,30 @@
 package routers
 
 import (
-	"database/sql"
+	"io/ioutil"
+	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vincent87720/daymood.backend/internal/settings"
 )
 
-func SetupSystemConfigRouters(router *gin.Engine, db *sql.DB, s *settings.Settings) (*gin.Engine, error) {
+func SetupSystemConfigRouters(router *gin.Engine, s settings.Settings) (*gin.Engine, error) {
 
-	router.GET("/systemConfigs", GetSystemConfigsHandler())
+	router.GET("/systemConfigs", GetSystemConfigsHandler(s))
 
 	return router, nil
 }
 
-func GetSystemConfigsHandler() gin.HandlerFunc {
+func GetSystemConfigsHandler(s settings.Settings) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
-		// y, err := s.GetTradingSettings()
-		// if err != nil {
-		// 	fmt.Println(err)
-		// 	context.JSON(http.StatusBadRequest, gin.H{
-		// 		"status": "FAIL",
-		// 	})
-		// 	return
-		// }
-
-		// context.JSON(http.StatusOK, gin.H{
-		// 	"status":  "OK",
-		// 	"trading": y.Trading,
-		// })
-		// return
+		sysConf, err := ioutil.ReadFile(s.GetExeFilePath() + "/assets/systemConfigs.json")
+		if err != nil {
+			log.Fatalf("ERROR: %v", err)
+			return
+		}
+		context.Data(http.StatusOK, "application/json", sysConf)
+		return
 	}
 
 	return gin.HandlerFunc(fn)

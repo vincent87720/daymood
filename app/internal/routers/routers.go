@@ -19,6 +19,7 @@ func SetupRouters(db *sql.DB, s settings.Settings) (*gin.Engine, error) {
 	SetupProductRouters(router, db, s)
 	SetupDeliveryOrderRouters(router, db)
 	SetupSettingsRouters(router, db, &s)
+	SetupSystemConfigRouters(router, s)
 
 	exePath := s.GetExeFilePath()
 	router.Static("/daymood", exePath+"/daymoodui")
