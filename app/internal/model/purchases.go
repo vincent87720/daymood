@@ -19,7 +19,7 @@ type Purchase struct {
 	ShippingEndAt      *string  //貨運結單日期
 	ShippingArriveAt   *string  //貨運送達日期
 	Weight             *float32 //貨運總重
-	shippingFeeKr      *float32 //貨運國內運費_韓國
+	ShippingFeeKr      *float32 //貨運國內運費_韓國
 	ShippingFeeTw      *float32 //貨運國內運費_台灣
 	ShippingFeeKokusai *float32 //貨運國際運費
 	ExchangeRateKrw    *float32 //韓圓匯率
@@ -66,7 +66,7 @@ func GetAllPurchases(db *sql.DB) (purchaseXi []Purchase, modelErr *ModelError) {
 			&purchase.ID, &purchase.Name, &purchase.Status,
 			&purchase.PurchaseType, &purchase.ShippingAgent, &purchase.ShippingInitiator,
 			&purchase.ShippingCreateAt, &purchase.ShippingEndAt, &purchase.ShippingArriveAt,
-			&purchase.Weight, &purchase.shippingFeeKr, &purchase.ShippingFeeTw,
+			&purchase.Weight, &purchase.ShippingFeeKr, &purchase.ShippingFeeTw,
 			&purchase.ShippingFeeKokusai, &purchase.ExchangeRateKrw, &purchase.TotalKrw,
 			&purchase.TotalTwd, &purchase.Remark, &purchase.DataOrder,
 			&purchase.CreateAt, &purchase.UpdateAt,
@@ -105,7 +105,7 @@ func (purchase *Purchase) Create(db *sql.DB) (modelErr *ModelError) {
 	res, err := stmt.Exec(purchase.Name, purchase.Status, purchase.PurchaseType,
 		purchase.ShippingAgent, purchase.ShippingInitiator, purchase.ShippingCreateAt,
 		purchase.ShippingEndAt, purchase.ShippingArriveAt, purchase.Weight,
-		purchase.shippingFeeKr, purchase.ShippingFeeTw, purchase.ShippingFeeKokusai,
+		purchase.ShippingFeeKr, purchase.ShippingFeeTw, purchase.ShippingFeeKokusai,
 		purchase.ExchangeRateKrw, purchase.TotalKrw, purchase.TotalTwd,
 		purchase.Remark, purchase.DataOrder)
 	if err != nil {
@@ -130,7 +130,7 @@ func (purchase *Purchase) Update(db *sql.DB) (modelErr *ModelError) {
 		purchase.ID, purchase.Name, purchase.Status, purchase.PurchaseType,
 		purchase.ShippingAgent, purchase.ShippingInitiator, purchase.ShippingCreateAt,
 		purchase.ShippingEndAt, purchase.ShippingArriveAt, purchase.Weight,
-		purchase.shippingFeeKr, purchase.ShippingFeeTw, purchase.ShippingFeeKokusai,
+		purchase.ShippingFeeKr, purchase.ShippingFeeTw, purchase.ShippingFeeKokusai,
 		purchase.ExchangeRateKrw, purchase.TotalKrw, purchase.TotalTwd,
 		purchase.Remark, purchase.DataOrder,
 	)
