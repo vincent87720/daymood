@@ -3,7 +3,6 @@ package routers
 import (
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -152,31 +151,31 @@ func organizeData(db *sql.DB, easyStoreData JSONRAW) (model.DeliveryOrder, *mode
 	}
 
 	//依照productStrXi裡面的字串在資料庫內查詢對應資訊
-	productMap, err := model.GetProducts(db, productSkuXi)
-	if err != nil {
-		fmt.Println(err)
-		return deliveryOrder, &model.ModelError{Code: 0, Message: "?"}, err
-	}
-	if len(productSkuXi) != len(productMap) {
+	// productMap, err := model.GetProducts(db, productSkuXi)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return deliveryOrder, &model.ModelError{Code: 0, Message: "?"}, err
+	// }
+	// if len(productSkuXi) != len(productMap) {
 
-		return deliveryOrder, &model.ModelError{Code: 1, Message: "Some products not found in database."}, errors.New("Some products not found in database.")
-	}
+	// 	return deliveryOrder, &model.ModelError{Code: 1, Message: "Some products not found in database."}, errors.New("Some products not found in database.")
+	// }
 
-	for idx, val := range deliveryOrder.Products {
-		//將查詢到的NtdRetailPrice放入deliveryOrder中
-		deliveryOrder.Products[idx].NtdSellingPrice = productMap[val.ProductSku].NtdSellingPrice
+	// for idx, val := range deliveryOrder.Products {
+	// 	//將查詢到的NtdRetailPrice放入deliveryOrder中
+	// 	deliveryOrder.Products[idx].NtdSellingPrice = productMap[val.ProductSku].NtdSellingPrice
 
-		//計算並記錄商品每個商品的小計
-		retailPrice := deliveryOrder.Products[idx].NtdSellingPrice
-		qty := deliveryOrder.Products[idx].DeliveryProductQty
-		deliveryOrder.Products[idx].DeliveryProductSubtotal = retailPrice * float32(qty)
+	// 	//計算並記錄商品每個商品的小計
+	// 	retailPrice := deliveryOrder.Products[idx].NtdSellingPrice
+	// 	qty := deliveryOrder.Products[idx].DeliveryProductQty
+	// 	deliveryOrder.Products[idx].DeliveryProductSubtotal = retailPrice * float32(qty)
 
-		//累加每個商品的小計，計算總價
-		deliveryOrder.DeliveryOrderTotal += deliveryOrder.Products[idx].DeliveryProductSubtotal
-	}
+	// 	//累加每個商品的小計，計算總價
+	// 	deliveryOrder.DeliveryOrderTotal += deliveryOrder.Products[idx].DeliveryProductSubtotal
+	// }
 
-	//將總價減去從EasyStore取得的價格，用於計算折扣
-	deliveryOrder.Discount = deliveryOrder.DeliveryOrderTotal - deliveryOrder.EasyStoreOrderTotal
+	// //將總價減去從EasyStore取得的價格，用於計算折扣
+	// deliveryOrder.Discount = deliveryOrder.DeliveryOrderTotal - deliveryOrder.EasyStoreOrderTotal
 
 	return deliveryOrder, nil, nil
 }

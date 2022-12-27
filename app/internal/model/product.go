@@ -3,19 +3,9 @@ package model
 import (
 	"database/sql"
 	"errors"
-	"fmt"
-	"log"
-	"strconv"
-	"strings"
 
 	"github.com/lib/pq"
 )
-
-type ModelError struct {
-	Model   string
-	Code    int
-	Message string
-}
 
 //PERR0: Connection to the Database is lost.
 //PERR1: Firm instance dosen't exists.
@@ -24,482 +14,346 @@ type ModelError struct {
 //PERR4: ProductSku must be unique.
 
 type Product struct {
-	FirmInfo          Firm
-	ProductID         int64
-	ProductSku        string
-	ProductName       string
-	ProductType       string
-	ProductImgName    string
-	ProductImgID      string
-	Stocks            int
-	Weight            float32
-	KrwWholesalePrice float32
-	NtdWholesalePrice float32
-	NtdListPrice      float32
-	NtdSellingPrice   float32
-	NtdCnf            float32
-	NtdCost           float32
-	PurchaseProductID string
-	DataOrder         string
-	CreateAt          string
-	UpdateAt          string
+	ID          int64    //流水號
+	SKU         *string  //商品顯示編號
+	Name        string   //商品名稱
+	ProductType int64    //商品種類
+	ImgName     *string  //商品圖片
+	ImgID       *string  //商品圖片編號
+	Stocks      int64    //庫存
+	Weight      *float32 //重量
+	RetailPrice float32  //售價
+	Remark      *string  //備註
+	DataOrder   *string  //順序
+	CreateAt    string   //建立時間
+	UpdateAt    string   //最後編輯時間
 }
 
-type ProductSchema struct {
-	ProductID         int64
-	ProductSku        string
-	ProductName       string
-	ProductType       string
-	ProductImgName    *string
-	ProductImgID      *string
-	Stocks            int
-	Weight            float32
-	KrwWholesalePrice float32
-	NtdWholesalePrice float32
-	NtdListPrice      float32
-	NtdSellingPrice   float32
-	NtdCnf            float32
-	NtdCost           float32
-	PurchaseProductID string
-	DataOrder         *string
-	CreateAt          string
-	UpdateAt          string
-	FirmID            int64
-	FirmName          string
-}
-
-func NewProduct(productSku string, productName string, productType string,
-	productImgName string, productImgID string,
-	weight float32, krwWholesalePrice float32, ntdWholesalePrice float32,
-	ntdListPrice float32, ntdSellingPrice float32,
-	ntdCnf float32, ntdCost float32, purchaseProductID string, firmID int64) (Product, error) {
+func NewProduct(name string, productType int64, stocks int64, retailPrice float32) (Product, error) {
 	var product Product
 
-	if checkEmpty(productSku) == true ||
-		checkEmpty(productName) == true ||
-		checkEmpty(productType) == true ||
-		weight < 0 ||
-		krwWholesalePrice < 0 ||
-		ntdWholesalePrice < 0 ||
-		ntdListPrice < 0 ||
-		ntdSellingPrice < 0 ||
-		ntdCnf < 0 ||
-		ntdCost < 0 ||
-		checkEmpty(purchaseProductID) == true ||
-		firmID < 0 {
-
+	if checkEmpty(name) == true ||
+		productType < 0 ||
+		stocks < 0 ||
+		retailPrice < 0 {
 		return product, errors.New("Column is null or empty.")
 	}
 
-	// uuid := uuid.New()
-	// id := uuid.String()
-
-	// if checkEmpty(productID) == true {
-	// 	productID = id
-	// }
-
 	product = Product{
-		ProductSku:        productSku,
-		ProductName:       productName,
-		ProductType:       productType,
-		ProductImgName:    productImgName,
-		ProductImgID:      productImgID,
-		Stocks:            0,
-		Weight:            weight,
-		KrwWholesalePrice: krwWholesalePrice,
-		NtdWholesalePrice: ntdWholesalePrice,
-		NtdListPrice:      ntdListPrice,
-		NtdSellingPrice:   ntdSellingPrice,
-		NtdCnf:            ntdCnf,
-		NtdCost:           ntdCost,
-		PurchaseProductID: purchaseProductID,
-		FirmInfo: Firm{
-			ID: firmID,
-		},
+		Name:        name,
+		ProductType: productType,
+		Stocks:      stocks,
+		RetailPrice: retailPrice,
 	}
 
 	return product, nil
 }
 
-func GetAllProducts(db *sql.DB) ([]Product, error) {
+func GetAllProducts(db *sql.DB) (productXi []Product, modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {
-		return nil, err
+		return nil, connectionError("products")
 	}
 
-	stmt := `
-	SELECT 
-	p.product_id, p.product_sku, 
-	p.product_name, p.product_type, 
-	p.product_img_name, p.product_img_id, 
-	p.stocks, p.weight, 
-	p.krw_wholesale_price, p.ntd_wholesale_price, 
-	p.ntd_list_price, p.ntd_selling_price, 
-	p.ntd_cnf, p.ntd_cost,
-	p.data_order, p.create_at, p.update_at, 
-	p.purchase_product_id, f.firm_id, f.firm_name 
-	FROM product AS p INNER JOIN firm AS f ON p.firm_id = f.firm_id 
-	ORDER BY p.update_at DESC;`
-
-	row, err := db.Query(stmt)
+	row, err := db.Query("SELECT * FROM products ORDER BY id DESC;")
 	if err != nil {
-		fmt.Println(err)
+		return nil, normalError("products", err)
 	}
 	defer row.Close()
 
-	var productSchema ProductSchema
-	var productXi []Product
+	var product Product
 	for row.Next() {
-		err := row.Scan(&productSchema.ProductID, &productSchema.ProductSku,
-			&productSchema.ProductName, &productSchema.ProductType,
-			&productSchema.ProductImgName, &productSchema.ProductImgID,
-			&productSchema.Stocks, &productSchema.Weight,
-			&productSchema.KrwWholesalePrice, &productSchema.NtdWholesalePrice,
-			&productSchema.NtdListPrice, &productSchema.NtdSellingPrice,
-			&productSchema.NtdCnf, &productSchema.NtdCost,
-			&productSchema.DataOrder, &productSchema.CreateAt, &productSchema.UpdateAt,
-			&productSchema.PurchaseProductID, &productSchema.FirmID, &productSchema.FirmName)
+		err := row.Scan(&product.ID, &product.SKU, &product.Name,
+			&product.ProductType, &product.ImgName, &product.ImgID,
+			&product.Stocks, &product.Weight, &product.RetailPrice,
+			&product.Remark, &product.DataOrder, &product.CreateAt,
+			&product.UpdateAt)
 		if err != nil {
-			log.Fatal(err)
+			return nil, normalError("products", err)
 		}
-		tempProduct := Product{
-			FirmInfo: Firm{
-				ID:   productSchema.FirmID,
-				Name: productSchema.FirmName,
-			},
-			ProductID:         productSchema.ProductID,
-			ProductSku:        productSchema.ProductSku,
-			ProductName:       productSchema.ProductName,
-			ProductType:       productSchema.ProductType,
-			Stocks:            productSchema.Stocks,
-			Weight:            productSchema.Weight,
-			KrwWholesalePrice: productSchema.KrwWholesalePrice,
-			NtdWholesalePrice: productSchema.NtdWholesalePrice,
-			NtdListPrice:      productSchema.NtdListPrice,
-			NtdSellingPrice:   productSchema.NtdSellingPrice,
-			NtdCnf:            productSchema.NtdCnf,
-			NtdCost:           productSchema.NtdCost,
-			PurchaseProductID: productSchema.PurchaseProductID,
-			CreateAt:          productSchema.CreateAt,
-			UpdateAt:          productSchema.UpdateAt,
-		}
-
-		if productSchema.ProductImgName == nil {
-			tempProduct.ProductImgName = ""
-		} else {
-			tempProduct.ProductImgName = *productSchema.ProductImgName
-		}
-
-		if productSchema.ProductImgID == nil {
-			tempProduct.ProductImgID = ""
-		} else {
-			tempProduct.ProductImgID = *productSchema.ProductImgID
-		}
-
-		if productSchema.DataOrder == nil {
-			tempProduct.DataOrder = ""
-		} else {
-			tempProduct.DataOrder = *productSchema.DataOrder
-		}
-
-		productXi = append(productXi, tempProduct)
+		productXi = append(productXi, product)
 	}
 
 	return productXi, nil
 }
 
-func GetProducts(db *sql.DB, productSkuXi []string) (map[string]Product, error) {
+// func GetProducts(db *sql.DB, productSkuXi []string) (map[string]Product, error) {
 
-	productMap := make(map[string]Product)
+// 	productMap := make(map[string]Product)
+// 	err := db.Ping()
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	porductSkuStr := strings.Join(productSkuXi, "','")
+// 	stmt := `
+// 	SELECT
+// 	p.product_id, p.product_sku,
+// 	p.product_name, p.product_type,
+// 	p.product_img_name, p.product_img_id,
+// 	p.stocks, p.weight,
+// 	p.krw_wholesale_price, p.ntd_wholesale_price,
+// 	p.ntd_list_price, p.ntd_selling_price,
+// 	p.ntd_cnf, p.ntd_cost,
+// 	p.data_order, p.create_at, p.update_at,
+// 	p.purchase_product_id, f.firm_id, f.firm_name
+// 	FROM product AS p INNER JOIN firm AS f ON p.firm_id = f.firm_id
+// 	WHERE p.product_sku
+// 	IN ('` + porductSkuStr + `')
+// 	ORDER BY p.update_at DESC;`
+
+// 	row, err := db.Query(stmt)
+// 	if err, ok := err.(*pq.Error); ok {
+// 		fmt.Println(err)
+// 	}
+// 	defer row.Close()
+
+// 	var productSchema ProductSchema
+// 	// var productXi []Product
+// 	for row.Next() {
+// 		err := row.Scan(&productSchema.ProductID, &productSchema.ProductSku,
+// 			&productSchema.ProductName, &productSchema.ProductType,
+// 			&productSchema.ProductImgName, &productSchema.ProductImgID,
+// 			&productSchema.Stocks, &productSchema.Weight,
+// 			&productSchema.KrwWholesalePrice, &productSchema.NtdWholesalePrice,
+// 			&productSchema.NtdListPrice, &productSchema.NtdSellingPrice,
+// 			&productSchema.NtdCnf, &productSchema.NtdCost,
+// 			&productSchema.DataOrder, &productSchema.CreateAt, &productSchema.UpdateAt,
+// 			&productSchema.PurchaseProductID, &productSchema.FirmID, &productSchema.FirmName)
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+// 		tempProduct := Product{
+// 			FirmInfo: Firm{
+// 				ID:   productSchema.FirmID,
+// 				Name: productSchema.FirmName,
+// 			},
+// 			ProductID:         productSchema.ProductID,
+// 			ProductSku:        productSchema.ProductSku,
+// 			ProductName:       productSchema.ProductName,
+// 			ProductType:       productSchema.ProductType,
+// 			ProductImgName:    *productSchema.ProductImgName,
+// 			ProductImgID:      *productSchema.ProductImgID,
+// 			Stocks:            productSchema.Stocks,
+// 			Weight:            productSchema.Weight,
+// 			KrwWholesalePrice: productSchema.KrwWholesalePrice,
+// 			NtdWholesalePrice: productSchema.NtdWholesalePrice,
+// 			NtdListPrice:      productSchema.NtdListPrice,
+// 			NtdSellingPrice:   productSchema.NtdSellingPrice,
+// 			NtdCnf:            productSchema.NtdCnf,
+// 			NtdCost:           productSchema.NtdCost,
+// 			CreateAt:          productSchema.CreateAt,
+// 			UpdateAt:          productSchema.UpdateAt,
+// 			PurchaseProductID: productSchema.PurchaseProductID,
+// 		}
+
+// 		if productSchema.ProductImgName == nil {
+// 			tempProduct.ProductImgName = ""
+// 		} else {
+// 			tempProduct.ProductImgName = *productSchema.ProductImgName
+// 		}
+
+// 		if productSchema.ProductImgID == nil {
+// 			tempProduct.ProductImgID = ""
+// 		} else {
+// 			tempProduct.ProductImgID = *productSchema.ProductImgID
+// 		}
+
+// 		if productSchema.DataOrder == nil {
+// 			tempProduct.DataOrder = ""
+// 		} else {
+// 			tempProduct.DataOrder = *productSchema.DataOrder
+// 		}
+// 		productMap[strconv.FormatInt(productSchema.ProductID, 10)] = tempProduct
+
+// 		// productXi = append(productXi, tempProduct)
+// 	}
+
+// 	return productMap, nil
+// }
+
+// func GetProductsByID(db *sql.DB, productIdXi []string) (map[string]Product, error) {
+
+// 	productMap := make(map[string]Product)
+// 	err := db.Ping()
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	porductIdStr := strings.Join(productIdXi, "','")
+// 	stmt := `
+// 	SELECT
+// 	p.product_id, p.product_sku,
+// 	p.product_name, p.product_type,
+// 	p.product_img_name, p.product_img_id,
+// 	p.stocks, p.weight,
+// 	p.krw_wholesale_price, p.ntd_wholesale_price,
+// 	p.ntd_list_price, p.ntd_selling_price,
+// 	p.ntd_cnf, p.ntd_cost,
+// 	p.data_order, p.create_at, p.update_at,
+// 	p.purchase_product_id, f.firm_id, f.firm_name
+// 	FROM product AS p INNER JOIN firm AS f ON p.firm_id = f.firm_id
+// 	WHERE p.product_id
+// 	IN ('` + porductIdStr + `')
+// 	ORDER BY p.update_at DESC;`
+
+// 	row, err := db.Query(stmt)
+// 	if err, ok := err.(*pq.Error); ok {
+// 		fmt.Println(err)
+// 	}
+// 	defer row.Close()
+
+// 	var productSchema ProductSchema
+// 	// var productXi []Product
+// 	for row.Next() {
+// 		err := row.Scan(&productSchema.ProductID, &productSchema.ProductSku,
+// 			&productSchema.ProductName, &productSchema.ProductType,
+// 			&productSchema.ProductImgName, &productSchema.ProductImgID,
+// 			&productSchema.Stocks, &productSchema.Weight,
+// 			&productSchema.KrwWholesalePrice, &productSchema.NtdWholesalePrice,
+// 			&productSchema.NtdListPrice, &productSchema.NtdSellingPrice,
+// 			&productSchema.NtdCnf, &productSchema.NtdCost,
+// 			&productSchema.DataOrder, &productSchema.CreateAt, &productSchema.UpdateAt,
+// 			&productSchema.PurchaseProductID, &productSchema.FirmID, &productSchema.FirmName)
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+// 		tempProduct := Product{
+// 			FirmInfo: Firm{
+// 				ID:   productSchema.FirmID,
+// 				Name: productSchema.FirmName,
+// 			},
+// 			ProductID:         productSchema.ProductID,
+// 			ProductSku:        productSchema.ProductSku,
+// 			ProductName:       productSchema.ProductName,
+// 			ProductType:       productSchema.ProductType,
+// 			ProductImgName:    *productSchema.ProductImgName,
+// 			ProductImgID:      *productSchema.ProductImgID,
+// 			Stocks:            productSchema.Stocks,
+// 			Weight:            productSchema.Weight,
+// 			KrwWholesalePrice: productSchema.KrwWholesalePrice,
+// 			NtdWholesalePrice: productSchema.NtdWholesalePrice,
+// 			NtdListPrice:      productSchema.NtdListPrice,
+// 			NtdSellingPrice:   productSchema.NtdSellingPrice,
+// 			NtdCnf:            productSchema.NtdCnf,
+// 			NtdCost:           productSchema.NtdCost,
+// 			CreateAt:          productSchema.CreateAt,
+// 			UpdateAt:          productSchema.UpdateAt,
+// 			PurchaseProductID: productSchema.PurchaseProductID,
+// 		}
+
+// 		if productSchema.ProductImgName == nil {
+// 			tempProduct.ProductImgName = ""
+// 		} else {
+// 			tempProduct.ProductImgName = *productSchema.ProductImgName
+// 		}
+
+// 		if productSchema.ProductImgID == nil {
+// 			tempProduct.ProductImgID = ""
+// 		} else {
+// 			tempProduct.ProductImgID = *productSchema.ProductImgID
+// 		}
+
+// 		if productSchema.DataOrder == nil {
+// 			tempProduct.DataOrder = ""
+// 		} else {
+// 			tempProduct.DataOrder = *productSchema.DataOrder
+// 		}
+// 		productMap[strconv.FormatInt(productSchema.ProductID, 10)] = tempProduct
+
+// 		// productXi = append(productXi, tempProduct)
+// 	}
+
+// 	return productMap, nil
+// }
+
+func (product *Product) Create(db *sql.DB) (modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {
-		return nil, err
-	}
-
-	porductSkuStr := strings.Join(productSkuXi, "','")
-	stmt := `
-	SELECT 
-	p.product_id, p.product_sku, 
-	p.product_name, p.product_type, 
-	p.product_img_name, p.product_img_id, 
-	p.stocks, p.weight, 
-	p.krw_wholesale_price, p.ntd_wholesale_price, 
-	p.ntd_list_price, p.ntd_selling_price, 
-	p.ntd_cnf, p.ntd_cost, 
-	p.data_order, p.create_at, p.update_at, 
-	p.purchase_product_id, f.firm_id, f.firm_name 
-	FROM product AS p INNER JOIN firm AS f ON p.firm_id = f.firm_id 
-	WHERE p.product_sku
-	IN ('` + porductSkuStr + `')
-	ORDER BY p.update_at DESC;`
-
-	row, err := db.Query(stmt)
-	if err, ok := err.(*pq.Error); ok {
-		fmt.Println(err)
-	}
-	defer row.Close()
-
-	var productSchema ProductSchema
-	// var productXi []Product
-	for row.Next() {
-		err := row.Scan(&productSchema.ProductID, &productSchema.ProductSku,
-			&productSchema.ProductName, &productSchema.ProductType,
-			&productSchema.ProductImgName, &productSchema.ProductImgID,
-			&productSchema.Stocks, &productSchema.Weight,
-			&productSchema.KrwWholesalePrice, &productSchema.NtdWholesalePrice,
-			&productSchema.NtdListPrice, &productSchema.NtdSellingPrice,
-			&productSchema.NtdCnf, &productSchema.NtdCost,
-			&productSchema.DataOrder, &productSchema.CreateAt, &productSchema.UpdateAt,
-			&productSchema.PurchaseProductID, &productSchema.FirmID, &productSchema.FirmName)
-		if err != nil {
-			log.Fatal(err)
-		}
-		tempProduct := Product{
-			FirmInfo: Firm{
-				ID:   productSchema.FirmID,
-				Name: productSchema.FirmName,
-			},
-			ProductID:         productSchema.ProductID,
-			ProductSku:        productSchema.ProductSku,
-			ProductName:       productSchema.ProductName,
-			ProductType:       productSchema.ProductType,
-			ProductImgName:    *productSchema.ProductImgName,
-			ProductImgID:      *productSchema.ProductImgID,
-			Stocks:            productSchema.Stocks,
-			Weight:            productSchema.Weight,
-			KrwWholesalePrice: productSchema.KrwWholesalePrice,
-			NtdWholesalePrice: productSchema.NtdWholesalePrice,
-			NtdListPrice:      productSchema.NtdListPrice,
-			NtdSellingPrice:   productSchema.NtdSellingPrice,
-			NtdCnf:            productSchema.NtdCnf,
-			NtdCost:           productSchema.NtdCost,
-			CreateAt:          productSchema.CreateAt,
-			UpdateAt:          productSchema.UpdateAt,
-			PurchaseProductID: productSchema.PurchaseProductID,
-		}
-
-		if productSchema.ProductImgName == nil {
-			tempProduct.ProductImgName = ""
-		} else {
-			tempProduct.ProductImgName = *productSchema.ProductImgName
-		}
-
-		if productSchema.ProductImgID == nil {
-			tempProduct.ProductImgID = ""
-		} else {
-			tempProduct.ProductImgID = *productSchema.ProductImgID
-		}
-
-		if productSchema.DataOrder == nil {
-			tempProduct.DataOrder = ""
-		} else {
-			tempProduct.DataOrder = *productSchema.DataOrder
-		}
-		productMap[strconv.FormatInt(productSchema.ProductID, 10)] = tempProduct
-
-		// productXi = append(productXi, tempProduct)
-	}
-
-	return productMap, nil
-}
-
-func GetProductsByID(db *sql.DB, productIdXi []string) (map[string]Product, error) {
-
-	productMap := make(map[string]Product)
-	err := db.Ping()
-	if err != nil {
-		return nil, err
-	}
-
-	porductIdStr := strings.Join(productIdXi, "','")
-	stmt := `
-	SELECT 
-	p.product_id, p.product_sku, 
-	p.product_name, p.product_type, 
-	p.product_img_name, p.product_img_id, 
-	p.stocks, p.weight, 
-	p.krw_wholesale_price, p.ntd_wholesale_price, 
-	p.ntd_list_price, p.ntd_selling_price, 
-	p.ntd_cnf, p.ntd_cost, 
-	p.data_order, p.create_at, p.update_at, 
-	p.purchase_product_id, f.firm_id, f.firm_name 
-	FROM product AS p INNER JOIN firm AS f ON p.firm_id = f.firm_id 
-	WHERE p.product_id
-	IN ('` + porductIdStr + `')
-	ORDER BY p.update_at DESC;`
-
-	row, err := db.Query(stmt)
-	if err, ok := err.(*pq.Error); ok {
-		fmt.Println(err)
-	}
-	defer row.Close()
-
-	var productSchema ProductSchema
-	// var productXi []Product
-	for row.Next() {
-		err := row.Scan(&productSchema.ProductID, &productSchema.ProductSku,
-			&productSchema.ProductName, &productSchema.ProductType,
-			&productSchema.ProductImgName, &productSchema.ProductImgID,
-			&productSchema.Stocks, &productSchema.Weight,
-			&productSchema.KrwWholesalePrice, &productSchema.NtdWholesalePrice,
-			&productSchema.NtdListPrice, &productSchema.NtdSellingPrice,
-			&productSchema.NtdCnf, &productSchema.NtdCost,
-			&productSchema.DataOrder, &productSchema.CreateAt, &productSchema.UpdateAt,
-			&productSchema.PurchaseProductID, &productSchema.FirmID, &productSchema.FirmName)
-		if err != nil {
-			log.Fatal(err)
-		}
-		tempProduct := Product{
-			FirmInfo: Firm{
-				ID:   productSchema.FirmID,
-				Name: productSchema.FirmName,
-			},
-			ProductID:         productSchema.ProductID,
-			ProductSku:        productSchema.ProductSku,
-			ProductName:       productSchema.ProductName,
-			ProductType:       productSchema.ProductType,
-			ProductImgName:    *productSchema.ProductImgName,
-			ProductImgID:      *productSchema.ProductImgID,
-			Stocks:            productSchema.Stocks,
-			Weight:            productSchema.Weight,
-			KrwWholesalePrice: productSchema.KrwWholesalePrice,
-			NtdWholesalePrice: productSchema.NtdWholesalePrice,
-			NtdListPrice:      productSchema.NtdListPrice,
-			NtdSellingPrice:   productSchema.NtdSellingPrice,
-			NtdCnf:            productSchema.NtdCnf,
-			NtdCost:           productSchema.NtdCost,
-			CreateAt:          productSchema.CreateAt,
-			UpdateAt:          productSchema.UpdateAt,
-			PurchaseProductID: productSchema.PurchaseProductID,
-		}
-
-		if productSchema.ProductImgName == nil {
-			tempProduct.ProductImgName = ""
-		} else {
-			tempProduct.ProductImgName = *productSchema.ProductImgName
-		}
-
-		if productSchema.ProductImgID == nil {
-			tempProduct.ProductImgID = ""
-		} else {
-			tempProduct.ProductImgID = *productSchema.ProductImgID
-		}
-
-		if productSchema.DataOrder == nil {
-			tempProduct.DataOrder = ""
-		} else {
-			tempProduct.DataOrder = *productSchema.DataOrder
-		}
-		productMap[strconv.FormatInt(productSchema.ProductID, 10)] = tempProduct
-
-		// productXi = append(productXi, tempProduct)
-	}
-
-	return productMap, nil
-}
-
-func (product *Product) Create(db *sql.DB) (modelErr *ModelError, err error) {
-	err = db.Ping()
-	if err != nil {
-		return &ModelError{Code: 0, Message: "Connection to the Database is lost."}, err
+		return connectionError("products")
 	}
 
 	qstr := `
-	INSERT INTO 
-	product(
-		product_sku, product_name, product_type,
-		product_img_name, product_img_id,
-		stocks, weight, 
-		krw_wholesale_price, ntd_wholesale_price, 
-		ntd_list_price, ntd_selling_price, 
-		ntd_cnf, ntd_cost, 
-		purchase_product_id, firm_id
-	) 
-	VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15);`
+	INSERT INTO
+	products(
+		sku, name, type, img_id, img_name,
+		stocks, weight, retail_price, remark, 
+		data_order
+	)
+	VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);`
 
 	stmt, err := db.Prepare(qstr)
 	if err != nil {
-		return nil, err
+		return normalError("products", err)
 	}
 	defer stmt.Close()
 
 	res, err := stmt.Exec(
-		product.ProductSku, product.ProductName, product.ProductType,
-		product.ProductImgName, product.ProductImgID,
-		product.Stocks, product.Weight,
-		product.KrwWholesalePrice, product.NtdWholesalePrice,
-		product.NtdListPrice, product.NtdSellingPrice,
-		product.NtdCnf, product.NtdCost,
-		product.PurchaseProductID, product.FirmInfo.ID)
+		product.SKU, product.Name, product.ProductType,
+		product.ImgName, product.ImgID, product.Stocks,
+		product.Weight, product.RetailPrice, product.Remark,
+		product.DataOrder)
 	if err, ok := err.(*pq.Error); ok {
 		if err.Code == "23505" {
-			return &ModelError{Code: 4, Message: "ProductSku must be unique."}, err
+			return uniqueError("products", "SKU")
 
-		} else if err.Code == "23503" {
-			return &ModelError{Code: 1, Message: "Firm instance dosen't exists."}, err
 		} else {
-			return &ModelError{Code: -1, Message: "?"}, err
+			return normalError("products", err)
 		}
 	}
 
 	rowsAff, err := res.RowsAffected()
 	if rowsAff != 1 {
-		return nil, err
+		return rowsAffectError("products")
 	}
-	return nil, nil
+	return nil
 }
 
-func (product *Product) Update(db *sql.DB) (modelErr *ModelError, err error) {
-	err = db.Ping()
-	if err != nil {
-		return &ModelError{Code: 0, Message: "Connection to the Database is lost."}, err
-	}
-
-	stmt, err := db.Prepare("CALL update_product($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)")
-	if err != nil {
-		return nil, err
-	}
-	defer stmt.Close()
-
-	res, err := stmt.Exec(
-		product.ProductID, product.ProductSku,
-		product.ProductName, product.ProductType,
-		product.ProductImgName, product.ProductImgID,
-		product.Stocks, product.Weight,
-		product.KrwWholesalePrice, product.NtdWholesalePrice,
-		product.NtdListPrice, product.NtdSellingPrice,
-		product.NtdCnf, product.NtdCost,
-		product.PurchaseProductID, product.FirmInfo.ID)
-
-	// res, err := db.Exec("CALL update_product($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)", product.ProductID, product.ProductSku, product.ProductName, product.ProductType, product.Stocks, product.Weight, product.KrwWholesalePrice, product.NtdWholesalePrice, product.NtdListPrice, product.NtdSellingPrice, product.NtdCnf, product.NtdCost, product.PurchaseProductID, product.FirmInfo.ID)
-	if err != nil {
-		return &ModelError{Code: 3, Message: "Update fail"}, err
-	}
-	fmt.Println(res.RowsAffected())
-
-	return nil, nil
-}
-
-func (product *Product) Delete(db *sql.DB) error {
+func (product *Product) Update(db *sql.DB) (modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {
-		return err
+		return connectionError("products")
 	}
 
-	stmt, err := db.Prepare("DELETE FROM product WHERE product_id = $1;")
+	stmt, err := db.Prepare("CALL update_product($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)")
 	if err != nil {
-		return err
+		return normalError("products", err)
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Exec(product.ProductID)
+	_, err = stmt.Exec(
+		product.ID, product.SKU, product.Name, product.ProductType,
+		product.ImgName, product.ImgID, product.Stocks,
+		product.Weight, product.RetailPrice, product.Remark,
+		product.DataOrder)
+
 	if err != nil {
-		return err
+		return normalError("products", err)
+	}
+
+	return nil
+}
+
+func (product *Product) Delete(db *sql.DB) (modelErr *ModelError) {
+	err := db.Ping()
+	if err != nil {
+		return connectionError("products")
+	}
+
+	stmt, err := db.Prepare("DELETE FROM products WHERE id = $1;")
+	if err != nil {
+		return normalError("products", err)
+	}
+	defer stmt.Close()
+
+	res, err := stmt.Exec(product.ID)
+	if err, ok := err.(*pq.Error); ok {
+		return normalError("products", err)
 	}
 
 	rowsAff, err := res.RowsAffected()
 	if rowsAff != 1 {
-		return err
+		return rowsAffectError("products")
 	}
 	return nil
 }
@@ -533,3 +387,59 @@ func checkEmpty(s string) bool {
 	}
 	return false
 }
+
+// ID
+// SKU
+// Name
+// ProductType
+// ImgName
+// ImgID
+// Stocks
+// Weight
+// RetailPrice
+// Remark
+// DataOrder
+// CreateAt
+// UpdateAt
+
+// id
+// sku
+// name
+// productType
+// imgName
+// imgID
+// stocks
+// weight
+// retailPrice
+// remark
+// dataOrder
+// createAt
+// updateAt
+
+//流水號
+//商品顯示編號
+//商品名稱
+//商品種類
+//商品圖片
+//商品圖片編號
+//庫存
+//重量
+//售價
+//備註
+//順序
+//建立時間
+//最後編輯時間
+
+// id
+// sku
+// name
+// type
+// img_id
+// img_name
+// stocks
+// weight
+// retail_price
+// remark
+// data_order
+// create_at
+// update_at
