@@ -104,11 +104,7 @@ func PutPurchaseHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		purchase, err := model.NewPurchase(purchaseForm.Name, purchaseForm.Status, purchaseForm.PurchaseType, purchaseForm.TotalTwd)
-		if err != nil {
-			context.JSON(http.StatusBadRequest, generalError)
-			return
-		}
+		purchase := purchaseForm
 		purchase.ID = supplierIDVal
 
 		modelErr := purchase.Update(db)
