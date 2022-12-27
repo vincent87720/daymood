@@ -54,7 +54,7 @@ func GetAllPurchases(db *sql.DB) (purchaseXi []Purchase, modelErr *ModelError) {
 		return nil, &ModelError{Model: "purchases", Code: 0, Message: err.Error()}
 	}
 
-	row, err := db.Query("SELECT * FROM purchases;")
+	row, err := db.Query("SELECT * FROM purchases ORDER BY id DESC;")
 	if err != nil {
 		return nil, &ModelError{Model: "purchases", Code: 0, Message: err.Error()}
 	}
