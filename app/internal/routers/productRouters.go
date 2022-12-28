@@ -33,8 +33,8 @@ func GetProductsHandler(db *sql.DB) gin.HandlerFunc {
 		}
 
 		context.JSON(http.StatusOK, gin.H{
-			"status":   "OK",
-			"products": productXi,
+			"status":  "OK",
+			"records": productXi,
 		})
 		return
 	}
