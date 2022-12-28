@@ -1,5 +1,19 @@
 [
-    {"id":"0", "type":"SupplierHeader", "key":0, "value":"廠商名稱", "remark":""},
-    {"id":"1", "type":"SupplierHeader", "key":1, "value":"廠商地址", "remark":""},
-    {"id":"2", "type":"SupplierHeader", "key":2, "value":"備註", "remark":""}
+    {"id":"0", "type":"PurchaseStatus", "key":1, "value":"採購中", "remark":""},
+    {"id":"1", "type":"PurchaseStatus", "key":2, "value":"結案", "remark":""},
+    {"id":"2", "type":"PurchaseType", "key":1, "value":"商品", "remark":""},
+    {"id":"3", "type":"PurchaseType", "key":2, "value":"耗材", "remark":""},
+    {"id":"4", "type":"ProductType", "key":1, "value":"耳環", "remark":""},
+    {"id":"5", "type":"ProductType", "key":2, "value":"耳骨夾", "remark":""},
+    {"id":"6", "type":"ProductType", "key":3, "value":"戒指", "remark":""},
+    {"id":"7", "type":"ProductType", "key":4, "value":"項鍊", "remark":""},
+    {"id":"8", "type":"ProductType", "key":5, "value":"手鍊", "remark":""},
+    {"id":"9", "type":"ProductType", "key":6, "value":"紙盒", "remark":""},
+    {"id":"10", "type":"ProductType", "key":7, "value":"氣泡紙", "remark":""},
+    {"id":"11", "type":"ProductType", "key":8, "value":"拭銀布", "remark":""},
+    {"id":"12", "type":"ProductType", "key":9, "value":"破壞袋", "remark":""},
+    {"id":"13", "type":"ProductType", "key":10, "value":"夾鏈袋", "remark":""},
+    {"id":"14", "type":"ProductType", "key":11, "value":"飾品卡", "remark":""},
+    {"id":"15", "type":"ProductType", "key":12, "value":"留言卡", "remark":""},
+    {"id":"16", "type":"ProductType", "key":13, "value":"香芬", "remark":""}
 ]
