@@ -24,7 +24,7 @@ type Product struct {
 	Weight      *float32 //重量
 	RetailPrice float32  //售價
 	Remark      *string  //備註
-	DataOrder   *string  //順序
+	DataOrder   *int64   //順序
 	CreateAt    string   //建立時間
 	UpdateAt    string   //最後編輯時間
 }
@@ -315,7 +315,7 @@ func (product *Product) Update(db *sql.DB) (modelErr *ModelError) {
 		return connectionError("products")
 	}
 
-	stmt, err := db.Prepare("CALL update_product($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)")
+	stmt, err := db.Prepare("CALL updateProducts($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)")
 	if err != nil {
 		return normalError("products", err)
 	}
