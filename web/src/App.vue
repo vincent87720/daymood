@@ -10,10 +10,18 @@
       </div>
     </v-app-bar>
     <v-main>
-      <Products
-      v-if="activeType != 2"
+      <!-- <ProductsOld
+      v-if="activeType != 2 && activeType != 0&& activeType != 1"
       ref="ProductsComponent"
       :prop_activeType.sync="activeType"
+      /> -->
+      <Products
+      v-if="activeType == 1"
+      :prop_activeType.sync="activeType"
+      />
+      <Purchases
+      ref="Purchases"
+      v-if="activeType == 0"
       />
       <Suppliers 
       v-if="activeType == 2"
@@ -66,21 +74,27 @@
 </template>
 
 <script>
+import ProductsOld from './components/ProductsOld/index.vue'
 import Products from './components/Products/index.vue'
 import Suppliers from './components/Suppliers/index.vue'
+import Purchases from './components/Purchases/index.vue'
 import ProductDialog from './components/ProductDialog/index.vue'
 
 export default {
   name: 'App',
   components:{
     Products,
+    ProductsOld,
     Suppliers,
+    Purchases,
     ProductDialog,
   },
   data: () => ({
     activeType: -1,
-    purchaseDialog: false,
   }),
+  created(){
+    this.$store.dispatch("GetSystemConfig");
+  },
   methods:{
   },
 };

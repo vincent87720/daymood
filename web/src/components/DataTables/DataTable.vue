@@ -1,23 +1,55 @@
 <template>
-    <v-data-table :headers="headers" :items="items" :items-per-page="7" :search="search" dark
-        class="elevation-1 mx-4 mb-4">
+    <v-data-table :headers="headers" :items="itemsss" :items-per-page="7" :search="search" dark
+        class="elevation-1 mx-4 mb-4 page__table">
         <template v-slot:item.actions="{ item }">
-            <v-icon small class="mr-2" @click.stop="onClick_editButton(item)">
+            <v-icon small class="mx-1" @click.stop="onClick_editButton(item)">
                 mdi-pencil
             </v-icon>
-            <v-icon small @click.stop="onClick_deleteButton(item)">
+            <v-icon small class="mx-1" @click.stop="onClick_deleteButton(item)">
                 mdi-delete
             </v-icon>
+            <slot name="item.actions.plus" v-bind="{ item }"></slot>
         </template>
+        <!-- Code to pass on the $slots: -->
+        <!-- <template v-for="(index, name) in $slots" v-slot:[name]>
+            <slot :name="name" />
+        </template> -->
+        <!-- Code to pass on the $slots: -->
+        <!-- Code to pass on the $scopedSlots -->
+        <template v-for="(index, name) in $scopedSlots" v-slot:[name]="data">
+            <slot :name="name" v-bind="data"></slot>
+        </template>
+        <!-- Code to pass on the $scopedSlots -->
+        <!-- <template v-slot:body="data">
+            <draggable :list="data.items" tag="tbody">
+                <tr v-for="(item, index) in data.items" :key="`row.${index}`">
+                    <td v-if="headers.find(x => x.value == idx)" v-for="(col, idx) in item" :key="`col.${idx}`">
+                        <slot :name="`item.${idx}`" v-bind="{'item':item}">{{ col }}</slot>
+                    </td>
+                    <td>
+                        <v-icon small class="mr-2" @click.stop="onClick_editButton(item)">
+                            mdi-pencil
+                        </v-icon>
+                        <v-icon small @click.stop="onClick_deleteButton(item)">
+                            mdi-delete
+                        </v-icon>
+                    </td>
+                </tr>
+            </draggable>
+        </template> -->
     </v-data-table>
 </template>
 
 <script>
+import Draggable from 'vuedraggable';
 export default {
     name: 'DataTable',
     data() {
         return {
         };
+    },
+    components: {
+        Draggable,
     },
     props: {
         prop_headers: {
@@ -43,7 +75,7 @@ export default {
 
             }
         },
-        items: {
+        itemsss: {
             get() {
                 return this.prop_items
             },
@@ -72,3 +104,17 @@ export default {
     },
 }   
 </script>
+
+<style lang="scss">
+.page--table {
+    .page {
+        &__table {
+            margin-top: 20px;
+        }
+
+        &__grab-icon {
+            cursor: move;
+        }
+    }
+}
+</style>

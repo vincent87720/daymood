@@ -1,420 +1,279 @@
+<template>
+    <v-dialog v-model="productDialog" @click:outside="onClick_cancel" fullscreen>
+        <v-card class="d-flex align-center flex-column justify-center" width="100">
+            <v-card-title class="text-h5 mt-4">
+                {{ text_cardTitle }}
+            </v-card-title>
+            <v-container class="pa-6">
+                <v-row>
+                    <v-col xs="12" sm="6" class="ml-auto mr-auto">
+                        <v-form ref="form" v-model="validator">
+                            <v-text-field label="SKU商品編號" v-model="productItem.SKU" :rules="[rules.required]"
+                                prepend-icon="mdi-identifier" v-on:keydown.enter.prevent="onClick_confirm"
+                                autofocus></v-text-field>
+                            <v-text-field label="商品名稱" v-model="productItem.Name" :rules="[rules.required]"
+                                prepend-icon="mdi-text-short"
+                                v-on:keydown.enter.prevent="onClick_confirm"></v-text-field>
+                            <v-select label="商品種類" v-model="productItem.ProductType"
+                                :rules="[rules.requiredIncludeZero, rules.number]" prepend-icon="mdi-store-outline"
+                                :items="systemConfigs.ProductType" item-text="value" item-value="key" dense full-width ></v-select>
+                            <v-text-field label="庫存" v-model="productItem.Stocks"
+                                :rules="[rules.requiredIncludeZero, rules.number]" prepend-icon="mdi-package-variant"
+                                v-on:keydown.enter.prevent="onClick_confirm" ></v-text-field>
+                            <v-text-field label="商品重量(g)" v-model="productItem.Weight"
+                                :rules="[rules.requiredIncludeZero, rules.number]" prepend-icon="mdi-weight-gram"
+                                v-on:keydown.enter.prevent="onClick_confirm" ></v-text-field>
+                            <v-text-field label="售價" v-model="productItem.RetailPrice"
+                                :rules="[rules.requiredIncludeZero, rules.number]" prepend-icon="mdi-currency-twd"
+                                v-on:keydown.enter.prevent="onClick_confirm" :hint="hint_retailPrice"
+                                :persistent-hint="isMaterials == true" :disabled="isMaterials == true"></v-text-field>
+                            <v-textarea label="備註" v-model="productItem.Remark" prepend-icon="mdi-text-long" auto-grow
+                                rows="1" row-height="15"></v-textarea>
+                        </v-form>
+                    </v-col>
+                </v-row>
+            </v-container>
+            <div class="pa-6 pt-3">
+
+                <v-btn class="mx-2" outlined rounded text @click.stop="onClick_cancel">
+                    取消
+                </v-btn>
+                <v-btn class="mx-2" outlined rounded text @click.stop="onClick_confirm">
+                    {{ text_confirmBtn }}
+                </v-btn>
+            </div>
+        </v-card>
+    </v-dialog>
+</template>
+
 <script>
 
-    export default {
-        name: 'ProductDialog',
-        components:{
-            
-        },
-        data(){
-            return{
-                imgFile: null,
-                fooFile: null,
-                valid_productForm: false,
-                // select_type: null,
-                typeList:[
-                    { name: '耳環', val: 'earrings' },
-                    { name: '耳骨夾', val: 'earcuff' },
-                    { name: '項鍊', val: 'necklace' },
-                    { name: '戒指', val: 'rings' },
-                    { name: '手鍊', val: 'bracelet' },
-                ],
-                text_requiredRules: [
-                    v => !!v || '必填',
-                ],
-                text_requiredRules_isNumber: [
-                    v => !!v || '必填',
-                    v => {
-                        return !!parseFloat(v) || '必須為數字'
-                    },
-                ],
-                grossMargin: null,//毛利
-                profitMargin: null,//毛利率
-            };
-        },
-        mounted(){
-        },
-        props:{
-            prop_productDialog:{
-                type:Boolean,
-                required:true
-            },
-            prop_text_cardTitle:{
-                type:String,
-                required:true
-            },
-            prop_text_confirmBtn:{
-                type:String,
-                required:true
-            },
-            prop_actionType:{
-                type:String,
-                required:false
-            },
-            prop_productID:{
-                type:Number,
-                required:false
-            },
-            prop_productSku:{
-                type:String,
-                required:false
-            },
-            prop_purchaseProductID:{
-                type:String,
-                required:false
-            },
-            prop_productName:{
-                type:String,
-                required:false
-            },
-            prop_productType:{
-                type:String,
-                required:false
-            },
-            prop_productImgName:{
-                type:String,
-                required:false
-            },
-            prop_productImgID:{
-                type:String,
-                required:false
-            },
-            prop_productWeight:{
-                type:String,
-                required:false
-            },
-            prop_krwWholesalePrice:{
-                type:String,
-                required:false
-            },
-            prop_ntdWholesalePrice:{
-                type:String,
-                required:false
-            },
-            prop_ntdListPrice:{
-                type:String,
-                required:false
-            },
-            prop_ntdSellingPrice:{
-                type:String,
-                required:false
-            },
-            prop_ntdCnf:{
-                type:String,
-                required:false
-            },
-            prop_ntdCost:{
-                type:String,
-                required:false
-            },
-            prop_firmID:{
-                type:Number,
-                required:false
-            },
-            prop_firmList:{
-                type:Array,
-                required:false
-            },
-            prop_tradingSettings:{
-                type:Object,
-                required:true
-            },
-        },
-        computed:{
-            productDialog:{
-                get(){
-                    return this.prop_productDialog
-                },
-                set(val){
-                    this.$emit('update:prop_productDialog',val)
-                    
-                }
-            },
-            text_cardTitle:{
-                get(){
-                    return this.prop_text_cardTitle
-                },
-                set(val){
-                    this.$emit('update:prop_text_cardTitle',val)
-                }
-            },
-            text_confirmBtn:{
-                get(){
-                    return this.prop_text_confirmBtn
-                },
-                set(val){
-                    this.$emit('update:prop_text_confirmBtn',val)
-                }
-            },
-            actionType:{
-                get(){
-                    return this.prop_actionType
-                },
-                set(val){
-                    this.$emit('update:prop_actionType',val)
-                }
-            },
-            productID:{
-                get(){
-                    return this.prop_productID
-                },
-                set(val){
-                    this.$emit('update:prop_productID',val)
-                }
-            },
-            productSku:{
-                get(){
-                    return this.prop_productSku
-                },
-                set(val){
-                    this.$emit('update:prop_productSku',val)
-                }
-            },
-            purchaseProductID:{
-                get(){
-                    return this.prop_purchaseProductID
-                },
-                set(val){
-                    this.$emit('update:prop_purchaseProductID',val)
-                }
-            },
-            productName:{
-                get(){
-                    return this.prop_productName
-                },
-                set(val){
-                    this.$emit('update:prop_productName',val)
-                }
-            },
-            productType:{
-                get(){
-                    return this.prop_productType
-                },
-                set(val){
-                    this.$emit('update:prop_productType',val)
-                }
-            },
-            productImgName:{
-                get(){
-                    return this.prop_productImgName
-                },
-                set(val){
-                    this.$emit('update:prop_productImgName',val)
-                }
-            },
-            productImgID:{
-                get(){
-                    return this.prop_productImgID
-                },
-                set(val){
-                    this.$emit('update:prop_productImgID',val)
-                }
-            },
-            productWeight:{
-                get(){
-                    return this.prop_productWeight
-                },
-                set(val){
-                    this.$emit('update:prop_productWeight',val)
-                }
-            },
-            krwWholesalePrice:{
-                get(){
-                    return this.prop_krwWholesalePrice
-                },
-                set(val){
-                    this.$emit('update:prop_krwWholesalePrice',val)
-                }
-            },
-            ntdWholesalePrice:{
-                get(){
-                    return this.prop_ntdWholesalePrice
-                },
-                set(val){
-                    this.$emit('update:prop_ntdWholesalePrice',val)
-                }
-            },
-            ntdListPrice:{
-                get(){
-                    return this.prop_ntdListPrice
-                },
-                set(val){
-                    this.$emit('update:prop_ntdListPrice',val)
-                }
-            },
-            ntdSellingPrice:{
-                get(){
-                    return this.prop_ntdSellingPrice
-                },
-                set(val){
-                    this.$emit('update:prop_ntdSellingPrice',val)
-                }
-            },
-            ntdCnf:{
-                get(){
-                    return this.prop_ntdCnf
-                },
-                set(val){
-                    this.$emit('update:prop_ntdCnf',val)
-                }
-            },
-            ntdCost:{
-                get(){
-                    return this.prop_ntdCost
-                },
-                set(val){
-                    this.$emit('update:prop_ntdCost',val)
-                }
-            },
-            firmID:{
-                get(){
-                    return this.prop_firmID
-                },
-                set(val){
-                    this.$emit('update:prop_firmID',val)
-                }
-            },
-            firmList:{
-                get(){
-                    return this.prop_firmList
-                },
-                set(val){
-                    this.$emit('update:prop_firmList',val)
-                }
-            },
-            tradingSettings:{
-                get(){
-                    return this.prop_tradingSettings
-                },
-                set(val){
-                    this.$emit('update:prop_tradingSettings',val)
-                }
-            },
-        },
-        methods:{
-            onClick_confirm:function(){ //有子元件的事件觸發 自定義事件childevent
-                this.$refs.form.validate();
-                if(this.valid_productForm == false){
-                    return
-                }
-                var productInfo = {};
-                productInfo.actionType = this.actionType;
-                productInfo.productID = this.productID;
-                productInfo.productSku = this.productSku;
-                productInfo.purchaseProductID = this.purchaseProductID;
-                productInfo.productName = this.productName;
-                productInfo.productType = this.productType;
-                productInfo.productWeight = this.productWeight;
-                productInfo.krwWholesalePrice = this.krwWholesalePrice;
-                productInfo.ntdWholesalePrice = this.ntdWholesalePrice;
-                productInfo.ntdListPrice = this.ntdListPrice;
-                productInfo.ntdSellingPrice = this.ntdSellingPrice;
-                productInfo.ntdCnf = this.ntdCnf;
-                productInfo.ntdCost = this.ntdCost;
-                productInfo.firmID = this.firmID;
-                productInfo.fooFile = this.fooFile;
-                productInfo.imgFile = this.imgFile;
-                productInfo.productImgName = this.productImgName;
-                productInfo.productImgID = this.productImgID;
-                console.log(this.fooFile);
-                console.log(this.imgFile);
-                this.$emit('confirmClick',productInfo);//觸發一個在子元件中宣告的事件 childEvnet
-                this.resetForm();
-            },
-            onClick_cancel(){
-                this.productDialog = false;
-                this.resetForm();
-            },
-            resetForm () {
-                this.productID = null;
-                this.productSku = null;
-                this.purchaseProductID = null;
-                this.productName = null;
-                this.productType = null;
-                this.productImgName = null;
-                this.productImgID = null;
-                this.productWeight = null;
-                this.krwWholesalePrice = null;
-                this.ntdWholesalePrice = null;
-                this.ntdListPrice = null;
-                this.ntdSellingPrice = null;
-                this.ntdCnf = null;
-                this.ntdCost = null;
-                this.imgFile = null;
-                this.fooFile = null;
-                this.$refs.form.reset();
-            },
-            clearFileInput(){
-                this.$refs.imgFile.reset();
-                this.imgFile = null;
-            },
-            calc_ntdWholesalePrice(){
-                return (this.krwWholesalePrice/this.tradingSettings.ExchangeRate).toFixed(2).toString();
-            },
-            calc_listPrice(){
-                var tempPrice = ((this.krwWholesalePrice/this.tradingSettings.ExchangeRate)*this.tradingSettings.Markup).toFixed();
-                if(tempPrice%10 == 0){
-                    return (tempPrice).toString()
-                }
-                else if(tempPrice%10 > 1){
-                    return ((tempPrice-tempPrice%10)+10).toString()
-                }
-                else{
-                    return (tempPrice-tempPrice%10).toString()
-                }
-            },
-            calc_param(){
-                var param = {};
+export default {
+    name: 'ProductDialog',
+    components: {
 
-                var gram = this.productWeight/1000;
-                param.ajeossiCalc = this.tradingSettings.Ajeossi/100+1;//大哥抽成
-                param.shippingFeeCalc = gram*this.tradingSettings.ShippingFee;
-                param.tariffCalc = gram*this.tradingSettings.Tariff;
-                return param
+    },
+    data() {
+        return {
+            imgFile: null,
+            fooFile: null,
+            validator: false,
+            rules: {
+                required: value => !!value || '必填',
+                requiredIncludeZero: value => !(value === undefined || value == null || value == "") || '必填',
+                number: value => !isNaN(value) || '必須為數字',
+                email: value => {
+                    const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                    return pattern.test(value) || 'Invalid e-mail.'
+                },
             },
-            calc_cnfCost(){
-                var param = this.calc_param();
-                return ((this.krwWholesalePrice * param.ajeossiCalc + param.shippingFeeCalc)/this.tradingSettings.ExchangeRate + param.tariffCalc).toFixed(2).toString()
-            },
-            calc_cost(){
-                var param = this.calc_param();
-                return ((this.krwWholesalePrice * param.ajeossiCalc + param.shippingFeeCalc)/this.tradingSettings.ExchangeRate + param.tariffCalc+25).toFixed(2).toString()
-            },
-            calc_grossMargin(){
-                this.grossMargin = this.ntdSellingPrice-this.ntdCost;
-                let percent = ((this.ntdSellingPrice-this.ntdCost)/this.ntdSellingPrice).toFixed(2).toString();
+            grossMargin: null,//毛利
+            profitMargin: null,//毛利率
 
-                if(isNaN(percent) == false){
-                    this.profitMargin = percent;
-                }
-                else{
-                    this.profitMargin = 0;
-                }
+            hint_retailPrice: "",
+        };
+    },
+    mounted() {
+    },
+    props: {
+        prop_productDialog: {
+            type: Boolean,
+            required: true
+        },
+        prop_text_cardTitle: {
+            type: String,
+            required: true
+        },
+        prop_text_confirmBtn: {
+            type: String,
+            required: true
+        },
+        prop_actionType: {
+            type: String,
+            required: false
+        },
+        prop_productItem: {
+            type: Object,
+            required: false
+        },
+        prop_tradingSettings: {
+            type: Object,
+            required: true
+        },
+    },
+    computed: {
+        productDialog: {
+            get() {
+                return this.prop_productDialog
+            },
+            set(val) {
+                this.$emit('update:prop_productDialog', val)
+
             }
         },
-        watch:  {
-            productDialog: function(){
-                if(this.productDialog == false){
-                    this.resetForm();
-                }
-                else{
-                    if(this.actionType == "put" && this.productImgName){
-                        const fooFile = new File(["foo"], this.productImgName, {
-                            type: "text/plain",
-                            name: this.productImgName,
-                        });
-                        this.imgFile = fooFile;
-                        this.fooFile = fooFile;
-                    }
-                }
+        text_cardTitle: {
+            get() {
+                return this.prop_text_cardTitle
             },
-            ntdSellingPrice: function(){
-                this.calc_grossMargin();
+            set(val) {
+                this.$emit('update:prop_text_cardTitle', val)
+            }
+        },
+        text_confirmBtn: {
+            get() {
+                return this.prop_text_confirmBtn
             },
-            ntdCost: function(){
-                this.calc_grossMargin();
+            set(val) {
+                this.$emit('update:prop_text_confirmBtn', val)
+            }
+        },
+        actionType: {
+            get() {
+                return this.prop_actionType
             },
+            set(val) {
+                this.$emit('update:prop_actionType', val)
+            }
+        },
+        productItem: {
+            get() {
+                return this.prop_productItem
+            },
+            set(val) {
+                this.$emit('update:prop_productItem', val)
+            }
+        },
+        tradingSettings: {
+            get() {
+                return this.prop_tradingSettings
+            },
+            set(val) {
+                this.$emit('update:prop_tradingSettings', val)
+            }
+        },
+        isMaterials() {
+            let type_products = [1, 2, 3, 4, 5];//商品
+            let type_materials = [6, 7, 8, 9, 10, 11, 12, 13];//耗材
+            if (type_products.includes(this.productItem.ProductType)) {
+                // if(this.actionType == "post") this.productItem.RetailPrice = undefined;
+                this.hint_retailPrice = ""
+                return false;
+            }
+            else if (type_materials.includes(this.productItem.ProductType)) {
+                this.productItem.RetailPrice = 0;
+                this.hint_retailPrice = "若商品種類為耗材，售價為零"
+                return true
+            }
+        },
+        systemConfigs() {
+            return this.$store.state.systemConfigs;
+        },
+    },
+    methods: {
+        onClick_confirm() { //有子元件的事件觸發 自定義事件childevent
+            this.$refs.form.validate();
+            if (this.validator == false) {
+                return
+            }
+            this.$emit('confirm', this.productItem);//觸發一個在子元件中宣告的事件 childEvnet
+            // this.resetForm();
+        },
+        onClick_cancel() {
+            this.productDialog = false;
+            // this.resetForm();
+        },
+        resetForm() {
+            this.productID = null;
+            this.productSku = null;
+            this.purchaseProductID = null;
+            this.productName = null;
+            this.productType = null;
+            this.productImgName = null;
+            this.productImgID = null;
+            this.productWeight = null;
+            this.krwWholesalePrice = null;
+            this.ntdWholesalePrice = null;
+            this.ntdListPrice = null;
+            this.ntdSellingPrice = null;
+            this.ntdCnf = null;
+            this.ntdCost = null;
+            this.imgFile = null;
+            this.fooFile = null;
+            this.$refs.form.reset();
+        },
+        clearFileInput() {
+            this.$refs.imgFile.reset();
+            this.imgFile = null;
+        },
+        calc_ntdWholesalePrice() {
+            return (this.krwWholesalePrice / this.tradingSettings.ExchangeRate).toFixed(2).toString();
+        },
+        calc_listPrice() {
+            var tempPrice = ((this.krwWholesalePrice / this.tradingSettings.ExchangeRate) * this.tradingSettings.Markup).toFixed();
+            if (tempPrice % 10 == 0) {
+                return (tempPrice).toString()
+            }
+            else if (tempPrice % 10 > 1) {
+                return ((tempPrice - tempPrice % 10) + 10).toString()
+            }
+            else {
+                return (tempPrice - tempPrice % 10).toString()
+            }
+        },
+        calc_param() {
+            var param = {};
+
+            var gram = this.productWeight / 1000;
+            param.ajeossiCalc = this.tradingSettings.Ajeossi / 100 + 1;//大哥抽成
+            param.shippingFeeCalc = gram * this.tradingSettings.ShippingFee;
+            param.tariffCalc = gram * this.tradingSettings.Tariff;
+            return param
+        },
+        calc_cnfCost() {
+            var param = this.calc_param();
+            return ((this.krwWholesalePrice * param.ajeossiCalc + param.shippingFeeCalc) / this.tradingSettings.ExchangeRate + param.tariffCalc).toFixed(2).toString()
+        },
+        calc_cost() {
+            var param = this.calc_param();
+            return ((this.krwWholesalePrice * param.ajeossiCalc + param.shippingFeeCalc) / this.tradingSettings.ExchangeRate + param.tariffCalc + 25).toFixed(2).toString()
+        },
+        calc_grossMargin() {
+            this.grossMargin = this.ntdSellingPrice - this.ntdCost;
+            let percent = ((this.ntdSellingPrice - this.ntdCost) / this.ntdSellingPrice).toFixed(2).toString();
+
+            if (isNaN(percent) == false) {
+                this.profitMargin = percent;
+            }
+            else {
+                this.profitMargin = 0;
+            }
         }
+    },
+    watch: {
+        // productDialog: function () {
+        //     if (this.productDialog == false) {
+        //         this.resetForm();
+        //     }
+        //     else {
+        //         if (this.actionType == "put" && this.productImgName) {
+        //             const fooFile = new File(["foo"], this.productImgName, {
+        //                 type: "text/plain",
+        //                 name: this.productImgName,
+        //             });
+        //             this.imgFile = fooFile;
+        //             this.fooFile = fooFile;
+        //         }
+        //     }
+        // },
+        ntdSellingPrice: function () {
+            this.calc_grossMargin();
+        },
+        ntdCost: function () {
+            this.calc_grossMargin();
+        },
     }
+}
 </script>
-<style scoped src="./style.css"></style>
-<template src="./template.html"></template>
+<style scoped src="./style.css">
+
+</style>

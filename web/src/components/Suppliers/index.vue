@@ -87,7 +87,7 @@ export default {
             supplierHeader: [
                 { text: "廠商名稱", value: "Name" },
                 { text: "廠商地址", value: "Address" },
-                { text: "備註", value: "Remark" },
+                { text: "備註", value: "Remark", width: "10%" },
                 { text: "", value: "actions", sortable: false, width: "10%" },
             ],
             suppliers: [],
@@ -109,7 +109,7 @@ export default {
     },
     methods: {
         onFocus_searchFields() {
-            this.$refs.searchField.focus();
+            // this.$refs.searchField.focus();
         },
         onClick_newButton() {
             this.text_cardTitle = "新增廠商";

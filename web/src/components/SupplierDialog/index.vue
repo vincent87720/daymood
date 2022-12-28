@@ -42,11 +42,6 @@ export default {
     },
     data() {
         return {
-            supplierForm: {
-                name: "",
-                address: "",
-                remark: "",
-            },
             validator: false,
             text_requiredRules: [
                 v => !!v || '必填',
