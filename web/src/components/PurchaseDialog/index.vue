@@ -75,15 +75,11 @@ export default {
             toggle_form: undefined,
             purchaseQty: null,
             validator: false,
-            text_requiredRules: [
-                v => !!v || '必填',
-            ],
-            text_requiredRules_isNumber: [
-                v => !!v || '必填',
-                v => {
-                    return !!parseFloat(v) || '必須為數字'
-                },
-            ],
+            rules: {
+                required: value => !!value || '必填',
+                requiredIncludeZero: value => !(value === undefined || value == null || value == "") || '必填',
+                number: value => !isNaN(value) || '必須為數字',
+            },
         };
     },
     props: {
