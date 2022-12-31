@@ -94,6 +94,7 @@ export default {
   }),
   created(){
     this.$store.dispatch("GetSystemConfig");
+    this.$store.dispatch("GetTradingSettings");
   },
   methods:{
   },
