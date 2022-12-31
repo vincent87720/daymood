@@ -188,11 +188,10 @@ export default {
             this.deleteTarget = item;
         },
         onClick_checkoutPurchaseInfo(item){
-            this.text_cardTitle = "採購明細";
-            this.text_confirmBtn = "新增";
+            this.text_cardTitle = "採購案"+item.Name;
+            this.text_confirmBtn = "";
             this.purchase = item;
             this.purchaseInfoDialog = true;
-            console.log(item)
         },
         async onConfirm_purchaseDialog(item) {
             this.purchaseDialog = false;
