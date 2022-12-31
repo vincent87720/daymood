@@ -77,7 +77,10 @@ class Purchase {
     Name = "";
     Status = undefined;
     PurchaseType = undefined;
+    QTY = undefined;
     ShippingAgent = "";
+    ShippingAgentCutKrw = undefined;
+    ShippingAgentCutPercent = undefined;
     ShippingInitiator = "";
     ShippingCreateAt = "";
     ShippingEndAt = "";
@@ -85,10 +88,14 @@ class Purchase {
     Weight = undefined;
     ShippingFeeKr = undefined;
     ShippingFeeTw = undefined;
-    ShippingFeeKokusai = undefined;
+    ShippingFeeKokusaiKrw = undefined;
+    ShippingFeeKokusaiPerKilo = undefined;
     ExchangeRateKrw = undefined;
+    TariffTwd = undefined;
+    TariffPerKilo = undefined;
     TotalKrw = undefined;
     TotalTwd = undefined;
+    Total = undefined;
     Remark = "";
     DataOrder = undefined;
     CreateAt = "";
@@ -222,13 +229,18 @@ export default {
             item.ID = parseFloat(item.ID);
             item.Status = parseFloat(item.Status);
             item.PurchaseType = parseFloat(item.PurchaseType);
+            item.QTY = parseFloat(item.QTY);
+            item.ShippingAgentCutKrw = parseFloat(item.ShippingAgentCutKrw);
+            item.ShippingAgentCutPercent = parseFloat(item.ShippingAgentCutPercent);
             item.Weight = parseFloat(item.Weight);
             item.ShippingFeeKr = parseFloat(item.ShippingFeeKr);
             item.ShippingFeeTw = parseFloat(item.ShippingFeeTw);
-            item.ShippingFeeKokusai = parseFloat(item.ShippingFeeKokusai);
+            item.ShippingFeeKokusaiKrw = parseFloat(item.ShippingFeeKokusaiKrw);
+            item.ShippingFeeKokusaiPerKilo = parseFloat(item.ShippingFeeKokusaiPerKilo);
             item.ExchangeRateKrw = parseFloat(item.ExchangeRateKrw);
             item.TotalKrw = parseFloat(item.TotalKrw);
             item.TotalTwd = parseFloat(item.TotalTwd);
+            item.Total = parseFloat(item.Total);
             item.DataOrder = parseFloat(item.DataOrder);
             return item;
         },
