@@ -15,5 +15,7 @@
     {"id":"13", "type":"ProductType", "key":10, "value":"夾鏈袋", "remark":""},
     {"id":"14", "type":"ProductType", "key":11, "value":"飾品卡", "remark":""},
     {"id":"15", "type":"ProductType", "key":12, "value":"留言卡", "remark":""},
-    {"id":"16", "type":"ProductType", "key":13, "value":"香芬", "remark":""}
+    {"id":"16", "type":"ProductType", "key":13, "value":"香芬", "remark":""},
+    {"id":"17", "type":"PurchaseDetailStatus", "key":1, "value":"採用", "remark":""},
+    {"id":"18", "type":"PurchaseDetailStatus", "key":2, "value":"不採用", "remark":""}
 ]
