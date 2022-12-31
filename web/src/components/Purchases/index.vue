@@ -134,9 +134,11 @@ export default {
             purchaseDialog: false,
             purchases: [],
             purchaseHeader: [
+                { text: '採購狀態', value: 'Status', align: 'center', width: "10%" },
                 { text: '採購名稱', value: 'Name' },
-                { text: '採購狀態', value: 'Status' },
                 { text: '採購種類', value: 'PurchaseType' },
+                { text: '韓圓總計', value: 'TotalKrw' },
+                { text: '總計', value: 'Total' },
                 { text: "備註", value: "Remark", width: "10%" },
                 { text: '', value: 'actions', sortable: false, width: "10%" },
             ],
