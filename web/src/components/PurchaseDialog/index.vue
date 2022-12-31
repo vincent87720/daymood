@@ -10,24 +10,29 @@
                         <v-btn-toggle v-model="toggle_form" rounded mandatory dense class="d-flex justify-sm-center">
                             <v-btn> 基本資訊 </v-btn>
                             <v-btn> 貨運資訊 </v-btn>
+                            <v-btn> 費用資訊 </v-btn>
                         </v-btn-toggle>
                         <v-form ref="form" v-model="validator">
-                            <div v-if="toggle_form == 0">
-                                <v-text-field label="採購名稱" v-model="purchaseItem.Name" :rules="text_requiredRules"
-                                    required prepend-icon="mdi-text-short"></v-text-field>
-                                <v-select class="overflow-hidden" label="採購狀態" v-model="purchaseItem.Status"
-                                    :rules="text_requiredRules" prepend-icon="mdi-package-variant"
-                                    :items="systemConfigs.PurchaseStatus" item-text="value" item-value="key" required
-                                    dense full-width></v-select>
-                                <v-select class="overflow-hidden" label="採購類型" v-model="purchaseItem.PurchaseType"
-                                    :rules="text_requiredRules" prepend-icon="mdi-package-variant"
-                                    :items="systemConfigs.PurchaseType" item-text="value" item-value="key" required
-                                    dense full-width></v-select>
-                            </div>
-                            <div v-if="toggle_form == 1">
-                                <v-text-field label="貨運行" v-model="purchaseItem.ShippingAgent" required
+                            <div v-show="toggle_form == 0">
+                                <v-text-field label="採購名稱" v-model="purchaseItem.Name" :rules="[rules.required]"
                                     prepend-icon="mdi-text-short"></v-text-field>
-                                <v-text-field label="貨運團主" v-model="purchaseItem.ShippingInitiator" required
+                                <v-select class="overflow-hidden" label="採購狀態" v-model="purchaseItem.Status"
+                                    :rules="[rules.requiredIncludeZero, rules.number]"
+                                    prepend-icon="mdi-package-variant" :items="systemConfigs.PurchaseStatus"
+                                    item-text="value" item-value="key" dense full-width></v-select>
+                                <v-select class="overflow-hidden" label="採購類型" v-model="purchaseItem.PurchaseType"
+                                    :rules="[rules.requiredIncludeZero, rules.number]"
+                                    prepend-icon="mdi-package-variant" :items="systemConfigs.PurchaseType"
+                                    item-text="value" item-value="key" dense full-width></v-select>
+                                <v-text-field label="韓圓匯率" v-model="purchaseItem.ExchangeRateKrw"
+                                    prepend-icon="mdi-text-short"></v-text-field>
+                            </div>
+                            <div v-show="toggle_form == 1">
+                                <v-text-field label="貨運總重" v-model="purchaseItem.Weight"
+                                    prepend-icon="mdi-text-short"></v-text-field>
+                                <v-text-field label="貨運行" v-model="purchaseItem.ShippingAgent"
+                                    prepend-icon="mdi-text-short"></v-text-field>
+                                <v-text-field label="貨運團主" v-model="purchaseItem.ShippingInitiator"
                                     prepend-icon="mdi-text-short"></v-text-field>
                                 <c-date-picker prop_label="開團日期"
                                     :prop_date.sync="purchaseItem.ShippingCreateAt"></c-date-picker>
@@ -35,14 +40,64 @@
                                     :prop_date.sync="purchaseItem.ShippingEndAt"></c-date-picker>
                                 <c-date-picker prop_label="送達日期"
                                     :prop_date.sync="purchaseItem.ShippingArriveAt"></c-date-picker>
-                                <v-text-field label="貨運總重" v-model="purchaseItem.Weight" required
-                                    prepend-icon="mdi-text-short"></v-text-field>
-                                <v-text-field label="國內運費 韓國" v-model="purchaseItem.ShippingFeeKr" required
-                                    prepend-icon="mdi-text-short"></v-text-field>
-                                <v-text-field label="國內運費 台灣" v-model="purchaseItem.ShippingFeeTw" required
-                                    prepend-icon="mdi-text-short"></v-text-field>
-                                <v-text-field label="國際運費" v-model="purchaseItem.ShippingFeeKokusai" required
-                                    prepend-icon="mdi-text-short"></v-text-field>
+                            </div>
+                            <div v-show="toggle_form == 2">
+                                <v-row>
+                                    <v-col class="py-0" v-if="hideWhenCreate">
+                                        <v-text-field label="貨運行抽成" v-model="purchaseItem.ShippingAgentCutKrw"
+                                            prepend-icon="mdi-dolly"></v-text-field>
+                                    </v-col>
+                                    <v-col class="py-0">
+                                        <v-text-field label="貨運行抽成百分比" v-model="purchaseItem.ShippingAgentCutPercent"
+                                            prepend-icon="mdi-percent-outline"></v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <v-row>
+                                    <v-col class="py-0">
+                                        <v-text-field label="國內運費 韓國" v-model="purchaseItem.ShippingFeeKr"
+                                            prepend-icon="mdi-truck"></v-text-field>
+                                    </v-col>
+                                    <v-col class="py-0">
+                                        <v-text-field label="國內運費 台灣" v-model="purchaseItem.ShippingFeeTw"
+                                            prepend-icon="mdi-truck"></v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <v-row>
+                                    <v-col class="py-0" v-if="hideWhenCreate">
+                                        <v-text-field label="國際運費" v-model="purchaseItem.ShippingFeeKokusai"
+                                            prepend-icon="mdi-ferry"></v-text-field>
+                                    </v-col>
+                                    <v-col class="py-0">
+                                        <v-text-field label="每公斤國際運費" v-model="purchaseItem.ShippingFeeKokusaiPerKilo"
+                                            prepend-icon="mdi-ferry"></v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <v-row>
+                                    <v-col class="py-0" v-if="hideWhenCreate">
+                                        <v-text-field label="關稅" v-model="purchaseItem.TariffTwd"
+                                            prepend-icon="mdi-account-tie"></v-text-field>
+                                    </v-col>
+                                    <v-col class="py-0">
+                                        <v-text-field label="每公斤關稅" v-model="purchaseItem.TariffPerKilo"
+                                            prepend-icon="mdi-account-tie"></v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <v-row v-if="hideWhenCreate">
+                                    <v-col class="py-0">
+                                        <v-text-field label="韓圓總價" v-model="purchaseItem.TotalKrw"
+                                            prepend-icon="mdi-currency-krw"></v-text-field>
+                                    </v-col>
+                                    <v-col class="py-0">
+                                        <v-text-field label="台幣總價" v-model="purchaseItem.TotalTwd"
+                                            prepend-icon="mdi-currency-twd"></v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <v-row v-if="hideWhenCreate">
+                                    <v-col class="ya-0">
+                                        <v-text-field label="總金額" v-model="purchaseItem.Total"
+                                            prepend-icon="mdi-currency-twd"></v-text-field>
+                                    </v-col>
+                                </v-row>
                             </div>
                         </v-form>
                     </v-col>
@@ -151,6 +206,12 @@ export default {
         },
         tradingSettings() {
             return this.$store.state.tradingSettings;
+        },
+        hideWhenCreate() {
+            if (this.actionType == "post") {
+                return false;
+            }
+            return true;
         },
     },
     methods: {
