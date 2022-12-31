@@ -235,6 +235,19 @@ export default {
             item.DataOrder = parseFloat(item.DataOrder);
             return item;
         },
+        async getPurchases() {
+            await getPurchases()
+                .then((response) => {
+                    if (response.data.records != null) {
+                        this.purchases = response.data.records;
+                    }
+                    else {
+                        this.purchases = [];
+                    }
+                })
+                .catch((error) => {
+                });
+        },
         async postPurchase(item) {
             item = this.preSend(item);
             await postPurchase(item)
