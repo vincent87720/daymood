@@ -26,7 +26,9 @@
                     <c-data-table :prop_headers="purchaseHeader" :prop_items="purchases" :prop_search="search"
                         @edit="onClick_editButton" @delete="onClick_deleteButton">
                         <template v-slot:item.Status="{ item }">
-                            <span>{{ convertDisplayText(systemConfigs.PurchaseStatus, item.Status) }}</span>
+                            <v-chip :color="getStatusChipColor(item.Status)" dark small>
+                                {{ convertDisplayText(systemConfigs.PurchaseStatus, item.Status) }}
+                            </v-chip>
                         </template>
                         <template v-slot:item.PurchaseType="{ item }">
                             <span>{{ convertDisplayText(systemConfigs.PurchaseType, item.PurchaseType) }}</span>
@@ -152,6 +154,12 @@ export default {
     methods: {
         convertDisplayText(systemConfig, key) {
             return systemConfig.find(x=>x.key == key).value
+        },
+        getStatusChipColor(status) {
+            if (status == 1) return '#849A8F'
+            // #97A48D
+            else if (status == 2) return '#7E7E7E'
+            else return ''
         },
         onFocus_searchFields() {
             this.$refs.searchField.focus();
