@@ -45,7 +45,7 @@
         <PurchaseDialog :prop_purchaseDialog.sync="purchaseDialog" :prop_text_cardTitle="text_cardTitle"
             :prop_text_confirmBtn="text_confirmBtn" :prop_purchaseItem="purchase" @confirm='onConfirm_purchaseDialog' />
         <PurchaseInfoDialog :prop_purchaseInfoDialog.sync="purchaseInfoDialog" :prop_text_cardTitle="text_cardTitle"
-            :prop_text_confirmBtn="text_confirmBtn" :prop_purchaseItem="purchase" @confirm='onConfirm_purchaseDialog' />
+            :prop_text_confirmBtn="text_confirmBtn" :prop_purchaseItem="purchase" @finish='onFinish_purchaseInfoDialog' />
         <ConfirmDialog :prop_confirmDialog.sync="confirmDialog" :prop_text_cardTitle="text_cardTitle"
             :prop_text_confirmBtn="text_confirmBtn" :prop_deleteTarget.sync="deleteTarget"
             v-on:confirmClick='onConfirm_confirmDialog' />
@@ -212,18 +212,9 @@ export default {
             this.confirmDialog = false;
             await this.deletePurchase(item);
         },
-        async getPurchases() {
-            await getPurchases()
-                .then((response) => {
-                    if (response.data.records != null) {
-                        this.purchases = response.data.records;
-                    }
-                    else {
-                        this.purchases = [];
-                    }
-                })
-                .catch((error) => {
-                });
+        async onFinish_purchaseInfoDialog(item){
+            this.purchaseInfoDialog = false;
+            await this.putPurchase(item);
         },
         preSend(item) {
             item.ID = parseFloat(item.ID);
