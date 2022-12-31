@@ -55,7 +55,7 @@ func PostPurchaseHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		purchase, err := model.NewPurchase(purchaseForm.Name, purchaseForm.Status, purchaseForm.PurchaseType, purchaseForm.TotalTwd)
+		purchase, err := model.NewPurchase(purchaseForm.Name, purchaseForm.Status, purchaseForm.PurchaseType)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, generalError)
 			return
