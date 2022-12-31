@@ -99,6 +99,10 @@ export default {
             type: String,
             required: true
         },
+        prop_actionType: {
+            type: String,
+            required: false
+        },
         prop_purchaseItem: {
             type: Object,
             required: false
@@ -128,6 +132,14 @@ export default {
             },
             set(val) {
                 this.$emit('update:prop_text_confirmBtn', val)
+            }
+        },
+        actionType: {
+            get() {
+                return this.prop_actionType
+            },
+            set(val) {
+                this.$emit('update:prop_actionType', val)
             }
         },
         purchaseItem: {

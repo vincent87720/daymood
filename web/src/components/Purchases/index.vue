@@ -43,7 +43,7 @@
             </v-row>
         </v-container>
         <PurchaseDialog :prop_purchaseDialog.sync="purchaseDialog" :prop_text_cardTitle="text_cardTitle"
-            :prop_text_confirmBtn="text_confirmBtn" :prop_purchaseItem="purchase" @confirm='onConfirm_purchaseDialog' />
+            :prop_text_confirmBtn="text_confirmBtn" :prop_actionType="actionType" :prop_purchaseItem="purchase" @confirm='onConfirm_purchaseDialog' />
         <PurchaseInfoDialog :prop_purchaseInfoDialog.sync="purchaseInfoDialog" :prop_text_cardTitle="text_cardTitle"
             :prop_text_confirmBtn="text_confirmBtn" :prop_purchaseItem="purchase" @finish='onFinish_purchaseInfoDialog' />
         <ConfirmDialog :prop_confirmDialog.sync="confirmDialog" :prop_text_cardTitle="text_cardTitle"
