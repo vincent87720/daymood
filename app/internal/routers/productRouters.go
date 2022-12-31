@@ -17,6 +17,7 @@ func SetupProductRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*
 	router.POST("/products", PostProductHandler(db, s))
 	router.PUT("/products/:id", PutProductHandler(db, s))
 	router.DELETE("/products/:id", DeleteProductHandler(db, s))
+	router.GET("/products/:id/purchaseHistories", GetProductPurchaseHistoriesHandler(db))
 	// router.GET("/products/dumping", DumpProductHandler(db, s))
 	// router.POST("/stocks/:id", PostStocksHandler(db)) //新增庫存
 	// router.GET("/products/images/:id", GetProductImgHandler(db, s))
@@ -152,6 +153,36 @@ func DeleteProductHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 
 		context.JSON(http.StatusOK, gin.H{
 			"status": "OK",
+		})
+		return
+	}
+
+	return gin.HandlerFunc(fn)
+}
+
+func GetProductPurchaseHistoriesHandler(db *sql.DB) gin.HandlerFunc {
+	fn := func(context *gin.Context) {
+		productID := context.Param("id")
+		if checkEmpty(productID) == true {
+			context.JSON(http.StatusBadRequest, emptyError("id"))
+			return
+		}
+
+		productIDVal, err := strconv.ParseInt(productID, 10, 64)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, typeError("id"))
+			return
+		}
+
+		historyXi, modelErr := model.GetProductPurchaseHistories(db, productIDVal)
+		if modelErr != nil {
+			context.JSON(http.StatusBadRequest, modelError(modelErr))
+			return
+		}
+
+		context.JSON(http.StatusOK, gin.H{
+			"status":  "OK",
+			"records": historyXi,
 		})
 		return
 	}
