@@ -149,6 +149,9 @@ export default {
         systemConfigs() {
             return this.$store.state.systemConfigs;
         },
+        tradingSettings() {
+            return this.$store.state.tradingSettings;
+        },
     },
     methods: {
         onClick_confirm: function () { //有子元件的事件觸發 自定義事件childevent
@@ -157,27 +160,25 @@ export default {
                 return
             }
             this.$emit('confirm', this.purchaseItem);//觸發一個在子元件中宣告的事件 childEvnet
-            // this.resetForm();
         },
         onClick_cancel() {
             this.purchaseDialog = false;
-            // this.resetForm();
         },
-        resetForm() {
-            this.$refs.form.reset();
-            // this.productID = null;
-            // this.productSku = null;
-            // this.productName = null;
-            // this.productStocks = null;
-            // this.purchaseQty = null;
+        autofill(){
+            if(this.actionType == "post"){
+                this.purchaseItem.ExchangeRateKrw = this.tradingSettings.ExchangeRate;
+                this.purchaseItem.ShippingAgentCutPercent = this.tradingSettings.Ajeossi;
+                this.purchaseItem.ShippingFeeKokusaiPerKilo = this.tradingSettings.ShippingFee;
+                this.purchaseItem.TariffPerKilo = this.tradingSettings.Tariff;
+            }
         },
     },
-    // watch: {
-    //     purchaseDialog: function () {
-    //         if (this.purchaseDialog == false) {
-    //             this.resetForm();
-    //         }
-    //     },
-    // }
+    watch: {
+        purchaseDialog: async function (newVal, oldVal) {
+            if (newVal == true) {
+                this.autofill();
+            }
+        },
+    }
 }
 </script>
