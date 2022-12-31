@@ -86,6 +86,39 @@ func GetAllPurchases(db *sql.DB) (purchaseXi []Purchase, modelErr *ModelError) {
 	return purchaseXi, nil
 }
 
+func (purchase *Purchase) GetPurchase(db *sql.DB) (purchaseXi []Purchase, modelErr *ModelError) {
+	err := db.Ping()
+	if err != nil {
+		return nil, &ModelError{Model: "purchases", Code: 0, Message: err.Error()}
+	}
+
+	row, err := db.Query("SELECT * FROM purchases WHERE id = $1;", purchase.ID)
+	if err != nil {
+		return nil, &ModelError{Model: "purchases", Code: 0, Message: err.Error()}
+	}
+	defer row.Close()
+
+	var purchaseRow Purchase
+	for row.Next() {
+		err := row.Scan(
+			&purchaseRow.ID, &purchaseRow.Name, &purchaseRow.Status, &purchaseRow.PurchaseType,
+			&purchaseRow.ShippingAgent, &purchaseRow.ShippingAgentCutKrw, &purchaseRow.ShippingAgentCutPercent, &purchaseRow.ShippingInitiator,
+			&purchaseRow.ShippingCreateAt, &purchaseRow.ShippingEndAt, &purchaseRow.ShippingArriveAt, &purchaseRow.Weight,
+			&purchaseRow.ShippingFeeKr, &purchaseRow.ShippingFeeTw, &purchaseRow.ShippingFeeKokusaiKrw, &purchaseRow.ShippingFeeKokusaiPerKilo,
+			&purchaseRow.ExchangeRateKrw, &purchaseRow.TariffTwd, &purchaseRow.TariffPerKilo, &purchaseRow.TotalKrw,
+			&purchaseRow.TotalTwd, &purchaseRow.Total, &purchaseRow.Remark, &purchaseRow.DataOrder,
+			&purchaseRow.CreateAt, &purchaseRow.UpdateAt,
+		)
+		if err != nil {
+			return nil, &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
+		}
+
+		purchaseXi = append(purchaseXi, purchaseRow)
+	}
+
+	return purchaseXi, nil
+}
+
 func (purchase *Purchase) Create(db *sql.DB) (modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {

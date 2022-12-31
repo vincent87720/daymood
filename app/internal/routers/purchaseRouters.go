@@ -13,6 +13,7 @@ import (
 func SetupPurchaseRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*gin.Engine, error) {
 
 	router.GET("/purchases", GetPurchasesHandler(db))
+	router.GET("/purchases/:id", GetPurchaseHandler(db))
 	router.POST("/purchases", PostPurchaseHandler(db))
 	router.PUT("/purchases/:id", PutPurchaseHandler(db))
 	router.DELETE("/purchases/:id", DeletePurchaseHandler(db))
@@ -24,6 +25,40 @@ func SetupPurchaseRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (
 func GetPurchasesHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 		purchaseXi, modelErr := model.GetAllPurchases(db)
+		if modelErr != nil {
+			context.JSON(http.StatusBadRequest, modelError(modelErr))
+			return
+		}
+
+		context.JSON(http.StatusOK, gin.H{
+			"status":  "OK",
+			"records": purchaseXi,
+		})
+		return
+	}
+
+	return gin.HandlerFunc(fn)
+}
+
+func GetPurchaseHandler(db *sql.DB) gin.HandlerFunc {
+	fn := func(context *gin.Context) {
+		purchaseID := context.Param("id")
+
+		if checkEmpty(purchaseID) == true {
+			context.JSON(http.StatusBadRequest, emptyError("id"))
+			return
+		}
+
+		purchaseIDVal, err := strconv.ParseInt(purchaseID, 10, 64)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, typeError("id"))
+			return
+		}
+		purchase := model.Purchase{
+			ID: purchaseIDVal,
+		}
+
+		purchaseXi, modelErr := purchase.GetPurchase(db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
