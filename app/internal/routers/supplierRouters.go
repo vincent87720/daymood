@@ -42,22 +42,16 @@ func GetSuppliersHandler(db *sql.DB) gin.HandlerFunc {
 func PostSupplierHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
-		supplierForm := model.Supplier{}
+		supplier := model.Supplier{}
 
-		err := context.BindJSON(&supplierForm)
+		err := context.BindJSON(&supplier)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		if checkEmpty(supplierForm.Name) == true {
+		if checkEmpty(supplier.Name) == true {
 			context.JSON(http.StatusBadRequest, emptyError("name"))
-			return
-		}
-
-		supplier, err := model.NewSupplier(supplierForm.Name, supplierForm.Address, supplierForm.Remark, supplierForm.DataOrder)
-		if err != nil {
-			context.JSON(http.StatusBadRequest, generalError)
 			return
 		}
 
@@ -91,24 +85,19 @@ func PutSupplierHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		supplierForm := model.Supplier{}
+		supplier := model.Supplier{}
 
-		err = context.BindJSON(&supplierForm)
+		err = context.BindJSON(&supplier)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		if checkEmpty(supplierForm.Name) == true {
+		if checkEmpty(supplier.Name) == true {
 			context.JSON(http.StatusBadRequest, emptyError("name"))
 			return
 		}
 
-		supplier, err := model.NewSupplier(supplierForm.Name, supplierForm.Address, supplierForm.Remark, supplierForm.DataOrder)
-		if err != nil {
-			context.JSON(http.StatusBadRequest, generalError)
-			return
-		}
 		supplier.ID = supplierIDVal
 
 		modelErr := supplier.Update(db)

@@ -9,16 +9,16 @@ import (
 )
 
 type Supplier struct {
-	ID        int64   //流水號
-	Name      string  //廠商名稱
-	Address   *string //廠商地址
-	Remark    *string //備註
-	DataOrder *int64  //順序
-	CreateAt  string  //建立時間
-	UpdateAt  string  //最後編輯時間
+	ID         int64   //流水號
+	Name       string  //廠商名稱
+	Address    *string //廠商地址
+	Remark     *string //備註
+	DataStatus int64   //是否啟用 0:已刪除,1:使用中
+	CreateAt   string  //建立時間
+	UpdateAt   string  //最後編輯時間
 }
 
-func NewSupplier(name string, address *string, remark *string, dataOrder *int64) (Supplier, error) {
+func NewSupplier(name string, address *string, remark *string, dataStatus int64) (Supplier, error) {
 	var supplier Supplier
 
 	if name == "" {
@@ -26,10 +26,10 @@ func NewSupplier(name string, address *string, remark *string, dataOrder *int64)
 	}
 
 	supplier = Supplier{
-		Name:      name,
-		Address:   address,
-		Remark:    remark,
-		DataOrder: dataOrder,
+		Name:       name,
+		Address:    address,
+		Remark:     remark,
+		DataStatus: dataStatus,
 	}
 
 	return supplier, nil
@@ -41,7 +41,7 @@ func GetAllSuppliers(db *sql.DB) (supplierXi []Supplier, modelErr *ModelError) {
 		return nil, &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
 	}
 
-	row, err := db.Query("SELECT * FROM suppliers ORDER BY id DESC;")
+	row, err := db.Query("SELECT * FROM suppliers WHERE data_status = 1 ORDER BY id DESC;")
 	if err != nil {
 		return nil, &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
 	}
@@ -49,35 +49,19 @@ func GetAllSuppliers(db *sql.DB) (supplierXi []Supplier, modelErr *ModelError) {
 
 	var supplierSchema Supplier
 	for row.Next() {
-		err := row.Scan(&supplierSchema.ID, &supplierSchema.Name, &supplierSchema.Address, &supplierSchema.Remark, &supplierSchema.DataOrder, &supplierSchema.CreateAt, &supplierSchema.UpdateAt)
+		err := row.Scan(&supplierSchema.ID, &supplierSchema.Name, &supplierSchema.Address, &supplierSchema.Remark, &supplierSchema.DataStatus, &supplierSchema.CreateAt, &supplierSchema.UpdateAt)
 		if err != nil {
 			return nil, &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
 		}
 		tempSupplier := Supplier{
-			ID:        supplierSchema.ID,
-			Name:      supplierSchema.Name,
-			Address:   supplierSchema.Address,
-			Remark:    supplierSchema.Remark,
-			DataOrder: supplierSchema.DataOrder,
-			CreateAt:  supplierSchema.CreateAt,
-			UpdateAt:  supplierSchema.UpdateAt,
+			ID:         supplierSchema.ID,
+			Name:       supplierSchema.Name,
+			Address:    supplierSchema.Address,
+			Remark:     supplierSchema.Remark,
+			DataStatus: supplierSchema.DataStatus,
+			CreateAt:   supplierSchema.CreateAt,
+			UpdateAt:   supplierSchema.UpdateAt,
 		}
-
-		// if supplierSchema.Address == nil {
-		// 	tempSupplier.Address = ""
-		// } else {
-		// 	tempSupplier.Address = *supplierSchema.Address
-		// }
-		// if supplierSchema.Remark == nil {
-		// 	tempSupplier.Remark = ""
-		// } else {
-		// 	tempSupplier.Remark = *supplierSchema.Remark
-		// }
-		// if supplierSchema.DataOrder == nil {
-		// 	tempSupplier.DataOrder = 0
-		// } else {
-		// 	tempSupplier.DataOrder = *supplierSchema.DataOrder
-		// }
 
 		supplierXi = append(supplierXi, tempSupplier)
 	}
@@ -91,13 +75,13 @@ func (supplier *Supplier) Create(db *sql.DB) (modelErr *ModelError) {
 		return &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
 	}
 
-	stmt, err := db.Prepare("INSERT INTO suppliers(name, address, remark, data_order) VALUES($1,$2,$3,$4);")
+	stmt, err := db.Prepare("INSERT INTO suppliers(name, address, remark, data_status) VALUES($1,$2,$3,$4);")
 	if err != nil {
 		return &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Exec(supplier.Name, supplier.Address, supplier.Remark, supplier.DataOrder)
+	res, err := stmt.Exec(supplier.Name, supplier.Address, supplier.Remark, supplier.DataStatus)
 	if err != nil {
 		return &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
 	}
@@ -115,7 +99,7 @@ func (supplier *Supplier) Update(db *sql.DB) (modelErr *ModelError) {
 		return &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
 	}
 
-	_, err = db.Exec("CALL updateSuppliers($1,$2,$3,$4,$5)", supplier.ID, supplier.Name, supplier.Address, supplier.Remark, supplier.DataOrder)
+	_, err = db.Exec("CALL updateSuppliers($1,$2,$3,$4,$5)", supplier.ID, supplier.Name, supplier.Address, supplier.Remark, supplier.DataStatus)
 	if err != nil {
 		return &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
 	}
