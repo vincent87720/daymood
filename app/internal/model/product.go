@@ -27,6 +27,7 @@ type Product struct {
 	DataStatus  int64    //是否啟用 0:已刪除,1:使用中
 	CreateAt    string   //建立時間
 	UpdateAt    string   //最後編輯時間
+	SupplierID  *int64   //廠商編號
 }
 
 func NewProduct(name string, productType int64, stocks int64, retailPrice float32) (Product, error) {
@@ -67,7 +68,7 @@ func GetAllProducts(db *sql.DB) (productXi []Product, modelErr *ModelError) {
 			&product.ProductType, &product.ImgName, &product.ImgID,
 			&product.Stocks, &product.Weight, &product.RetailPrice,
 			&product.Remark, &product.DataStatus, &product.CreateAt,
-			&product.UpdateAt)
+			&product.UpdateAt, &product.SupplierID)
 		if err != nil {
 			return nil, normalError("products", err)
 		}
@@ -278,9 +279,9 @@ func (product *Product) Create(db *sql.DB) (modelErr *ModelError) {
 	products(
 		sku, name, type, img_id, img_name,
 		stocks, weight, retail_price, remark, 
-		data_status
+		data_status, supplier_id
 	)
-	VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);`
+	VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);`
 
 	stmt, err := db.Prepare(qstr)
 	if err != nil {
@@ -292,7 +293,7 @@ func (product *Product) Create(db *sql.DB) (modelErr *ModelError) {
 		product.SKU, product.Name, product.ProductType,
 		product.ImgName, product.ImgID, product.Stocks,
 		product.Weight, product.RetailPrice, product.Remark,
-		product.DataStatus)
+		product.DataStatus, product.SupplierID)
 	if err, ok := err.(*pq.Error); ok {
 		if err.Code == "23505" {
 			return uniqueError("products", "SKU")
@@ -315,7 +316,7 @@ func (product *Product) Update(db *sql.DB) (modelErr *ModelError) {
 		return connectionError("products")
 	}
 
-	stmt, err := db.Prepare("CALL updateProducts($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)")
+	stmt, err := db.Prepare("CALL updateProducts($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)")
 	if err != nil {
 		return normalError("products", err)
 	}
@@ -325,7 +326,7 @@ func (product *Product) Update(db *sql.DB) (modelErr *ModelError) {
 		product.ID, product.SKU, product.Name, product.ProductType,
 		product.ImgName, product.ImgID, product.Stocks,
 		product.Weight, product.RetailPrice, product.Remark,
-		product.DataStatus)
+		product.DataStatus, product.SupplierID)
 
 	if err != nil {
 		return normalError("products", err)
