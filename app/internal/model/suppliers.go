@@ -122,7 +122,7 @@ func (supplier *Supplier) Delete(db *sql.DB) (modelErr *ModelError) {
 	res, err := stmt.Exec(supplier.ID)
 	if err, ok := err.(*pq.Error); ok {
 		fmt.Println(err.Code.Name())
-		return &ModelError{Model: "suppliers", Code: 1, Message: "supplier still have children."}
+		return &ModelError{Model: "suppliers", Code: 3, Message: "Database error"}
 	}
 
 	rowsAff, err := res.RowsAffected()
