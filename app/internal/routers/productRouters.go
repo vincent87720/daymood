@@ -15,6 +15,7 @@ func SetupProductRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*
 
 	router.GET("/products", GetProductsHandler(db))
 	router.POST("/products", PostProductHandler(db, s))
+	router.POST("/products/multiple", PostProductsHandler(db, s))
 	router.PUT("/products/:id", PutProductHandler(db, s))
 	router.DELETE("/products/:id", DeleteProductHandler(db, s))
 	router.GET("/products/:id/purchaseHistories", GetProductPurchaseHistoriesHandler(db))
@@ -60,6 +61,42 @@ func PostProductHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 		}
 
 		modelErr := product.Create(db)
+		if modelErr != nil {
+			context.JSON(http.StatusBadRequest, modelError(modelErr))
+			return
+		}
+
+		context.JSON(http.StatusOK, gin.H{
+			"status": "OK",
+		})
+		return
+	}
+
+	return gin.HandlerFunc(fn)
+}
+
+func PostProductsHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
+	fn := func(context *gin.Context) {
+
+		var productXi []model.Product
+
+		err := context.BindJSON(&productXi)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, typeError(err.Error()))
+			return
+		}
+
+		for _, val := range productXi {
+			if checkEmpty(val.Name) == true {
+				context.JSON(http.StatusBadRequest, emptyError("name"))
+				return
+			}
+			val.DataStatus = 1
+		}
+
+		var product model.Product
+
+		modelErr := product.CreateMultiple(db, productXi)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return

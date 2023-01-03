@@ -1,6 +1,7 @@
 package model
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 
@@ -307,6 +308,64 @@ func (product *Product) Create(db *sql.DB) (modelErr *ModelError) {
 	if rowsAff != 1 {
 		return rowsAffectError("products")
 	}
+	return nil
+}
+
+func (product *Product) CreateMultiple(db *sql.DB, productXi []Product) (modelErr *ModelError) {
+	err := db.Ping()
+	if err != nil {
+		return connectionError("products")
+	}
+
+	qstr := `
+	INSERT INTO
+	products(
+		sku, name, type, img_id, img_name,
+		stocks, weight, retail_price, remark, 
+		data_status, supplier_id
+	)
+	VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);`
+
+	stmt, err := db.Prepare(qstr)
+	if err != nil {
+		return normalError("products", err)
+	}
+	defer stmt.Close()
+
+	ctx := context.Background()
+
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return normalError("products", err)
+	}
+
+	for _, product := range productXi {
+
+		res, err := stmt.Exec(
+			product.SKU, product.Name, product.ProductType,
+			product.ImgName, product.ImgID, product.Stocks,
+			product.Weight, product.RetailPrice, product.Remark,
+			product.DataStatus, product.SupplierID)
+		if err, ok := err.(*pq.Error); ok {
+			if err.Code == "23505" {
+				_ = tx.Rollback()
+				return uniqueError("products", "SKU")
+
+			} else {
+				_ = tx.Rollback()
+				return normalError("products", err)
+			}
+		}
+		rowsAff, execErr := res.RowsAffected()
+		if execErr != nil || err != nil || rowsAff != 1 {
+			_ = tx.Rollback()
+			return transactionError("products")
+		}
+	}
+	if err := tx.Commit(); err != nil {
+		return normalError("products", err)
+	}
+
 	return nil
 }
 
