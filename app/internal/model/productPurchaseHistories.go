@@ -5,15 +5,22 @@ import (
 )
 
 type ProductPurchaseHistory struct {
-	PurchaseID         int64    //採購編號
-	PurchaseName       string   //採購名稱
-	PurchaseDetailID   int64    //採購明細編號
-	PurchaseDetailName string   //採購明細名稱
-	QTY                int64    //數量
-	WholesalePriceKrw  *float32 //韓圓批價
-	SubtotalTwd        *float32 //台幣小計
-	ShippingArriveAt   *string  //貨運送達日期
-	SupplierID         int64    //廠商編號
+	PurchaseID              int64    //採購編號
+	PurchaseName            string   //採購名稱
+	PurchaseQTY             *int64   //採購商品總數
+	PurchaseDetailID        int64    //採購明細編號
+	PurchaseDetailName      string   //採購明細名稱
+	PurchaseDetailQTY       int64    //採購明細商品總數
+	WholesalePrice          *float32 //批價
+	Subtotal                *float32 //小計
+	ShippingArriveAt        *string  //貨運送達日期
+	SupplierID              *int64   //廠商編號
+	ExchangeRateKrw         *float32 //韓圓匯率
+	ShippingAgentCutPercent *float32 //貨運行百分比
+	ShippingFeeKr           *float32 //貨運國內運費_韓國
+	ShippingFeeTw           *float32 //貨運國內運費_台灣
+	ShippingFeeKokusaiKrw   *float32 //貨運國際運費
+	TariffTwd               *float32 //關稅
 }
 
 func GetProductPurchaseHistories(db *sql.DB, productID int64) (historyXi []ProductPurchaseHistory, modelErr *ModelError) {
@@ -31,35 +38,16 @@ func GetProductPurchaseHistories(db *sql.DB, productID int64) (historyXi []Produ
 	var history ProductPurchaseHistory
 	for row.Next() {
 		err := row.Scan(
-			&history.PurchaseID, &history.PurchaseName, &history.PurchaseDetailID,
-			&history.PurchaseDetailName, &history.QTY, &history.WholesalePriceKrw,
-			&history.SubtotalTwd, &history.ShippingArriveAt, &history.SupplierID,
+			&history.PurchaseID, &history.PurchaseName, &history.PurchaseQTY, &history.PurchaseDetailID,
+			&history.PurchaseDetailName, &history.PurchaseDetailQTY, &history.WholesalePrice, &history.Subtotal,
+			&history.ShippingArriveAt, &history.SupplierID, &history.ExchangeRateKrw, &history.ShippingAgentCutPercent,
+			&history.ShippingFeeKr, &history.ShippingFeeTw, &history.ShippingFeeKokusaiKrw, &history.TariffTwd,
 		)
 		if err != nil {
-			return nil, normalError("purchaseDetails", err)
+			return nil, normalError("productPurchaseHistories", err)
 		}
 		historyXi = append(historyXi, history)
 	}
 
 	return historyXi, nil
 }
-
-// purchase_id
-// purchase_Name
-// purchase_detail_id
-// purchase_detail_name
-// qty
-// wholesale_price_krw
-// subtotal_twd
-// shipping_arrive_at
-// supplier_id
-
-// PurchaseID
-// purchaseName
-// PurchaseDetailID
-// PurchaseDetailName
-// QTY
-// WholesalePriceKrw
-// SubtotalTwd
-// ShippingArriveAt
-// SupplierID
