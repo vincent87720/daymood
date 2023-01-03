@@ -34,6 +34,10 @@ type Y struct {
 		ExchangeRate float32 `yaml:"exchangeRate"`
 		Tariff       float32 `yaml:"tariff"`
 		Markup       float32 `yaml:"markup"`
+		Costs        []struct {
+			Key   string  `yaml:"key"`
+			Value float32 `yaml:"value"`
+		}
 	}
 }
 
