@@ -77,22 +77,16 @@ func GetPurchaseHandler(db *sql.DB) gin.HandlerFunc {
 func PostPurchaseHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
-		purchaseForm := model.Purchase{}
+		purchase := model.Purchase{}
 
-		err := context.BindJSON(&purchaseForm)
+		err := context.BindJSON(&purchase)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		if checkEmpty(purchaseForm.Name) == true {
+		if checkEmpty(purchase.Name) == true {
 			context.JSON(http.StatusBadRequest, emptyError("name"))
-			return
-		}
-
-		purchase, err := model.NewPurchase(purchaseForm.Name, purchaseForm.Status, purchaseForm.PurchaseType)
-		if err != nil {
-			context.JSON(http.StatusBadRequest, generalError)
 			return
 		}
 
