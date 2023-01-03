@@ -60,6 +60,8 @@ func PostProductHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 			return
 		}
 
+		product.DataStatus = 1
+
 		modelErr := product.Create(db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
