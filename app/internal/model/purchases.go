@@ -13,6 +13,7 @@ type Purchase struct {
 	Name                      string   //採購名稱
 	Status                    int64    //採購狀態
 	PurchaseType              int64    //採購種類
+	QTY                       *int64   //商品總數
 	ShippingAgent             *string  //貨運行
 	ShippingAgentCutKrw       *float32 //貨運行抽成
 	ShippingAgentCutPercent   *float32 //貨運行抽成趴數
@@ -68,7 +69,7 @@ func GetAllPurchases(db *sql.DB) (purchaseXi []Purchase, modelErr *ModelError) {
 	var purchase Purchase
 	for row.Next() {
 		err := row.Scan(
-			&purchase.ID, &purchase.Name, &purchase.Status, &purchase.PurchaseType,
+			&purchase.ID, &purchase.Name, &purchase.Status, &purchase.PurchaseType, &purchase.QTY,
 			&purchase.ShippingAgent, &purchase.ShippingAgentCutKrw, &purchase.ShippingAgentCutPercent, &purchase.ShippingInitiator,
 			&purchase.ShippingCreateAt, &purchase.ShippingEndAt, &purchase.ShippingArriveAt, &purchase.Weight,
 			&purchase.ShippingFeeKr, &purchase.ShippingFeeTw, &purchase.ShippingFeeKokusaiKrw, &purchase.ShippingFeeKokusaiPerKilo,
@@ -101,7 +102,7 @@ func (purchase *Purchase) GetPurchase(db *sql.DB) (purchaseXi []Purchase, modelE
 	var purchaseRow Purchase
 	for row.Next() {
 		err := row.Scan(
-			&purchaseRow.ID, &purchaseRow.Name, &purchaseRow.Status, &purchaseRow.PurchaseType,
+			&purchaseRow.ID, &purchaseRow.Name, &purchaseRow.Status, &purchaseRow.PurchaseType, &purchaseRow.QTY,
 			&purchaseRow.ShippingAgent, &purchaseRow.ShippingAgentCutKrw, &purchaseRow.ShippingAgentCutPercent, &purchaseRow.ShippingInitiator,
 			&purchaseRow.ShippingCreateAt, &purchaseRow.ShippingEndAt, &purchaseRow.ShippingArriveAt, &purchaseRow.Weight,
 			&purchaseRow.ShippingFeeKr, &purchaseRow.ShippingFeeTw, &purchaseRow.ShippingFeeKokusaiKrw, &purchaseRow.ShippingFeeKokusaiPerKilo,
@@ -126,13 +127,13 @@ func (purchase *Purchase) Create(db *sql.DB) (modelErr *ModelError) {
 	}
 
 	qryString := `INSERT INTO purchases(
-		name, status, purchase_type, shipping_agent,
+		name, status, purchase_type, qty, shipping_agent,
 		shipping_agent_cut_krw, shipping_agent_cut_percent, shipping_initiator, shipping_create_at,
 		shipping_end_at, shipping_arrive_at, weight, shipping_fee_kr,
 		shipping_fee_tw, shipping_fee_kokusai_krw, shipping_fee_kokusai_per_kilo, exchange_rate_krw,
 		tariff_twd, tariff_per_kilo, total_krw, total_twd,
 		total, remark, data_order
-	) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23);`
+	) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24);`
 
 	stmt, err := db.Prepare(qryString)
 	if err != nil {
@@ -140,7 +141,7 @@ func (purchase *Purchase) Create(db *sql.DB) (modelErr *ModelError) {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.Exec(purchase.Name, purchase.Status, purchase.PurchaseType, purchase.ShippingAgent,
+	res, err := stmt.Exec(purchase.Name, purchase.Status, purchase.PurchaseType, purchase.QTY, purchase.ShippingAgent,
 		purchase.ShippingAgentCutKrw, purchase.ShippingAgentCutPercent, purchase.ShippingInitiator, purchase.ShippingCreateAt,
 		purchase.ShippingEndAt, purchase.ShippingArriveAt, purchase.Weight, purchase.ShippingFeeKr,
 		purchase.ShippingFeeTw, purchase.ShippingFeeKokusaiKrw, purchase.ShippingFeeKokusaiPerKilo, purchase.ExchangeRateKrw,
@@ -164,8 +165,8 @@ func (purchase *Purchase) Update(db *sql.DB) (modelErr *ModelError) {
 	}
 
 	_, err = db.Exec(
-		"CALL updatePurchases($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)",
-		purchase.ID, purchase.Name, purchase.Status, purchase.PurchaseType, purchase.ShippingAgent,
+		"CALL updatePurchases($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25)",
+		purchase.ID, purchase.Name, purchase.Status, purchase.PurchaseType, purchase.QTY, purchase.ShippingAgent,
 		purchase.ShippingAgentCutKrw, purchase.ShippingAgentCutPercent, purchase.ShippingInitiator, purchase.ShippingCreateAt,
 		purchase.ShippingEndAt, purchase.ShippingArriveAt, purchase.Weight, purchase.ShippingFeeKr,
 		purchase.ShippingFeeTw, purchase.ShippingFeeKokusaiKrw, purchase.ShippingFeeKokusaiPerKilo, purchase.ExchangeRateKrw,
@@ -194,7 +195,7 @@ func (purchase *Purchase) Delete(db *sql.DB) (modelErr *ModelError) {
 	res, err := stmt.Exec(purchase.ID)
 	if err, ok := err.(*pq.Error); ok {
 		fmt.Println(err.Code.Name())
-		return &ModelError{Model: "purchases", Code: 1, Message: "supplier still have children."}
+		return &ModelError{Model: "purchases", Code: 1, Message: "purchases still have children."}
 	}
 
 	rowsAff, err := res.RowsAffected()
