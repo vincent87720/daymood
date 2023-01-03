@@ -13,6 +13,7 @@ import (
 func SetupPurchaseDetailRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*gin.Engine, error) {
 
 	router.GET("/purchaseDetails", GetAllPurchaseDetailsHandler(db))
+	router.POST("/purchaseDetails/multiple", PostPurchaseDetailsHandler(db))
 	router.GET("/purchases/:id/purchaseDetails", GetPurchaseDetailsHandler(db))
 	router.POST("/purchaseDetails", PostPurchaseDetailHandler(db))
 	router.PUT("/purchaseDetails/:id", PutPurchaseDetailHandler(db))
@@ -33,6 +34,41 @@ func GetAllPurchaseDetailsHandler(db *sql.DB) gin.HandlerFunc {
 		context.JSON(http.StatusOK, gin.H{
 			"status":  "OK",
 			"records": purchaseDetailXi,
+		})
+		return
+	}
+
+	return gin.HandlerFunc(fn)
+}
+
+func PostPurchaseDetailsHandler(db *sql.DB) gin.HandlerFunc {
+	fn := func(context *gin.Context) {
+
+		var purchaseDetailXi []model.PurchaseDetail
+
+		err := context.BindJSON(&purchaseDetailXi)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, typeError(err.Error()))
+			return
+		}
+
+		for _, val := range purchaseDetailXi {
+			if checkEmpty(val.Name) == true {
+				context.JSON(http.StatusBadRequest, emptyError("name"))
+				return
+			}
+		}
+
+		var purchaseDetail model.PurchaseDetail
+
+		modelErr := purchaseDetail.CreateMultiple(db, purchaseDetailXi)
+		if modelErr != nil {
+			context.JSON(http.StatusBadRequest, modelError(modelErr))
+			return
+		}
+
+		context.JSON(http.StatusOK, gin.H{
+			"status": "OK",
 		})
 		return
 	}

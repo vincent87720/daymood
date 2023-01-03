@@ -1,6 +1,7 @@
 package model
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -140,6 +141,57 @@ func (purchaseDetail *PurchaseDetail) Create(db *sql.DB) (modelErr *ModelError) 
 	if rowsAff != 1 {
 		return rowsAffectError("purchaseDetails")
 	}
+	return nil
+}
+
+func (purchaseDetail *PurchaseDetail) CreateMultiple(db *sql.DB, purchaseDetailXi []PurchaseDetail) (modelErr *ModelError) {
+	err := db.Ping()
+	if err != nil {
+		return connectionError("purchaseDetails")
+	}
+
+	qryString := `INSERT INTO purchaseDetails(
+		named_id, name, status,
+		wholesale_price, qty, cost,
+		currency, subtotal, remark,
+		data_order, purchase_id, supplier_id,
+		product_id
+	) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13);`
+
+	stmt, err := db.Prepare(qryString)
+	if err != nil {
+		return normalError("purchaseDetails", err)
+	}
+	defer stmt.Close()
+
+	ctx := context.Background()
+
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return normalError("purchaseDetails", err)
+	}
+
+	for _, purchaseDetail := range purchaseDetailXi {
+
+		res, err := stmt.Exec(purchaseDetail.NamedID, purchaseDetail.Name,
+			purchaseDetail.Status, purchaseDetail.WholesalePrice, purchaseDetail.QTY,
+			purchaseDetail.Cost, purchaseDetail.Currency, purchaseDetail.Subtotal,
+			purchaseDetail.Remark, purchaseDetail.DataOrder, purchaseDetail.PurchaseID,
+			purchaseDetail.SupplierID, purchaseDetail.ProductID)
+		if err, ok := err.(*pq.Error); ok {
+			_ = tx.Rollback()
+			return normalError("purchaseDetails", err)
+		}
+		rowsAff, execErr := res.RowsAffected()
+		if execErr != nil || err != nil || rowsAff != 1 {
+			_ = tx.Rollback()
+			return transactionError("purchaseDetails")
+		}
+	}
+	if err := tx.Commit(); err != nil {
+		return normalError("purchaseDetails", err)
+	}
+
 	return nil
 }
 
