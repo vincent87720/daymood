@@ -13,7 +13,6 @@ func SetupRouters(db *sql.DB, s settings.Settings) (*gin.Engine, error) {
 	router := gin.Default()
 	router.Use(CORSMiddleware())
 
-	SetupFirmRouters(router, db, s)
 	SetupSupplierRouters(router, db, s)
 	SetupPurchaseRouters(router, db, s)
 	SetupPurchaseDetailRouters(router, db, s)
