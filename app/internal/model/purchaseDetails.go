@@ -24,8 +24,8 @@ type PurchaseDetail struct {
 	CreateAt       string   //建立時間
 	UpdateAt       string   //最後編輯時間
 	PurchaseID     int64    //採購編號
-	SupplierID     int64    //廠商編號
-	ProductID      int64    //商品編號
+	SupplierID     *int64   //廠商編號
+	ProductID      *int64   //商品編號
 }
 
 func NewPurchaseDetail(name string, status int64, qty int64, subtotalTwd float32) (PurchaseDetail, error) {
