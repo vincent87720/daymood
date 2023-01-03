@@ -55,6 +55,9 @@ func PostSupplierHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
+		//DataStatus預設為使用中
+		supplier.DataStatus = 1
+
 		modelErr := supplier.Create(db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
