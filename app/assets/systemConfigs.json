@@ -6,7 +6,7 @@
     {"id":"4", "type":"ProductType", "key":1, "value":"耳環", "remark":""},
     {"id":"5", "type":"ProductType", "key":2, "value":"耳骨夾", "remark":""},
     {"id":"6", "type":"ProductType", "key":3, "value":"戒指", "remark":""},
-    {"id":"7", "type":"ProductType", "key":4, "value":"項鍊", "remark":""},
+    {"id":"7", "type":"ProductType", "key":4, "value":"項鏈", "remark":""},
     {"id":"8", "type":"ProductType", "key":5, "value":"手鍊", "remark":""},
     {"id":"9", "type":"ProductType", "key":6, "value":"紙盒", "remark":""},
     {"id":"10", "type":"ProductType", "key":7, "value":"氣泡紙", "remark":""},
