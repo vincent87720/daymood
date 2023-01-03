@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/vincent87720/daymood.backend/internal/launch"
+	"github.com/vincent87720/daymood/app/internal/launch"
 )
 
 func main() {

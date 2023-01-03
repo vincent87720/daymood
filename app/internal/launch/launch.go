@@ -10,8 +10,8 @@ import (
 	"runtime"
 
 	_ "github.com/lib/pq"
-	"github.com/vincent87720/daymood.backend/internal/routers"
-	"github.com/vincent87720/daymood.backend/internal/settings"
+	"github.com/vincent87720/daymood/app/internal/routers"
+	"github.com/vincent87720/daymood/app/internal/settings"
 )
 
 func Launch(mode bool) {

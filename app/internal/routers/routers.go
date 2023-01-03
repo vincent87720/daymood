@@ -4,8 +4,8 @@ import (
 	"database/sql"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vincent87720/daymood.backend/internal/model"
-	"github.com/vincent87720/daymood.backend/internal/settings"
+	"github.com/vincent87720/daymood/app/internal/model"
+	"github.com/vincent87720/daymood/app/internal/settings"
 )
 
 func SetupRouters(db *sql.DB, s settings.Settings) (*gin.Engine, error) {

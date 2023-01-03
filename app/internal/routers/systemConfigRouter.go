@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vincent87720/daymood.backend/internal/settings"
+	"github.com/vincent87720/daymood/app/internal/settings"
 )
 
 func SetupSystemConfigRouters(router *gin.Engine, s settings.Settings) (*gin.Engine, error) {

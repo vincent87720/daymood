@@ -10,7 +10,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vincent87720/daymood.backend/internal/model"
+	"github.com/vincent87720/daymood/app/internal/model"
 )
 
 func SetupDeliveryOrderRouters(router *gin.Engine, db *sql.DB) (*gin.Engine, error) {

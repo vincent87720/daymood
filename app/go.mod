@@ -1,4 +1,4 @@
-module github.com/vincent87720/daymood.backend
+module github.com/vincent87720/daymood/app
 
 go 1.15
 
