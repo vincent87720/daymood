@@ -18,3 +18,6 @@ var rowsAffectError = func(model string) (modelErr *ModelError) {
 var uniqueError = func(model string, varName string) (modelErr *ModelError) {
 	return &ModelError{Model: model, Code: 3, Message: varName + " must be unique."}
 }
+var transactionError = func(model string) (modelErr *ModelError) {
+	return &ModelError{Model: model, Code: 4, Message: "Transaction fail."}
+}
