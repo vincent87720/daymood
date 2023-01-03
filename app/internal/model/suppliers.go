@@ -41,7 +41,7 @@ func GetAllSuppliers(db *sql.DB) (supplierXi []Supplier, modelErr *ModelError) {
 		return nil, &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
 	}
 
-	row, err := db.Query("SELECT * FROM suppliers WHERE data_status = 1 ORDER BY id DESC;")
+	row, err := db.Query("SELECT * FROM suppliers ORDER BY id DESC;")
 	if err != nil {
 		return nil, &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
 	}
