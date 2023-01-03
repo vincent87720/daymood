@@ -52,11 +52,13 @@ func checkEmpty(s string) bool {
 
 var generalError = gin.H{
 	"status": "FAIL",
+	"role":   "router",
 	"code":   0,
 }
 var emptyError = func(varName string) gin.H {
 	return gin.H{
 		"status":  "FAIL",
+		"role":    "router",
 		"code":    1,
 		"message": varName + " field should not be empty",
 	}
@@ -64,6 +66,7 @@ var emptyError = func(varName string) gin.H {
 var typeError = func(varName string) gin.H {
 	return gin.H{
 		"status":  "FAIL",
+		"role":    "router",
 		"code":    2,
 		"message": "Invalid type: " + varName,
 	}
@@ -71,6 +74,7 @@ var typeError = func(varName string) gin.H {
 var modelError = func(modelErr *model.ModelError) gin.H {
 	return gin.H{
 		"status":  "FAIL",
+		"role":    "model",
 		"model":   modelErr.Model,
 		"code":    modelErr.Code,
 		"message": modelErr.Message,
