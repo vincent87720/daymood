@@ -6,7 +6,7 @@ services:
       context: './web'
       dockerfile: 'Dockerfile.development'
     ports:
-      - '8001:8080'
+      - '8001:8001'
     volumes:
       - ./web:/app
   app:
