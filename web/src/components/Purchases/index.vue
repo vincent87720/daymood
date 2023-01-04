@@ -152,9 +152,6 @@ export default {
         key('command+/', this.onFocus_searchFields);
         key('ctrl+/', this.onFocus_searchFields);
         await this.getPurchases();
-
-        // this.dumpProducts();
-        // this.dumpFirms();
     },
     props: {
     },

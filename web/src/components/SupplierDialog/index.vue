@@ -123,12 +123,5 @@ export default {
             this.$refs.form.reset();
         },
     },
-    // watch:  {
-    //     supplierDialog: function(){
-    //         if(this.supplierDialog == false){
-    //             this.resetForm();
-    //         }
-    //     },
-    // }
 }
 </script>
