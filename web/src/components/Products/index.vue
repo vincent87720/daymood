@@ -29,6 +29,11 @@
                         <template v-slot:item.ProductType="{ item }">
                             <span>{{ convertDisplayText(systemConfigs.ProductType, item.ProductType) }}</span>
                         </template>
+                        <template v-slot:item.actions.plus="{ item }">
+                            <v-icon small class="mx-1" @click.stop="onClick_checkoutProductInfo(item)">
+                                mdi-arrow-right-circle
+                            </v-icon>
+                        </template>
                     </c-data-table>
                 </v-col>
             </v-row>
@@ -179,21 +184,11 @@ export default {
         },
         onClick_download() {
         },
-        onClick_removeDeliveryInfo() {
-            this.deliveryObj = {};
-        },
-        onClick_delivery() {
-            this.postDeliveryOrder();
-        },
-        onClick_setting() {
-            this.ajeossi = (this.tradingSettings.Ajeossi).toString();
-            this.shippingFee = (this.tradingSettings.ShippingFee).toString();
-            this.exchangeRate = (this.tradingSettings.ExchangeRate).toString();
-            this.tariff = (this.tradingSettings.Tariff).toString();
-            this.markup = (this.tradingSettings.Markup).toString();
-            this.text_cardTitle = "設定";
-            this.text_confirmBtn = "確定";
-            this.settingDialog = true;
+        onClick_checkoutProductInfo(item) {
+            this.text_cardTitle = item.Name;
+            this.text_confirmBtn = "";
+            this.product = item;
+            this.productInfoDialog = true;
         },
         async onClick_changeDataStatus(item) {
             this.confirmDialog = false;
