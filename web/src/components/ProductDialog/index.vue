@@ -171,6 +171,9 @@ export default {
         systemConfigs() {
             return this.$store.state.systemConfigs;
         },
+        supplierList() {
+            return this.$store.state.suppliers;
+        },
     },
     methods: {
         onClick_confirm() { //有子元件的事件觸發 自定義事件childevent
@@ -253,21 +256,11 @@ export default {
         }
     },
     watch: {
-        // productDialog: function () {
-        //     if (this.productDialog == false) {
-        //         this.resetForm();
-        //     }
-        //     else {
-        //         if (this.actionType == "put" && this.productImgName) {
-        //             const fooFile = new File(["foo"], this.productImgName, {
-        //                 type: "text/plain",
-        //                 name: this.productImgName,
-        //             });
-        //             this.imgFile = fooFile;
-        //             this.fooFile = fooFile;
-        //         }
-        //     }
-        // },
+        productDialog: async function (newVal, oldVal) {
+            if (newVal == true) {
+                this.$store.dispatch("GetSuppliers");
+            }
+        },
         ntdSellingPrice: function () {
             this.calc_grossMargin();
         },
