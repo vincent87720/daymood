@@ -17,5 +17,19 @@
     {"id":"15", "type":"ProductType", "key":12, "value":"留言卡", "remark":""},
     {"id":"16", "type":"ProductType", "key":13, "value":"香芬", "remark":""},
     {"id":"17", "type":"PurchaseDetailStatus", "key":1, "value":"採用", "remark":""},
-    {"id":"18", "type":"PurchaseDetailStatus", "key":2, "value":"不採用", "remark":""}
+    {"id":"18", "type":"PurchaseDetailStatus", "key":2, "value":"不採用", "remark":""},
+    {"id":"19", "type":"DeliveryType", "key":1, "value":"宅配", "remark":""},
+    {"id":"20", "type":"DeliveryType", "key":2, "value":"7-11", "remark":""},
+    {"id":"21", "type":"DeliveryType", "key":3, "value":"全家", "remark":""},
+    {"id":"22", "type":"DeliveryType", "key":4, "value":"萊爾富", "remark":""},
+    {"id":"23", "type":"DeliveryStatus", "key":1, "value":"未出貨", "remark":""},
+    {"id":"24", "type":"DeliveryStatus", "key":2, "value":"已出貨", "remark":""},
+    {"id":"25", "type":"DeliveryFeeStatus", "key":1, "value":"運費由平台支付", "remark":""},
+    {"id":"26", "type":"DeliveryFeeStatus", "key":2, "value":"運費由賣家支付", "remark":""},
+    {"id":"27", "type":"DeliveryFeeStatus", "key":3, "value":"運費由買家支付", "remark":""},
+    {"id":"28", "type":"PaymentType", "key":1, "value":"ATM轉帳", "remark":""},
+    {"id":"29", "type":"PaymentType", "key":2, "value":"信用卡支付", "remark":""},
+    {"id":"30", "type":"PaymentType", "key":3, "value":"超商取貨付款", "remark":""},
+    {"id":"31", "type":"PaymentStatus", "key":1, "value":"未付款", "remark":""},
+    {"id":"32", "type":"PaymentStatus", "key":2, "value":"已付款", "remark":""}
 ]
