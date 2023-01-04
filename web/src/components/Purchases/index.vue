@@ -290,9 +290,16 @@ export default {
                     this.alertText = "刪除採購案成功";
                 })
                 .catch((error) => {
-                    this.alert = true;
-                    this.alertType = "Fail";
-                    this.alertText = "刪除採購案失敗";
+                    if (error.response.data.role == "model" && error.response.data.code == 1) {
+                        this.alert = true;
+                        this.alertType = "Fail";
+                        this.alertText = "此採購案尚包含商品明細，請先移除相關商品明細後再移除此採購案";
+                    }
+                    else {
+                        this.alert = true;
+                        this.alertType = "Fail";
+                        this.alertText = "刪除採購案失敗";
+                    }
                 });
         },
     },

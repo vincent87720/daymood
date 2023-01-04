@@ -214,12 +214,11 @@ export default {
                     this.alertText = "刪除廠商成功";
                 })
                 .catch((error) => {
-                    // console.log(error.response);
-                    // if(error.response.data.code == 1){
-                    //     this.alert = true;
-                    //     this.alertType = "Fail";
-                    //     this.alertText = "尚有商品屬於此廠商，請先移除相關商品後再移除此廠商";
-                    // }
+                    if(error.response.data.role == "model" && error.response.data.code == 1){
+                            this.alert = true;
+                            this.alertType = "Fail";
+                            this.alertText = "尚有商品屬於此廠商，請先移除相關商品後再移除此廠商";
+                    }
                 });
         },
         // dumpFirms() {
