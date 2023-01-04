@@ -127,7 +127,7 @@ export default {
             productDialog: false,
             products: [],
             productHeader: [
-                { text: '商品編號', value: 'SKU', width: "12%" },
+                { text: 'SKU', value: 'SKU', width: "12%" },
                 { text: '商品名稱', value: 'Name' },
                 { text: '商品種類', value: 'ProductType' },
                 { text: '庫存(個)', value: 'Stocks' },

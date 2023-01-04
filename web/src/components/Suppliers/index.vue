@@ -94,7 +94,7 @@ export default {
             supplierHeader: [
                 { text: "廠商名稱", value: "Name" },
                 { text: "廠商地址", value: "Address" },
-                { text: "備註", value: "Remark", width: "10%" },
+                { text: "備註", value: "Remark" },
                 { text: "", value: "actions", sortable: false, width: "10%" },
             ],
             suppliers: [],
