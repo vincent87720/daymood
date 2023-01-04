@@ -1,6 +1,6 @@
 ---
 backend:
-  host: 127.0.0.1
+  host:
   port: 8000
 easypick:
   host: 127.0.0.1
@@ -8,7 +8,7 @@ easypick:
   username: yourEasyStoreUsername
   password: yourEasyStorePassword
 database:
-  host: 127.0.0.1
+  host: database
   database: database
   username: username
   password: password

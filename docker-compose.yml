@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: './web'
+      dockerfile: 'Dockerfile.development'
+    ports:
+      - '8001:8080'
+    volumes:
+      - ./web:/app
+  app:
+    build:
+      context: './app'
+      dockerfile: 'Dockerfile.development'
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./app:/app
+    depends_on:
+      - database
+  database:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: admin
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./database:/var/lib/postgresql/data
