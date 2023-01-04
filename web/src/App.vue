@@ -44,7 +44,6 @@
 </template>
 
 <script>
-import ProductsOld from './components/ProductsOld/index.vue'
 import Products from './components/Products/index.vue'
 import Suppliers from './components/Suppliers/index.vue'
 import Purchases from './components/Purchases/index.vue'
@@ -54,7 +53,6 @@ export default {
   name: 'App',
   components: {
     Products,
-    ProductsOld,
     Suppliers,
     Purchases,
     ProductDialog,
