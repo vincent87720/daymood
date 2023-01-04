@@ -232,6 +232,8 @@ export default {
             item.ShippingFeeKokusaiKrw = parseFloat(item.ShippingFeeKokusaiKrw);
             item.ShippingFeeKokusaiPerKilo = parseFloat(item.ShippingFeeKokusaiPerKilo);
             item.ExchangeRateKrw = parseFloat(item.ExchangeRateKrw);
+            item.TariffTwd = parseFloat(item.TariffTwd);
+            item.TariffPerKilo = parseFloat(item.TariffPerKilo);
             item.TotalKrw = parseFloat(item.TotalKrw);
             item.TotalTwd = parseFloat(item.TotalTwd);
             item.Total = parseFloat(item.Total);
