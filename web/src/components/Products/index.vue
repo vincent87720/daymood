@@ -73,6 +73,7 @@ import BtnSetting from "../../components/Buttons/BtnSetting.vue";
 import DataTable from "../../components/DataTables/DataTable.vue";
 import {
     getProducts,
+    postProducts,
     postProduct,
     putProduct,
     deleteProduct,
@@ -113,6 +114,7 @@ export default {
         return {
             search: '',
             text_cardTitle: "新增",
+            text_cardHint: "",
             text_confirmBtn: "新增",
 
             //Alert
@@ -184,6 +186,7 @@ export default {
         onClick_deleteButton(item) {
             this.text_cardTitle = "確認刪除";
             this.text_confirmBtn = "刪除";
+            this.text_cardHint = ""
             this.confirmDialog = true;
             this.confirmTarget = item;
         },
