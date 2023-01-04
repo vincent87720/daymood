@@ -7,7 +7,8 @@
             <v-container class="pa-6">
                 <v-row>
                     <v-col xs="12" sm="6" class="ml-auto mr-auto">
-                        <v-btn-toggle v-model="toggle_form" rounded mandatory dense class="d-flex justify-sm-center">
+                        <v-btn-toggle v-model="toggle_form" rounded mandatory dense
+                            class="d-flex justify-sm-center mb-3">
                             <v-btn> 基本資訊 </v-btn>
                             <v-btn> 貨運資訊 </v-btn>
                             <v-btn> 費用資訊 </v-btn>
@@ -19,11 +20,11 @@
                                 <v-select class="overflow-hidden" label="採購狀態" v-model="purchaseItem.Status"
                                     :rules="[rules.requiredIncludeZero, rules.number]"
                                     prepend-icon="mdi-package-variant" :items="systemConfigs.PurchaseStatus"
-                                    item-text="value" item-value="key" dense full-width></v-select>
+                                    item-text="value" item-value="key"></v-select>
                                 <v-select class="overflow-hidden" label="採購類型" v-model="purchaseItem.PurchaseType"
                                     :rules="[rules.requiredIncludeZero, rules.number]"
                                     prepend-icon="mdi-package-variant" :items="systemConfigs.PurchaseType"
-                                    item-text="value" item-value="key" dense full-width></v-select>
+                                    item-text="value" item-value="key"></v-select>
                                 <v-text-field label="韓圓匯率" v-model="purchaseItem.ExchangeRateKrw"
                                     prepend-icon="mdi-text-short"></v-text-field>
                             </div>
@@ -42,62 +43,66 @@
                                     :prop_date.sync="purchaseItem.ShippingArriveAt"></c-date-picker>
                             </div>
                             <div v-show="toggle_form == 2">
-                                <v-row>
-                                    <v-col class="py-0" v-if="hideWhenCreate">
-                                        <v-text-field label="貨運行抽成" v-model="purchaseItem.ShippingAgentCutKrw"
-                                            prepend-icon="mdi-dolly"></v-text-field>
-                                    </v-col>
-                                    <v-col class="py-0">
-                                        <v-text-field label="貨運行抽成百分比" v-model="purchaseItem.ShippingAgentCutPercent"
-                                            prepend-icon="mdi-percent-outline"></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row>
-                                    <v-col class="py-0">
-                                        <v-text-field label="國內運費 韓國" v-model="purchaseItem.ShippingFeeKr"
-                                            prepend-icon="mdi-truck"></v-text-field>
-                                    </v-col>
-                                    <v-col class="py-0">
-                                        <v-text-field label="國內運費 台灣" v-model="purchaseItem.ShippingFeeTw"
-                                            prepend-icon="mdi-truck"></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row>
-                                    <v-col class="py-0" v-if="hideWhenCreate">
-                                        <v-text-field label="國際運費" v-model="purchaseItem.ShippingFeeKokusai"
-                                            prepend-icon="mdi-ferry"></v-text-field>
-                                    </v-col>
-                                    <v-col class="py-0">
-                                        <v-text-field label="每公斤國際運費" v-model="purchaseItem.ShippingFeeKokusaiPerKilo"
-                                            prepend-icon="mdi-ferry"></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row>
-                                    <v-col class="py-0" v-if="hideWhenCreate">
-                                        <v-text-field label="關稅" v-model="purchaseItem.TariffTwd"
-                                            prepend-icon="mdi-account-tie"></v-text-field>
-                                    </v-col>
-                                    <v-col class="py-0">
-                                        <v-text-field label="每公斤關稅" v-model="purchaseItem.TariffPerKilo"
-                                            prepend-icon="mdi-account-tie"></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row v-if="hideWhenCreate">
-                                    <v-col class="py-0">
-                                        <v-text-field label="韓圓總價" v-model="purchaseItem.TotalKrw"
-                                            prepend-icon="mdi-currency-krw"></v-text-field>
-                                    </v-col>
-                                    <v-col class="py-0">
-                                        <v-text-field label="台幣總價" v-model="purchaseItem.TotalTwd"
-                                            prepend-icon="mdi-currency-twd"></v-text-field>
-                                    </v-col>
-                                </v-row>
-                                <v-row v-if="hideWhenCreate">
-                                    <v-col class="ya-0">
-                                        <v-text-field label="總金額" v-model="purchaseItem.Total"
-                                            prepend-icon="mdi-currency-twd"></v-text-field>
-                                    </v-col>
-                                </v-row>
+                                <v-container fluid>
+                                    <v-row>
+                                        <v-col class="py-0" v-if="hideWhenCreate">
+                                            <v-text-field label="貨運行抽成" v-model="purchaseItem.ShippingAgentCutKrw"
+                                                prepend-icon="mdi-dolly"></v-text-field>
+                                        </v-col>
+                                        <v-col class="py-0">
+                                            <v-text-field label="貨運行抽成百分比"
+                                                v-model="purchaseItem.ShippingAgentCutPercent"
+                                                prepend-icon="mdi-percent-outline"></v-text-field>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row>
+                                        <v-col class="py-0">
+                                            <v-text-field label="國內運費 韓國" v-model="purchaseItem.ShippingFeeKr"
+                                                prepend-icon="mdi-truck"></v-text-field>
+                                        </v-col>
+                                        <v-col class="py-0">
+                                            <v-text-field label="國內運費 台灣" v-model="purchaseItem.ShippingFeeTw"
+                                                prepend-icon="mdi-truck"></v-text-field>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row>
+                                        <v-col class="py-0" v-if="hideWhenCreate">
+                                            <v-text-field label="國際運費" v-model="purchaseItem.ShippingFeeKokusaiKrw"
+                                                prepend-icon="mdi-ferry"></v-text-field>
+                                        </v-col>
+                                        <v-col class="py-0">
+                                            <v-text-field label="每公斤國際運費"
+                                                v-model="purchaseItem.ShippingFeeKokusaiPerKilo"
+                                                prepend-icon="mdi-ferry"></v-text-field>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row>
+                                        <v-col class="py-0" v-if="hideWhenCreate">
+                                            <v-text-field label="關稅" v-model="purchaseItem.TariffTwd"
+                                                prepend-icon="mdi-account-tie"></v-text-field>
+                                        </v-col>
+                                        <v-col class="py-0">
+                                            <v-text-field label="每公斤關稅" v-model="purchaseItem.TariffPerKilo"
+                                                prepend-icon="mdi-account-tie"></v-text-field>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row v-if="hideWhenCreate">
+                                        <v-col class="py-0">
+                                            <v-text-field label="韓圓總價" v-model="purchaseItem.TotalKrw"
+                                                prepend-icon="mdi-currency-krw"></v-text-field>
+                                        </v-col>
+                                        <v-col class="py-0">
+                                            <v-text-field label="台幣總價" v-model="purchaseItem.TotalTwd"
+                                                prepend-icon="mdi-currency-twd"></v-text-field>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row v-if="hideWhenCreate">
+                                        <v-col class="ya-0">
+                                            <v-text-field label="總金額" v-model="purchaseItem.Total"
+                                                prepend-icon="mdi-currency-twd"></v-text-field>
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
                             </div>
                         </v-form>
                     </v-col>
