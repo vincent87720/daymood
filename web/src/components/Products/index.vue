@@ -5,6 +5,7 @@
                 <v-col class="pa-0 d-flex justify-end">
                     <c-btn-add @click="onClick_newButton"></c-btn-add>
                     <c-btn-download @click="onClick_download"></c-btn-download>
+                    <c-btn-upload @click="onClick_upload"></c-btn-upload>
                     <c-btn-setting></c-btn-setting>
                 </v-col>
             </v-row>
@@ -99,6 +100,7 @@ export default {
         ProductImportDialog,
         "c-btn-add": BtnAdd,
         "c-btn-download": BtnDownload,
+        "c-btn-upload": BtnUpload,
         "c-btn-setting": BtnSetting,
         "c-data-table": DataTable,
     },
