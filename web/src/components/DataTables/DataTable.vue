@@ -1,6 +1,6 @@
 <template>
-    <v-data-table :headers="headers" :items="itemsss" :items-per-page="7" :search="search" dark
-        class="elevation-1 mx-4 mb-4 page__table">
+    <v-data-table :headers="headers" :items="items" :items-per-page="7" :search="search" dark
+        class="page__table">
         <template v-slot:item.actions="{ item }">
             <v-icon small class="mx-1" @click.stop="onClick_editButton(item)">
                 mdi-pencil
@@ -75,7 +75,7 @@ export default {
 
             }
         },
-        itemsss: {
+        items: {
             get() {
                 return this.prop_items
             },
