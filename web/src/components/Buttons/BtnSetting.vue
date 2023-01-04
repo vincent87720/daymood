@@ -4,15 +4,15 @@
     </v-btn>
 </template>
 <script>
-    export default {
+export default {
     name: 'BtnSetting',
-    data(){
-        return{
+    data() {
+        return {
         };
     },
     methods: {
-        onClick(){
-            this.$emit('click',true);
+        onClick() {
+            this.$emit('click', true);
         },
     },
 }   

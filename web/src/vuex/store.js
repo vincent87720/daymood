@@ -70,16 +70,16 @@ const store = new Vuex.Store({
                 value: x.Name,
                 SKU: x.SKU,
               });
-              if(x.DataStatus == 1){
+              if (x.DataStatus == 1) {
                 products.push({
                   key: x.ID,
-                  value: x.SKU+" "+x.Name,
+                  value: x.SKU + " " + x.Name,
                 });
               }
             });
           }
         })
-        .catch((error) => {});
+        .catch((error) => { });
       commit("setProducts", products);
       commit("setAllProducts", allProducts);
     },
@@ -94,7 +94,7 @@ const store = new Vuex.Store({
                 key: x.ID,
                 value: x.Name,
               });
-              if(x.DataStatus == 1){
+              if (x.DataStatus == 1) {
                 suppliers.push({
                   key: x.ID,
                   value: x.Name,

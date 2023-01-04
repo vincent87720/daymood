@@ -8,9 +8,8 @@
                 <v-row>
                     <v-col xs="12" sm="6" class="ml-auto mr-auto">
                         <v-form ref="form" v-model="validator">
-                            <v-text-field label="SKU商品編號" v-model="productItem.SKU"
-                                prepend-icon="mdi-identifier" v-on:keydown.enter.prevent="onClick_confirm"
-                                autofocus></v-text-field>
+                            <v-text-field label="SKU商品編號" v-model="productItem.SKU" prepend-icon="mdi-identifier"
+                                v-on:keydown.enter.prevent="onClick_confirm" autofocus></v-text-field>
                             <v-text-field label="商品名稱" v-model="productItem.Name" :rules="[rules.required]"
                                 prepend-icon="mdi-text-short"
                                 v-on:keydown.enter.prevent="onClick_confirm"></v-text-field>
@@ -20,15 +19,15 @@
                             <v-select label="進貨廠商" v-model="productItem.SupplierID" class="overflow-hidden"
                                 :rules="[rules.number]" prepend-icon="mdi-store-outline" :items="supplierList"
                                 item-text="value" item-value="key" clearable></v-select>
-                            <v-text-field label="售價" v-model="productItem.RetailPrice"
-                                :rules="[rules.number]" prepend-icon="mdi-currency-twd"
-                                v-on:keydown.enter.prevent="onClick_confirm" :hint="hint_retailPrice"
-                                :persistent-hint="isMaterials == true" :disabled="isMaterials == true"></v-text-field>
+                            <v-text-field label="售價" v-model="productItem.RetailPrice" :rules="[rules.number]"
+                                prepend-icon="mdi-currency-twd" v-on:keydown.enter.prevent="onClick_confirm"
+                                :hint="hint_retailPrice" :persistent-hint="isMaterials == true"
+                                :disabled="isMaterials == true"></v-text-field>
                             <v-text-field label="庫存" v-model="productItem.Stocks"
                                 :rules="[rules.requiredIncludeZero, rules.number]" prepend-icon="mdi-package-variant"
                                 v-on:keydown.enter.prevent="onClick_confirm"></v-text-field>
-                            <v-text-field label="商品重量(g)" v-model="productItem.Weight"
-                                :rules="[rules.number]" prepend-icon="mdi-weight-gram"
+                            <v-text-field label="商品重量(g)" v-model="productItem.Weight" :rules="[rules.number]"
+                                prepend-icon="mdi-weight-gram"
                                 v-on:keydown.enter.prevent="onClick_confirm"></v-text-field>
                             <v-textarea label="備註" v-model="productItem.Remark" prepend-icon="mdi-text-long" auto-grow
                                 rows="1" row-height="15"></v-textarea>

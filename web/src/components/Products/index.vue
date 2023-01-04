@@ -284,7 +284,7 @@ export default {
                         this.alertText = "商品名稱缺漏，請檢查商品名稱是否填寫";
                     }
                     else {
-                        
+
                         this.alert = true;
                         this.alertType = "Fail";
                         this.alertText = "新增商品失敗";

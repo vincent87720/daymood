@@ -1,12 +1,8 @@
 <template>
   <v-app>
-    <v-app-bar
-    app
-    flat
-    class="appbar d-flex justify-center"
-    >
+    <v-app-bar app flat class="appbar d-flex justify-center">
       <div class="pa-3">
-        <img src="@/assets/8467417.png" width="120"/>
+        <img src="@/assets/8467417.png" width="120" />
       </div>
     </v-app-bar>
     <v-main>
@@ -15,56 +11,30 @@
       ref="ProductsComponent"
       :prop_activeType.sync="activeType"
       /> -->
-      <Products
-      v-if="activeType == 1"
-      :prop_activeType.sync="activeType"
-      />
-      <Purchases
-      ref="Purchases"
-      v-if="activeType == 0"
-      />
-      <Suppliers 
-      v-if="activeType == 2"
-      :prop_activeType.sync="activeType"
-      />
+      <Products v-if="activeType == 1" :prop_activeType.sync="activeType" />
+      <Purchases ref="Purchases" v-if="activeType == 0" />
+      <Suppliers v-if="activeType == 2" :prop_activeType.sync="activeType" />
     </v-main>
-    <v-bottom-navigation 
-    v-model="activeType"
-    dark
-    grow
-    app
-    >
-      <v-btn
-      x-large
-      activeType="productPurchase"
-      >
+    <v-bottom-navigation v-model="activeType" dark grow app>
+      <v-btn x-large activeType="productPurchase">
         <span>進貨</span>
 
         <v-icon>mdi-package-down</v-icon>
       </v-btn>
 
-      <v-btn
-      x-large
-      activeType="productManagement"
-      >
+      <v-btn x-large activeType="productManagement">
         <span>商品管理</span>
 
         <v-icon>mdi-package-variant-closed</v-icon>
       </v-btn>
 
-      <v-btn
-      x-large
-      activeType="firmManagement"
-      >
+      <v-btn x-large activeType="firmManagement">
         <span>廠商管理</span>
 
         <v-icon>mdi-store-outline</v-icon>
       </v-btn>
 
-      <v-btn
-      x-large
-      activeType="productDelivery"
-      >
+      <v-btn x-large activeType="productDelivery">
         <span>出貨</span>
 
         <v-icon>mdi-package-up</v-icon>
@@ -82,7 +52,7 @@ import ProductDialog from './components/ProductDialog/index.vue'
 
 export default {
   name: 'App',
-  components:{
+  components: {
     Products,
     ProductsOld,
     Suppliers,
@@ -92,11 +62,11 @@ export default {
   data: () => ({
     activeType: -1,
   }),
-  created(){
+  created() {
     this.$store.dispatch("GetSystemConfig");
     this.$store.dispatch("GetTradingSettings");
   },
-  methods:{
+  methods: {
   },
 };
 </script>

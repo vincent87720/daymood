@@ -54,7 +54,8 @@
                 <v-row>
                     <v-col xs="12" sm="12" class="ml-auto mr-auto">
                         <v-card outlined class="pa-3 d-flex justify-end">
-                            <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray" v-if="purchaseItem.PurchaseType == 1">
+                            <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray"
+                                v-if="purchaseItem.PurchaseType == 1">
                                 <h2>商品總數</h2>
                                 <h2>商品總計</h2>
                                 <v-tooltip left>
@@ -188,21 +189,21 @@ export default {
             purchaseDetailDialog: false,
             purchaseDetails: [],
             purchaseDetailHeader: [
-                { text: '是否採用', value: 'Status', align: 'center'},
+                { text: '是否採用', value: 'Status', align: 'center' },
                 { text: '採購商品名稱', value: 'Name' },
                 { text: '商品', value: 'ProductID' },
                 { text: '廠商', value: 'SupplierID' },
                 { text: '批價', value: 'WholesalePrice' },
                 { text: '數量', value: 'QTY' },
                 { text: '小計', value: 'Subtotal' },
-                { text: "備註", value: "Remark"},
-                { text: '', value: 'actions', sortable: false},
+                { text: "備註", value: "Remark" },
+                { text: '', value: 'actions', sortable: false },
             ],
             products: [],
 
             purchaseDetailImportDialog: false,
 
-            tooltip:{
+            tooltip: {
                 calc_Ajeossi: "",
                 calc_ShippingFeeKokusaiKrw: "",
             }
@@ -392,7 +393,7 @@ export default {
             //總計 = (韓圓總計 / 匯率) + 台幣總計
             let result = 0;
             let total = 0;
-            if(this.purchaseItem.ExchangeRateKrw != null){
+            if (this.purchaseItem.ExchangeRateKrw != null) {
                 let totalKrw = parseFloat(this.calc_TotalKrw);
                 let exchangeRateKrw = parseFloat(this.purchaseItem.ExchangeRateKrw);
                 let totalExchangedKrw = totalKrw / exchangeRateKrw;

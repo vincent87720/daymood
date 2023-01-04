@@ -33,8 +33,8 @@
                                         {{ convertDisplayText_SKU(allProductsList, props.item.ProductID) }}
                                         <template v-slot:input>
                                             <v-select label="商品" v-model="props.item.ProductID"
-                                                prepend-icon="mdi-tournament" :items="allProductsList"
-                                                item-text="SKU" item-value="key"></v-select>
+                                                prepend-icon="mdi-tournament" :items="allProductsList" item-text="SKU"
+                                                item-value="key"></v-select>
                                         </template>
                                     </v-edit-dialog>
                                 </template>
@@ -53,8 +53,9 @@
                                         {{ convertDisplayText(systemConfigs.PurchaseDetailStatus, props.item.Status) }}
                                         <template v-slot:input>
                                             <v-select label="是否採用" v-model="props.item.Status"
-                                                prepend-icon="mdi-tournament" :items="systemConfigs.PurchaseDetailStatus"
-                                                item-text="value" item-value="key"></v-select>
+                                                prepend-icon="mdi-tournament"
+                                                :items="systemConfigs.PurchaseDetailStatus" item-text="value"
+                                                item-value="key"></v-select>
                                         </template>
                                     </v-edit-dialog>
                                 </template>
