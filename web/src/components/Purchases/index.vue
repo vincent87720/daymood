@@ -258,6 +258,9 @@ export default {
         },
         async postPurchase(item) {
             item = this.preSend(item);
+            item.ShippingArriveAt = null;
+            item.ShippingCreateAt = null;
+            item.ShippingEndAt = null;
             await postPurchase(item)
                 .then(async (response) => {
                     await this.getPurchases();
