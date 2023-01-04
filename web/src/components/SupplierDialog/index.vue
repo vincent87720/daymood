@@ -11,7 +11,7 @@
                             <v-text-field label="廠商名稱" v-model="supplierItem.Name" :rules="text_requiredRules"
                                 prepend-icon="mdi-store-outline" v-on:keydown.enter.prevent="onClick_confirm" autofocus
                                 required></v-text-field>
-                            <v-text-field label="廠商地址" v-model="supplierItem.Address" :rules="text_requiredRules"
+                            <v-text-field label="廠商地址" v-model="supplierItem.Address"
                                 prepend-icon="mdi-map-marker-outline" v-on:keydown.enter.prevent="onClick_confirm"
                                 required></v-text-field>
                             <v-textarea label="備註" v-model="supplierItem.Remark" prepend-icon="mdi-text-long" auto-grow
