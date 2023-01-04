@@ -1,11 +1,11 @@
 <template>
-    <v-menu v-model="menu" :close-on-content-click="true" :nudge-right="40" transition="scale-transition" offset-y
+    <v-menu v-model="menu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition" offset-y
         min-width="auto">
         <template v-slot:activator="{ on, attrs }">
-            <v-text-field v-model="date" :label="prop_label" prepend-icon="mdi-calendar" readonly
-                v-bind="attrs" v-on="on"></v-text-field>
+            <v-text-field v-model="date" :label="prop_label" prepend-icon="mdi-calendar" readonly v-bind="attrs"
+                v-on="on" clearable></v-text-field>
         </template>
-        <v-date-picker v-model="date" @input="menu = false"></v-date-picker>
+        <v-date-picker v-model="date"></v-date-picker>
     </v-menu>
 </template>
 
@@ -30,10 +30,10 @@ export default {
     computed: {
         date: {
             get() {
-                if(this.prop_date){
+                if (this.prop_date) {
                     return this.prop_date.substring(0, 10)
                 }
-                else{
+                else {
                     return ""
                 }
             },
