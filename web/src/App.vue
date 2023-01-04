@@ -14,6 +14,7 @@
       <Products v-if="activeType == 1" :prop_activeType.sync="activeType" />
       <Purchases ref="Purchases" v-if="activeType == 0" />
       <Suppliers v-if="activeType == 2" :prop_activeType.sync="activeType" />
+      <DeliveryOrders v-if="activeType == 3" :prop_activeType.sync="activeType" />
     </v-main>
     <v-bottom-navigation v-model="activeType" dark grow app>
       <v-btn x-large activeType="productPurchase">
@@ -47,6 +48,7 @@
 import Products from './components/Products/index.vue'
 import Suppliers from './components/Suppliers/index.vue'
 import Purchases from './components/Purchases/index.vue'
+import DeliveryOrders from './components/DeliveryOrders/index.vue'
 import ProductDialog from './components/ProductDialog/index.vue'
 
 export default {
@@ -55,6 +57,7 @@ export default {
     Products,
     Suppliers,
     Purchases,
+    DeliveryOrders,
     ProductDialog,
   },
   data: () => ({
