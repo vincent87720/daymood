@@ -14,8 +14,8 @@
                             <v-text-field label="廠商地址" v-model="supplierItem.Address" :rules="text_requiredRules"
                                 prepend-icon="mdi-map-marker-outline" v-on:keydown.enter.prevent="onClick_confirm"
                                 required></v-text-field>
-                            <v-text-field label="備註" v-model="supplierItem.Remark" prepend-icon="mdi-text-long"
-                                v-on:keydown.enter.prevent="onClick_confirm"></v-text-field>
+                            <v-textarea label="備註" v-model="supplierItem.Remark" prepend-icon="mdi-text-long" auto-grow
+                                rows="1" row-height="15"></v-textarea>
                         </v-form>
                     </v-col>
                 </v-row>
