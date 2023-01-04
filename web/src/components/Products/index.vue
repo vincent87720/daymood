@@ -548,11 +548,14 @@ export default {
             item.DataOrder = String(item.DataOrder);
             return item;
         },
+        filterEnableData(item) {
+            return item.filter(x => x.DataStatus == 1);
+        },
         async getProducts() {
             await getProducts()
                 .then((response) => {
                     if (response.data.records != null) {
-                        this.products = response.data.records;
+                        this.products = this.filterEnableData(response.data.records);
                     }
                     else {
                         this.products = [];

@@ -158,11 +158,14 @@ export default {
             this.confirmDialog = false;
             this.deleteSupplier(item);
         },
+        filterEnableData(item){
+            return item.filter(x=>x.DataStatus == 1);
+        },
         async getSuppliers() {
             await getSuppliers()
                 .then((response) => {
                     if (response.data.records != null) {
-                        this.suppliers = response.data.records;
+                        this.suppliers = this.filterEnableData(response.data.records);
                     }
                     else {
                         this.suppliers = [];
