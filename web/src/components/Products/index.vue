@@ -36,8 +36,14 @@
             :prop_text_confirmBtn="text_confirmBtn" :prop_actionType.sync="actionType" :prop_productItem="product"
             :prop_tradingSettings="tradingSettings" @confirm='onConfirm_productDialog' />
         <ConfirmDialog :prop_confirmDialog.sync="confirmDialog" :prop_text_cardTitle="text_cardTitle"
-            :prop_text_confirmBtn="text_confirmBtn" :prop_deleteTarget.sync="deleteTarget"
-            v-on:confirmClick='onConfirm_ConfirmDialog' />
+            :prop_text_cardHint="text_cardHint" :prop_text_confirmBtn="text_confirmBtn"
+            :prop_confirmTarget.sync="confirmTarget" v-on:confirmClick='onConfirm_ConfirmDialog'>
+            <template v-slot:actions="{ item }">
+                <v-btn outlined rounded text @click.stop="onClick_changeDataStatus(item)">
+                    刪除並保留歷史紀錄
+                </v-btn>
+            </template>
+        </ConfirmDialog>
         <Alert :prop_alert.sync="alert" :prop_alertType="alertType" :prop_alertText="alertText"></Alert>
     </div>
 
@@ -99,7 +105,7 @@ export default {
             alertText: "",
 
             confirmDialog: false,
-            deleteTarget: null,
+            confirmTarget: null,
 
             product: new Product(),
             productDialog: false,
@@ -199,7 +205,7 @@ export default {
             this.text_cardTitle = "確認刪除";
             this.text_confirmBtn = "刪除";
             this.confirmDialog = true;
-            this.deleteTarget = item;
+            this.confirmTarget = item;
         },
         onClick_download() {
             if (this.activeType == 1) {
@@ -225,9 +231,10 @@ export default {
             this.text_confirmBtn = "確定";
             this.settingDialog = true;
         },
-        onPurchaseDialogConfirmClick(val) {
-            this.purchaseDialog = false;
-            this.postStocks(val.productID, val.quantity);
+        async onClick_changeDataStatus(item) {
+            this.confirmDialog = false;
+            item.DataStatus = 0;
+            await this.putProduct(item);
         },
         async onConfirm_productDialog(item) {
             this.productDialog = false;

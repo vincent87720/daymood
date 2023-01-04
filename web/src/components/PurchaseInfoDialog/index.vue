@@ -33,10 +33,14 @@
                 </v-row>
             </v-container>
         </v-card>
+        <ConfirmDialog :prop_confirmDialog.sync="confirmDialog" :prop_text_cardTitle="text_cardTitle_inner"
+            :prop_text_cardHint="text_cardHint_inner" :prop_text_confirmBtn="text_confirmBtn_inner"
+            :prop_confirmTarget.sync="confirmTarget" v-on:confirmClick='onConfirm_confirmDialog' />
     </v-dialog>
 </template>
 
 <script>
+import ConfirmDialog from '../../components/ConfirmDialog/index.vue'
 import DatePicker from "../../components/Pickers/DatePicker.vue";
 import BtnAdd from "../../components/Buttons/BtnAdd.vue";
 import DataTable from "../../components/DataTables/DataTable.vue";
@@ -44,24 +48,19 @@ import DataTable from "../../components/DataTables/DataTable.vue";
 export default {
     name: 'purchaseInfoDialog',
     components: {
+        ConfirmDialog,
         "c-btn-add": BtnAdd,
         "c-date-picker": DatePicker,
         "c-data-table": DataTable,
     },
     data() {
         return {
-            toggle_form: undefined,
-            purchaseQty: null,
-            validator: false,
-            text_requiredRules: [
-                v => !!v || '必填',
-            ],
-            text_requiredRules_isNumber: [
-                v => !!v || '必填',
-                v => {
-                    return !!parseFloat(v) || '必須為數字'
-                },
-            ],
+            // ConfirmDialog
+            confirmDialog: false,
+            text_cardTitle_inner: '',
+            text_cardHint_inner: '',
+            text_confirmBtn_inner: '',
+            confirmTarget: null,
             purchaseDetails: [],
             purchaseDetailHeader: [
                 { text: '採購名稱', value: 'Name' },

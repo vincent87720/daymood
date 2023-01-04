@@ -30,9 +30,15 @@
         </v-container>
         <SupplierDialog :prop_supplierDialog.sync="supplierDialog" :prop_text_cardTitle="text_cardTitle"
             :prop_text_confirmBtn="text_confirmBtn" :prop_supplierItem="supplier" @confirm="onConfirm_supplierDialog" />
-        <ConfirmDialog :prop_confirmDialog.sync="confirmDialog" :prop_text_cardTitle="text_cardTitle"
-            :prop_text_confirmBtn="text_confirmBtn" :prop_deleteTarget.sync="deleteTarget"
-            v-on:confirmClick="onConfirm_confirmDialog" />
+        <ConfirmDialog :prop_confirmDialog.sync="confirmDialog" :prop_text_cardTitle="text_cardTitle" :prop_text_cardHint="text_cardHint"
+            :prop_text_confirmBtn="text_confirmBtn" :prop_confirmTarget.sync="confirmTarget"
+            v-on:confirmClick="onConfirm_confirmDialog">
+            <template v-slot:actions="{ item }">
+                <v-btn outlined rounded text @click.stop="onClick_changeDataStatus(item)">
+                    刪除並保留歷史紀錄
+                </v-btn>
+            </template>
+        </ConfirmDialog>
         <Alert :prop_alert.sync="alert" :prop_alertType="alertType" :prop_alertText="alertText"></Alert>
     </div>
 </template>
@@ -80,6 +86,7 @@ export default {
         return {
             search: "",
             text_cardTitle: "新增",
+            text_cardHint: "",
             text_confirmBtn: "新增",
 
             supplier: new Supplier(),
@@ -98,7 +105,7 @@ export default {
             alertText: "",
 
             confirmDialog: false,
-            deleteTarget: null,
+            confirmTarget: null,
         };
     },
     async mounted() {
@@ -129,10 +136,15 @@ export default {
             this.text_cardTitle = "確認刪除";
             this.text_confirmBtn = "刪除";
             this.confirmDialog = true;
-            this.deleteTarget = item;
+            this.confirmTarget = item;
         },
         onClick_download() {
             // this.dumpFirms();
+        },
+        async onClick_changeDataStatus(item) {
+            this.confirmDialog = false;
+            item.DataStatus = 0;
+            await this.putSupplier(item);
         },
         onConfirm_supplierDialog(val) {
             this.supplierDialog = false;

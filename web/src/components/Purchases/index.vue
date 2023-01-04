@@ -47,8 +47,8 @@
         <PurchaseInfoDialog :prop_purchaseInfoDialog.sync="purchaseInfoDialog" :prop_text_cardTitle="text_cardTitle"
             :prop_text_confirmBtn="text_confirmBtn" :prop_purchaseItem="purchase" @finish='onFinish_purchaseInfoDialog' />
         <ConfirmDialog :prop_confirmDialog.sync="confirmDialog" :prop_text_cardTitle="text_cardTitle"
-            :prop_text_confirmBtn="text_confirmBtn" :prop_deleteTarget.sync="deleteTarget"
-            v-on:confirmClick='onConfirm_confirmDialog' />
+            :prop_text_cardHint="text_cardHint" :prop_text_confirmBtn="text_confirmBtn"
+            :prop_confirmTarget.sync="confirmTarget" v-on:confirmClick='onConfirm_confirmDialog' />
         <Alert :prop_alert.sync="alert" :prop_alertType="alertType" :prop_alertText="alertText"></Alert>
     </div>
 
@@ -118,6 +118,7 @@ export default {
         return {
             search: '',
             text_cardTitle: "新增",
+            text_cardHint: "",
             text_confirmBtn: "新增",
 
             //Alert
@@ -127,7 +128,7 @@ export default {
             alertTimeoutID: null,
 
             confirmDialog: false,
-            deleteTarget: null,
+            confirmTarget: null,
             actionType: "",
 
             purchase: new Purchase(),
@@ -194,7 +195,7 @@ export default {
             this.text_cardTitle = "確認刪除";
             this.text_confirmBtn = "刪除";
             this.confirmDialog = true;
-            this.deleteTarget = item;
+            this.confirmTarget = item;
         },
         onClick_checkoutPurchaseInfo(item){
             this.text_cardTitle = "採購案"+item.Name;
