@@ -32,6 +32,10 @@
                 </v-col>
             </v-row>
         </v-container>
+        <ProductImportDialog :prop_productImportDialog.sync="productImportDialog" :prop_text_cardTitle="text_cardTitle"
+            :prop_text_confirmBtn="text_confirmBtn" @confirm='onConfirm_productImportDialog' />
+        <ProductInfoDialog :prop_productInfoDialog.sync="productInfoDialog" :prop_text_cardTitle="text_cardTitle"
+            :prop_text_confirmBtn="text_confirmBtn" :prop_actionType.sync="actionType" :prop_productItem="product" />
         <ProductDialog :prop_productDialog.sync="productDialog" :prop_text_cardTitle="text_cardTitle"
             :prop_text_confirmBtn="text_confirmBtn" :prop_actionType.sync="actionType" :prop_productItem="product"
             :prop_tradingSettings="tradingSettings" @confirm='onConfirm_productDialog' />
@@ -52,6 +56,8 @@
 <script>
 import key from 'keymaster'
 import ProductDialog from '../../components/ProductDialog/index.vue'
+import ProductInfoDialog from '../../components/ProductInfoDialog/index.vue'
+import ProductImportDialog from '../../components/ProductImportDialog/index.vue'
 import Alert from '../../components/Alert/index.vue'
 import ConfirmDialog from '../../components/ConfirmDialog/index.vue'
 import BtnAdd from "../../components/Buttons/BtnAdd.vue";
@@ -88,6 +94,9 @@ export default {
         ProductDialog,
         Alert,
         ConfirmDialog,
+        ProductDialog,
+        ProductInfoDialog,
+        ProductImportDialog,
         "c-btn-add": BtnAdd,
         "c-btn-download": BtnDownload,
         "c-btn-setting": BtnSetting,
@@ -129,9 +138,12 @@ export default {
                 // { text: '更新時間', value: 'UpdateAt' },
                 { text: '', value: 'actions', sortable: false, width: "10%" },
             ],
+            productInfoDialog: false,
 
             tradingSettings: {},
             actionType: "",
+
+            productImportDialog: false,
         };
     },
     async mounted() {
@@ -244,6 +256,10 @@ export default {
             else if (this.actionType == "put") {
                 await this.putProduct(item);
             }
+        },
+        async onConfirm_productImportDialog(item) {
+            this.productImportDialog = false;
+            await this.postProducts(item);
         },
         async onConfirm_ConfirmDialog(item) {
             this.confirmDialog = false;
