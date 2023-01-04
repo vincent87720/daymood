@@ -161,8 +161,12 @@ export default {
         },
     },
     methods: {
-        convertDisplayText(systemConfig, key) {
-            return systemConfig.find(x=>x.key == key).value
+        convertDisplayText(list, key) {
+            let result = list.find(x => x.key == key);
+            if (result) {
+                return result.value
+            }
+            return "";
         },
         getStatusChipColor(status) {
             if (status == 1) return '#849A8F'

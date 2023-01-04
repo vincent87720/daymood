@@ -157,8 +157,12 @@ export default {
         },
     },
     methods: {
-        convertDisplayText(systemConfig, key) {
-            return systemConfig[key].value
+        convertDisplayText(list, key) {
+            let result = list.find(x => x.key == key);
+            if (result) {
+                return result.value
+            }
+            return "";
         },
         onFocus_searchFields() {
             this.$refs.searchField.focus();
