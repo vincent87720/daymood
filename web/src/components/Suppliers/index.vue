@@ -30,9 +30,9 @@
         </v-container>
         <SupplierDialog :prop_supplierDialog.sync="supplierDialog" :prop_text_cardTitle="text_cardTitle"
             :prop_text_confirmBtn="text_confirmBtn" :prop_supplierItem="supplier" @confirm="onConfirm_supplierDialog" />
-        <ConfirmDialog :prop_confirmDialog.sync="confirmDialog" :prop_text_cardTitle="text_cardTitle" :prop_text_cardHint="text_cardHint"
-            :prop_text_confirmBtn="text_confirmBtn" :prop_confirmTarget.sync="confirmTarget"
-            v-on:confirmClick="onConfirm_confirmDialog">
+        <ConfirmDialog :prop_confirmDialog.sync="confirmDialog" :prop_text_cardTitle="text_cardTitle"
+            :prop_text_cardHint="text_cardHint" :prop_text_confirmBtn="text_confirmBtn"
+            :prop_confirmTarget.sync="confirmTarget" v-on:confirmClick="onConfirm_confirmDialog">
             <template v-slot:actions="{ item }">
                 <v-btn outlined rounded text @click.stop="onClick_changeDataStatus(item)">
                     刪除並保留歷史紀錄
@@ -158,8 +158,8 @@ export default {
             this.confirmDialog = false;
             this.deleteSupplier(item);
         },
-        filterEnableData(item){
-            return item.filter(x=>x.DataStatus == 1);
+        filterEnableData(item) {
+            return item.filter(x => x.DataStatus == 1);
         },
         async getSuppliers() {
             await getSuppliers()
@@ -214,10 +214,10 @@ export default {
                     this.alertText = "刪除廠商成功";
                 })
                 .catch((error) => {
-                    if(error.response.data.role == "model" && error.response.data.code == 1){
-                            this.alert = true;
-                            this.alertType = "Fail";
-                            this.alertText = "尚有商品屬於此廠商，請先移除相關商品後再移除此廠商";
+                    if (error.response.data.role == "model" && error.response.data.code == 1) {
+                        this.alert = true;
+                        this.alertType = "Fail";
+                        this.alertText = "尚有商品屬於此廠商，請先移除相關商品後再移除此廠商";
                     }
                 });
         },

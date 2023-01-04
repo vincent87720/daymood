@@ -43,9 +43,11 @@
             </v-row>
         </v-container>
         <PurchaseDialog :prop_purchaseDialog.sync="purchaseDialog" :prop_text_cardTitle="text_cardTitle"
-            :prop_text_confirmBtn="text_confirmBtn" :prop_actionType="actionType" :prop_purchaseItem="purchase" @confirm='onConfirm_purchaseDialog' />
+            :prop_text_confirmBtn="text_confirmBtn" :prop_actionType="actionType" :prop_purchaseItem="purchase"
+            @confirm='onConfirm_purchaseDialog' />
         <PurchaseInfoDialog :prop_purchaseInfoDialog.sync="purchaseInfoDialog" :prop_text_cardTitle="text_cardTitle"
-            :prop_text_confirmBtn="text_confirmBtn" :prop_purchaseItem="purchase" @finish='onFinish_purchaseInfoDialog' />
+            :prop_text_confirmBtn="text_confirmBtn" :prop_purchaseItem="purchase"
+            @finish='onFinish_purchaseInfoDialog' />
         <ConfirmDialog :prop_confirmDialog.sync="confirmDialog" :prop_text_cardTitle="text_cardTitle"
             :prop_text_cardHint="text_cardHint" :prop_text_confirmBtn="text_confirmBtn"
             :prop_confirmTarget.sync="confirmTarget" v-on:confirmClick='onConfirm_confirmDialog' />
@@ -197,8 +199,8 @@ export default {
             this.confirmDialog = true;
             this.confirmTarget = item;
         },
-        onClick_checkoutPurchaseInfo(item){
-            this.text_cardTitle = "採購案"+item.Name;
+        onClick_checkoutPurchaseInfo(item) {
+            this.text_cardTitle = "採購案" + item.Name;
             this.text_confirmBtn = "";
             this.purchase = item;
             this.purchaseInfoDialog = true;
@@ -215,7 +217,7 @@ export default {
             this.confirmDialog = false;
             await this.deletePurchase(item);
         },
-        async onFinish_purchaseInfoDialog(item){
+        async onFinish_purchaseInfoDialog(item) {
             this.purchaseInfoDialog = false;
             await this.putPurchase(item);
         },

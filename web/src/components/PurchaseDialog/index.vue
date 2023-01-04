@@ -225,8 +225,8 @@ export default {
         onClick_cancel() {
             this.purchaseDialog = false;
         },
-        autofill(){
-            if(this.actionType == "post"){
+        autofill() {
+            if (this.actionType == "post") {
                 this.purchaseItem.ExchangeRateKrw = this.tradingSettings.ExchangeRate;
                 this.purchaseItem.ShippingAgentCutPercent = this.tradingSettings.Ajeossi;
                 this.purchaseItem.ShippingFeeKokusaiPerKilo = this.tradingSettings.ShippingFee;
