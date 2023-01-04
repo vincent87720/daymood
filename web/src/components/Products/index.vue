@@ -68,6 +68,7 @@ import Alert from '../../components/Alert/index.vue'
 import ConfirmDialog from '../../components/ConfirmDialog/index.vue'
 import BtnAdd from "../../components/Buttons/BtnAdd.vue";
 import BtnDownload from "../../components/Buttons/BtnDownload.vue";
+import BtnUpload from "../../components/Buttons/BtnUpload.vue";
 import BtnSetting from "../../components/Buttons/BtnSetting.vue";
 import DataTable from "../../components/DataTables/DataTable.vue";
 import {
@@ -184,6 +185,11 @@ export default {
         },
         onClick_download() {
         },
+        onClick_upload() {
+            this.text_cardTitle = "匯入";
+            this.text_confirmBtn = "確定";
+            this.productImportDialog = true;
+        },
         onClick_checkoutProductInfo(item) {
             this.text_cardTitle = item.Name;
             this.text_confirmBtn = "";
@@ -249,6 +255,33 @@ export default {
                     }
                 })
                 .catch((error) => {
+                });
+        },
+        async postProducts(item) {
+            await postProducts(item)
+                .then(async (response) => {
+                    await this.getProducts();
+                    this.alert = true;
+                    this.alertType = "Success";
+                    this.alertText = "新增商品成功";
+                })
+                .catch((error) => {
+                    if (error.response.data.model == "products" && error.response.data.code == 3) {
+                        this.alert = true;
+                        this.alertType = "Fail";
+                        this.alertText = "新增項目與資料庫中的SKU重複，請檢查後重新上傳";
+                    }
+                    else if (error.response.data.role == "router" && error.response.data.code == 1) {
+                        this.alert = true;
+                        this.alertType = "Fail";
+                        this.alertText = "商品名稱缺漏，請檢查商品名稱是否填寫";
+                    }
+                    else {
+                        
+                        this.alert = true;
+                        this.alertType = "Fail";
+                        this.alertText = "新增商品失敗";
+                    }
                 });
         },
         async postProduct(item) {
