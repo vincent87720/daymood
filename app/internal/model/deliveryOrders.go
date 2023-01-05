@@ -134,7 +134,7 @@ func (deliveryOrder *DeliveryOrder) Update(db *sql.DB) (modelErr *ModelError) {
 	}
 
 	_, err = db.Exec(
-		"CALL updatePurchases($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)",
+		"CALL updateDeliveryOrders($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)",
 		deliveryOrder.ID, deliveryOrder.DeliveryType, deliveryOrder.DeliveryStatus,
 		deliveryOrder.DeliveryFeeStatus, deliveryOrder.PaymentType, deliveryOrder.PaymentStatus,
 		deliveryOrder.TotalOriginal, deliveryOrder.Discount, deliveryOrder.TotalDiscounted,
