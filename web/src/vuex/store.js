@@ -74,6 +74,7 @@ const store = new Vuex.Store({
                 products.push({
                   key: x.ID,
                   value: x.SKU + " " + x.Name,
+                  RetailPrice: x.RetailPrice,
                 });
               }
             });
