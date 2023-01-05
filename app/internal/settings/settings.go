@@ -68,12 +68,12 @@ func (s *Settings) setEnvVar() {
 	s.database.db = os.Getenv("DB_DATABASE")
 	s.database.username = os.Getenv("DB_USERNAME")
 	s.database.password = os.Getenv("DB_PASSWORD")
-	s.database.password = os.Getenv("EZSTORE_USERNAME")
-	s.database.password = os.Getenv("EZSTORE_PASSWORD")
+	s.easypick.username = os.Getenv("EZSTORE_USERNAME")
+	s.easypick.password = os.Getenv("EZSTORE_PASSWORD")
 }
 
 func (s *Settings) setPath() {
-	if s.mode == "BIN" {
+	if s.mode == "DEV" {
 		s.rootPath = "."
 	} else {
 		ex, err := os.Executable()
