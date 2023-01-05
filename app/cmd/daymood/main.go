@@ -8,5 +8,5 @@ import (
 
 func main() {
 	fmt.Println("Hello Daymood.")
-	launch.Launch(true) //debug: true, production: false
+	launch.Launch()
 }

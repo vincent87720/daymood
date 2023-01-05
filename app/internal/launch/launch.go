@@ -14,13 +14,10 @@ import (
 	"github.com/vincent87720/daymood/app/internal/settings"
 )
 
-func Launch(mode bool) {
-	s := settings.Init(mode)
-	// nsAppInit(s)
-	// runApp(s)
+func Launch() {
+	s := settings.Init()
 
-	if mode == true {
-		//debug
+	if s.GetAppMode() == "DEV" || s.GetAppMode() == "PROD" {
 		runApp(s)
 	} else {
 		//production
@@ -96,7 +93,6 @@ func Launch(mode bool) {
 
 func runApp(s settings.Settings) {
 	connStr := s.GetDBConnectionString()
-	fmt.Println(connStr)
 	backendAddr := s.GetBackendAddr()
 
 	// Connect to database

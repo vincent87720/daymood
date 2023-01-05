@@ -8,26 +8,11 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v3"
 )
 
 type Y struct {
-	Backend struct {
-		Host string `yaml:"host"`
-		Port string `yaml:"port"`
-	}
-	Easypick struct {
-		Host     string `yaml:"host"`
-		Port     string `yaml:"port"`
-		Username string `yaml:"username"`
-		Password string `yaml:"password"`
-	}
-	Database struct {
-		Host     string `yaml:"host"`
-		Db       string `yaml:"database"`
-		Username string `yaml:"username"`
-		Password string `yaml:"password"`
-	}
 	Trading struct {
 		Ajeossi      float32 `yaml:"ajeossi"`
 		ShippingFee  float32 `yaml:"shippingFee"`
@@ -43,34 +28,62 @@ type Y struct {
 
 type Settings struct {
 	yamlByteXi []byte
-	binaryPath string
+	rootPath   string
 	yamlPath   string
-	debugMode  bool
+	mode       string //DEV: development, PROD: production, BIN: binary
 	y          Y
+	backend    struct {
+		host string
+		port string
+	}
+	database struct {
+		host     string
+		db       string
+		username string
+		password string
+	}
+	easypick struct {
+		host     string
+		port     string
+		username string
+		password string
+	}
 }
 
-func Init(debug bool) Settings {
+func Init() Settings {
 	s := Settings{}
-	s.debugMode = debug
-	s.SetPath()
+	s.setEnvVar()
+	s.setPath()
 	s.ReadFile()
 	s.UnmarshalSettings()
 	return s
 }
 
-func (s *Settings) SetPath() {
-	if s.debugMode == true {
-		s.binaryPath = "."
-		s.yamlPath = s.binaryPath + "/settings.development.yaml"
+func (s *Settings) setEnvVar() {
+	godotenv.Load()
+	s.mode = os.Getenv("APP_MODE")
+	s.backend.host = os.Getenv("APP_HOST")
+	s.backend.port = os.Getenv("APP_PORT")
+	s.database.host = os.Getenv("DB_HOSTNAME")
+	s.database.db = os.Getenv("DB_DATABASE")
+	s.database.username = os.Getenv("DB_USERNAME")
+	s.database.password = os.Getenv("DB_PASSWORD")
+	s.database.password = os.Getenv("EZSTORE_USERNAME")
+	s.database.password = os.Getenv("EZSTORE_PASSWORD")
+}
+
+func (s *Settings) setPath() {
+	if s.mode == "BIN" {
+		s.rootPath = "."
 	} else {
 		ex, err := os.Executable()
 		if err != nil {
 			panic(err)
 		}
 		exPath := filepath.Dir(ex)
-		s.binaryPath = exPath
-		s.yamlPath = s.binaryPath + "/settings.production.yaml"
+		s.rootPath = exPath
 	}
+	s.yamlPath = s.rootPath + "/settings.yaml"
 
 }
 
@@ -122,23 +135,23 @@ func (s *Settings) Print() {
 }
 
 func (s *Settings) GetExeFilePath() string {
-	return s.binaryPath
+	return s.rootPath
 }
 
-func (s *Settings) GetDebugMode() bool {
-	return s.debugMode
+func (s *Settings) GetAppMode() string {
+	return s.mode
 }
 
 func (s *Settings) GetBackendAddr() string {
-	return s.y.Backend.Host + ":" + s.y.Backend.Port
+	return s.backend.host + ":" + s.backend.port
 }
 
 func (s *Settings) GetEasyPickAddr() string {
-	return s.y.Easypick.Host + ":" + s.y.Easypick.Port
+	return s.easypick.host + ":" + s.easypick.port
 }
 
 func (s *Settings) GetDBConnectionString() string {
-	return "postgresql://" + s.y.Database.Username + ":" + s.y.Database.Password + "@" + s.y.Database.Host + "/" + s.y.Database.Db + "?sslmode=disable"
+	return "postgresql://" + s.database.username + ":" + s.database.password + "@" + s.database.host + "/" + s.database.db + "?sslmode=disable"
 }
 
 func (s *Settings) GetTradingSettings() (Y, error) {
