@@ -104,7 +104,6 @@ class DeliveryOrderDetail {
 	UpdateAt = "";
 	DeliveryOrderID = undefined;
 	ProductID = undefined;
-	PurchaseDetailID = undefined;
 }
 
 export default {
@@ -328,7 +327,6 @@ export default {
             item.DataOrder = parseFloat(item.DataOrder);
             item.DeliveryOrderID = parseFloat(item.DeliveryOrderID);
             item.ProductID = parseFloat(item.ProductID);
-            item.PurchaseDetailID = parseFloat(item.PurchaseDetailID);
             return item;
         },
         async getDeliveryOrderDetails() {

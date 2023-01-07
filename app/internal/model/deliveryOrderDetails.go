@@ -9,17 +9,16 @@ import (
 )
 
 type DeliveryOrderDetail struct {
-	ID               int64   //流水號
-	RetailPrice      float32 //出貨時售價
-	QTY              int64   //數量
-	Subtotal         float32 //小計
-	Remark           *string //備註
-	DataOrder        *int64  //順序
-	CreateAt         string  //建立時間
-	UpdateAt         string  //最後編輯時間
-	DeliveryOrderID  int64   //出貨編號
-	ProductID        *int64  //商品編號
-	PurchaseDetailID *int64  //採購明細編號
+	ID              int64   //流水號
+	RetailPrice     float32 //出貨時售價
+	QTY             int64   //數量
+	Subtotal        float32 //小計
+	Remark          *string //備註
+	DataOrder       *int64  //順序
+	CreateAt        string  //建立時間
+	UpdateAt        string  //最後編輯時間
+	DeliveryOrderID int64   //出貨編號
+	ProductID       *int64  //商品編號
 }
 
 func GetAllDeliveryOrderDetails(db *sql.DB) (deliveryOrderDetailXi []DeliveryOrderDetail, modelErr *ModelError) {
@@ -40,7 +39,7 @@ func GetAllDeliveryOrderDetails(db *sql.DB) (deliveryOrderDetailXi []DeliveryOrd
 			&deliveryOrderDetail.ID, &deliveryOrderDetail.RetailPrice, &deliveryOrderDetail.QTY,
 			&deliveryOrderDetail.Subtotal, &deliveryOrderDetail.Remark, &deliveryOrderDetail.DataOrder,
 			&deliveryOrderDetail.CreateAt, &deliveryOrderDetail.UpdateAt, &deliveryOrderDetail.DeliveryOrderID,
-			&deliveryOrderDetail.ProductID, &deliveryOrderDetail.PurchaseDetailID,
+			&deliveryOrderDetail.ProductID,
 		)
 		if err != nil {
 			return nil, normalError("deliveryOrderDetails", err)
@@ -70,7 +69,7 @@ func GetDeliveryOrderDetails(db *sql.DB, deliveryOrderID int64) (deliveryOrderDe
 			&deliveryOrderDetail.ID, &deliveryOrderDetail.RetailPrice, &deliveryOrderDetail.QTY,
 			&deliveryOrderDetail.Subtotal, &deliveryOrderDetail.Remark, &deliveryOrderDetail.DataOrder,
 			&deliveryOrderDetail.CreateAt, &deliveryOrderDetail.UpdateAt, &deliveryOrderDetail.DeliveryOrderID,
-			&deliveryOrderDetail.ProductID, &deliveryOrderDetail.PurchaseDetailID,
+			&deliveryOrderDetail.ProductID,
 		)
 		if err != nil {
 			return nil, normalError("deliveryOrderDetails", err)
@@ -89,10 +88,9 @@ func (deliveryOrderDetail *DeliveryOrderDetail) Create(db *sql.DB) (modelErr *Mo
 	}
 
 	qryString := `INSERT INTO deliveryOrderDetails(
-		retail_price, qty, subtotal,
-		remark, data_order, delivery_order_id,
-		product_id, purchase_detail_id
-	) VALUES($1,$2,$3,$4,$5,$6,$7,$8);`
+		retail_price, qty, subtotal, remark, 
+		data_order, delivery_order_id, product_id
+	) VALUES($1,$2,$3,$4,$5,$6,$7);`
 
 	stmt, err := db.Prepare(qryString)
 	if err != nil {
@@ -103,7 +101,7 @@ func (deliveryOrderDetail *DeliveryOrderDetail) Create(db *sql.DB) (modelErr *Mo
 	res, err := stmt.Exec(
 		deliveryOrderDetail.RetailPrice, deliveryOrderDetail.QTY, deliveryOrderDetail.Subtotal,
 		deliveryOrderDetail.Remark, deliveryOrderDetail.DataOrder, deliveryOrderDetail.DeliveryOrderID,
-		deliveryOrderDetail.ProductID, deliveryOrderDetail.PurchaseDetailID,
+		deliveryOrderDetail.ProductID,
 	)
 	if err != nil {
 		return normalError("deliveryOrderDetails", err)
@@ -123,10 +121,9 @@ func (deliveryOrderDetail *DeliveryOrderDetail) CreateMultiple(db *sql.DB, deliv
 	}
 
 	qryString := `INSERT INTO deliveryOrderDetails(
-		retail_price, qty,
-		subtotal, remark, data_order,
-		delivery_order_id, product_id, purchase_detail_id,
-	) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13);`
+		retail_price, qty, subtotal, remark, data_order,
+		delivery_order_id, product_id
+	) VALUES($1,$2,$3,$4,$5,$6,$7);`
 
 	stmt, err := db.Prepare(qryString)
 	if err != nil {
@@ -146,7 +143,7 @@ func (deliveryOrderDetail *DeliveryOrderDetail) CreateMultiple(db *sql.DB, deliv
 		res, err := stmt.Exec(
 			deliveryOrderDetail.RetailPrice, deliveryOrderDetail.QTY, deliveryOrderDetail.Subtotal,
 			deliveryOrderDetail.Remark, deliveryOrderDetail.DataOrder, deliveryOrderDetail.DeliveryOrderID,
-			deliveryOrderDetail.ProductID, deliveryOrderDetail.PurchaseDetailID,
+			deliveryOrderDetail.ProductID,
 		)
 		if err, ok := err.(*pq.Error); ok {
 			_ = tx.Rollback()
@@ -172,10 +169,10 @@ func (deliveryOrderDetail *DeliveryOrderDetail) Update(db *sql.DB) (modelErr *Mo
 	}
 
 	_, err = db.Exec(
-		"CALL updateDeliveryOrderDetails($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+		"CALL updateDeliveryOrderDetails($1,$2,$3,$4,$5,$6,$7,$8)",
 		deliveryOrderDetail.ID, deliveryOrderDetail.RetailPrice, deliveryOrderDetail.QTY, deliveryOrderDetail.Subtotal,
 		deliveryOrderDetail.Remark, deliveryOrderDetail.DataOrder, deliveryOrderDetail.DeliveryOrderID,
-		deliveryOrderDetail.ProductID, deliveryOrderDetail.PurchaseDetailID,
+		deliveryOrderDetail.ProductID,
 	)
 	if err != nil {
 		return normalError("deliveryOrderDetails", err)
