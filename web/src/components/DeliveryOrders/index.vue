@@ -64,11 +64,11 @@
             </v-row>
         </v-container>
         <DeliveryOrderDialog :prop_deliveryOrderDialog.sync="deliveryOrderDialog" :prop_text_cardTitle="text_cardTitle"
-            :prop_text_confirmBtn="text_confirmBtn" :prop_actionType="actionType" :prop_deliveryOrderItem="deliveryOrder"
-            @confirm='onConfirm_deliveryOrderDialog' />
-        <!-- <DeliveryOrderInfoDialog :prop_deliveryOrderInfoDialog.sync="deliveryOrderInfoDialog" :prop_text_cardTitle="text_cardTitle"
-            :prop_text_confirmBtn="text_confirmBtn" :prop_deliveryOrderItem="deliveryOrder"
-            @finish='onFinish_deliveryOrderInfoDialog' /> -->
+            :prop_text_confirmBtn="text_confirmBtn" :prop_actionType="actionType"
+            :prop_deliveryOrderItem="deliveryOrder" @confirm='onConfirm_deliveryOrderDialog' />
+        <DeliveryOrderInfoDialog :prop_deliveryOrderInfoDialog.sync="deliveryOrderInfoDialog"
+            :prop_text_cardTitle="text_cardTitle" :prop_text_confirmBtn="text_confirmBtn"
+            :prop_deliveryOrderItem="deliveryOrder" @finish='onFinish_deliveryOrderInfoDialog' />
         <ConfirmDialog :prop_confirmDialog.sync="confirmDialog" :prop_text_cardTitle="text_cardTitle"
             :prop_text_cardHint="text_cardHint" :prop_text_confirmBtn="text_confirmBtn"
             :prop_confirmTarget.sync="confirmTarget" v-on:confirmClick='onConfirm_confirmDialog' />
@@ -82,7 +82,7 @@ import key from 'keymaster'
 import Alert from '../../components/Alert/index.vue'
 import ConfirmDialog from '../../components/ConfirmDialog/index.vue'
 import DeliveryOrderDialog from '../../components/DeliveryOrderDialog/index.vue'
-// import DeliveryOrderInfoDialog from '../../components/DeliveryOrderInfoDialog/index.vue'
+import DeliveryOrderInfoDialog from '../../components/DeliveryOrderInfoDialog/index.vue'
 import BtnAdd from "../../components/Buttons/BtnAdd.vue";
 import BtnDownload from "../../components/Buttons/BtnDownload.vue";
 import BtnSetting from "../../components/Buttons/BtnSetting.vue";
@@ -120,7 +120,7 @@ export default {
         Alert,
         ConfirmDialog,
         DeliveryOrderDialog,
-        // DeliveryOrderInfoDialog,
+        DeliveryOrderInfoDialog,
         "c-btn-add": BtnAdd,
         "c-btn-download": BtnDownload,
         "c-btn-setting": BtnSetting,
@@ -222,7 +222,7 @@ export default {
             this.confirmTarget = item;
         },
         onClick_checkoutDeliveryOrderInfo(item) {
-            this.text_cardTitle = "出貨單" + item.Name;
+            this.text_cardTitle = "出貨單" + item.ID;
             this.text_confirmBtn = "";
             this.deliveryOrder = item;
             this.deliveryOrderInfoDialog = true;
