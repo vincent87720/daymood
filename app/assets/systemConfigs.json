@@ -31,5 +31,7 @@
     {"id":"29", "type":"PaymentType", "key":2, "value":"信用卡支付", "remark":""},
     {"id":"30", "type":"PaymentType", "key":3, "value":"超商取貨付款", "remark":""},
     {"id":"31", "type":"PaymentStatus", "key":1, "value":"未付款", "remark":""},
-    {"id":"32", "type":"PaymentStatus", "key":2, "value":"已付款", "remark":""}
+    {"id":"32", "type":"PaymentStatus", "key":2, "value":"已付款", "remark":""},
+    {"id":"33", "type":"DeliveryOrderStatus", "key":1, "value":"處理中", "remark":""},
+    {"id":"34", "type":"DeliveryOrderStatus", "key":2, "value":"結案", "remark":""}
 ]
