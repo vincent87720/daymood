@@ -30,10 +30,29 @@
                                 {{ convertDisplayText(systemConfigs.DeliveryOrderStatus, item.Status) }}
                             </v-chip>
                         </template>
-                        <template v-slot:item.DeliveryOrderType="{ item }">
+                        <template v-slot:item.DeliveryStatus="{ item }">
+                            <v-chip :color="getDeliveryStatusChipColor(item.DeliveryStatus)" dark small>
+                                {{ convertDisplayText(systemConfigs.DeliveryStatus, item.DeliveryStatus) }}
+                            </v-chip>
+                        </template>
+                        <template v-slot:item.DeliveryType="{ item }">
                             <span>{{
-                                convertDisplayText(systemConfigs.DeliveryOrderType, item.DeliveryOrderType)
+                                convertDisplayText(systemConfigs.DeliveryType, item.DeliveryType)
                             }}</span>
+                        </template>
+                        <template v-slot:item.PaymentStatus="{ item }">
+                            <span>{{
+                                convertDisplayText(systemConfigs.PaymentStatus, item.PaymentStatus)
+                            }}</span>
+                        </template>
+                        <template v-slot:item.OrderAt="{ item }">
+                            <span>{{ item.OrderAt.substring(0,10)}}</span>
+                        </template>
+                        <template v-slot:item.SendAt="{ item }">
+                            <span>{{ item.SendAt.substring(0,10)}}</span>
+                        </template>
+                        <template v-slot:item.ArriveAt="{ item }">
+                            <span>{{ item.ArriveAt.substring(0,10)}}</span>
                         </template>
                         <template v-slot:item.actions.plus="{ item }">
                             <v-icon small class="mx-1" @click.stop="onClick_checkoutDeliveryOrderInfo(item)">
@@ -128,23 +147,19 @@ export default {
             deliveryOrderDialog: false,
             deliveryOrders: [],
             deliveryOrderHeader: [
-                {text: '流水號', value: 'ID'},
-                {text: '出貨方式', value: 'DeliveryType'},
-                {text: '出貨狀態', value: 'DeliveryStatus'},
-                {text: '運費狀態', value: 'DeliveryFeeStatus'},
-                {text: '付款方式', value: 'PaymentType'},
-                {text: '付款狀態', value: 'PaymentStatus'},
-                {text: '原價', value: 'TotalOriginal'},
-                {text: '折扣', value: 'Discount'},
-                {text: '總價', value: 'TotalDiscounted'},
-                {text: '備註', value: 'Remark'},
-                {text: '順序', value: 'DataOrder'},
-                {text: '下訂日期', value: 'OrderAt'},
-                {text: '出貨日期', value: 'SendAt'},
-                {text: '送達日期', value: 'ArriveAt'},
-                {text: '建立時間', value: 'CreateAt'},
-                {text: '最後編輯時間', value: 'UpdateAt'},
-                {text: '', value: 'actions', sortable: false, width: "10%" },
+                { text: '流水號', value: 'ID' },
+                { text: '出貨單狀態', value: 'Status', align: 'center' },
+                { text: '出貨狀態', value: 'DeliveryStatus', align: 'center' },
+                { text: '出貨方式', value: 'DeliveryType' },
+                { text: '付款狀態', value: 'PaymentStatus' },
+                { text: '原價', value: 'TotalOriginal' },
+                { text: '折扣', value: 'Discount' },
+                { text: '總價', value: 'TotalDiscounted' },
+                { text: '下訂日期', value: 'OrderAt' },
+                { text: '出貨日期', value: 'SendAt' },
+                { text: '送達日期', value: 'ArriveAt' },
+                { text: '備註', value: 'Remark' },
+                { text: '', value: 'actions', sortable: false, width: "10%" },
             ],
             deliveryOrderInfoDialog: false,
         };
@@ -163,16 +178,21 @@ export default {
     },
     methods: {
         convertDisplayText(list, key) {
-            // let result = list.find(x => x.key == key);
-            // if (result) {
-            //     return result.value
-            // }
+            let result = list.find(x => x.key == key);
+            if (result) {
+                return result.value
+            }
             return "";
         },
         getStatusChipColor(status) {
             if (status == 1) return '#849A8F'
             // #97A48D
             else if (status == 2) return '#7E7E7E'
+            else return ''
+        },
+        getDeliveryStatusChipColor(status) {
+            if (status == 1) return '#965455'
+            else if (status == 2) return '#849A8F'
             else return ''
         },
         onFocus_searchFields() {
