@@ -14,9 +14,12 @@
                         </v-btn-toggle>
                         <v-form ref="form" v-model="validator">
                             <div v-show="toggle_form == 0">
-                                <v-select class="overflow-hidden" label="出貨方式" v-model="deliveryOrderItem.DeliveryType"
-                                    prepend-icon="mdi-package-variant" :items="systemConfigs.DeliveryType"
+                                <v-select class="overflow-hidden" label="出貨單狀態" v-model="deliveryOrderItem.Status"
+                                    prepend-icon="mdi-toggle-switch" :items="systemConfigs.DeliveryOrderStatus"
                                     item-text="value" item-value="key"></v-select>
+                                <v-select class="overflow-hidden" label="出貨方式" v-model="deliveryOrderItem.DeliveryType"
+                                    prepend-icon="mdi-truck" :items="systemConfigs.DeliveryType" item-text="value"
+                                    item-value="key"></v-select>
                                 <v-select class="overflow-hidden" label="出貨狀態"
                                     v-model="deliveryOrderItem.DeliveryStatus" prepend-icon="mdi-package-variant"
                                     :items="systemConfigs.DeliveryStatus" item-text="value" item-value="key"></v-select>
@@ -31,20 +34,21 @@
                             </div>
                             <div v-show="toggle_form == 1">
                                 <v-select class="overflow-hidden" label="運費狀態"
-                                    v-model="deliveryOrderItem.DeliveryFeeStatus" prepend-icon="mdi-package-variant"
-                                    :items="systemConfigs.DeliveryFeeStatus" item-text="value" item-value="key"></v-select>
+                                    v-model="deliveryOrderItem.DeliveryFeeStatus" prepend-icon="mdi-truck"
+                                    :items="systemConfigs.DeliveryFeeStatus" item-text="value"
+                                    item-value="key"></v-select>
                                 <v-select class="overflow-hidden" label="付款方式" v-model="deliveryOrderItem.PaymentType"
-                                    prepend-icon="mdi-package-variant" :items="systemConfigs.PaymentType"
+                                    prepend-icon="mdi-cash-register" :items="systemConfigs.PaymentType"
                                     item-text="value" item-value="key"></v-select>
                                 <v-select class="overflow-hidden" label="付款狀態" v-model="deliveryOrderItem.PaymentStatus"
-                                    prepend-icon="mdi-package-variant" :items="systemConfigs.PaymentStatus"
-                                    item-text="value" item-value="key"></v-select>
+                                    prepend-icon="mdi-cash-check" :items="systemConfigs.PaymentStatus" item-text="value"
+                                    item-value="key"></v-select>
                                 <v-text-field label="原價" v-model="deliveryOrderItem.TotalOriginal"
-                                    prepend-icon="mdi-text-short"></v-text-field>
+                                    prepend-icon="mdi-currency-usd"></v-text-field>
                                 <v-text-field label="折扣" v-model="deliveryOrderItem.Discount"
-                                    prepend-icon="mdi-text-short"></v-text-field>
+                                    prepend-icon="mdi-currency-usd"></v-text-field>
                                 <v-text-field label="總價" v-model="deliveryOrderItem.TotalDiscounted"
-                                    prepend-icon="mdi-text-short"></v-text-field>
+                                    prepend-icon="mdi-currency-usd"></v-text-field>
                             </div>
                         </v-form>
                     </v-col>
