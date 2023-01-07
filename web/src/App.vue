@@ -6,38 +6,36 @@
       </div>
     </v-app-bar>
     <v-main>
-      <!-- <ProductsOld
-      v-if="activeType != 2 && activeType != 0&& activeType != 1"
-      ref="ProductsComponent"
-      :prop_activeType.sync="activeType"
-      /> -->
-      <Products v-if="activeType == 1" :prop_activeType.sync="activeType" />
-      <Purchases ref="Purchases" v-if="activeType == 0" />
-      <Suppliers v-if="activeType == 2" :prop_activeType.sync="activeType" />
-      <DeliveryOrders v-if="activeType == 3" :prop_activeType.sync="activeType" />
+      <v-window v-model="onboarding">
+        <v-window-item key="0">
+          <Purchases />
+        </v-window-item>
+        <v-window-item key="1">
+          <Products />
+        </v-window-item>
+        <v-window-item key="2">
+          <Suppliers />
+        </v-window-item>
+        <v-window-item key="3">
+          <DeliveryOrders />
+        </v-window-item>
+      </v-window>
     </v-main>
-    <v-bottom-navigation v-model="activeType" dark grow app>
-      <v-btn x-large activeType="productPurchase">
+    <v-bottom-navigation v-model="onboarding" dark grow app>
+      <v-btn x-large>
         <span>進貨</span>
-
         <v-icon>mdi-package-down</v-icon>
       </v-btn>
-
-      <v-btn x-large activeType="productManagement">
+      <v-btn x-large>
         <span>商品管理</span>
-
         <v-icon>mdi-package-variant-closed</v-icon>
       </v-btn>
-
-      <v-btn x-large activeType="firmManagement">
+      <v-btn x-large>
         <span>廠商管理</span>
-
         <v-icon>mdi-store-outline</v-icon>
       </v-btn>
-
-      <v-btn x-large activeType="productDelivery">
+      <v-btn x-large>
         <span>出貨</span>
-
         <v-icon>mdi-package-up</v-icon>
       </v-btn>
     </v-bottom-navigation>
@@ -61,7 +59,7 @@ export default {
     ProductDialog,
   },
   data: () => ({
-    activeType: -1,
+    onboarding: 0,
   }),
   created() {
     this.$store.dispatch("GetSystemConfig");
