@@ -58,7 +58,7 @@ func GetDeliveryOrderDetails(db *sql.DB, deliveryOrderID int64) (deliveryOrderDe
 		return nil, normalError("deliveryOrderDetails", err)
 	}
 
-	row, err := db.Query("SELECT * FROM deliveryOrderDetails WHERE deliveryOrder_id = $1 ORDER BY id DESC;", deliveryOrderID)
+	row, err := db.Query("SELECT * FROM deliveryOrderDetails WHERE delivery_order_id = $1 ORDER BY id DESC;", deliveryOrderID)
 	if err != nil {
 		return nil, normalError("deliveryOrderDetails", err)
 	}
@@ -89,12 +89,10 @@ func (deliveryOrderDetail *DeliveryOrderDetail) Create(db *sql.DB) (modelErr *Mo
 	}
 
 	qryString := `INSERT INTO deliveryOrderDetails(
-		named_id, name, status,
-		wholesale_price, qty, cost,
-		currency, subtotal, remark,
-		data_order, deliveryOrder_id, supplier_id,
-		product_id
-	) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13);`
+		retail_price, qty, subtotal,
+		remark, data_order, delivery_order_id,
+		product_id, purchase_detail_id
+	) VALUES($1,$2,$3,$4,$5,$6,$7,$8);`
 
 	stmt, err := db.Prepare(qryString)
 	if err != nil {
@@ -174,7 +172,7 @@ func (deliveryOrderDetail *DeliveryOrderDetail) Update(db *sql.DB) (modelErr *Mo
 	}
 
 	_, err = db.Exec(
-		"CALL updateDeliveryOrderDetails($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)",
+		"CALL updateDeliveryOrderDetails($1,$2,$3,$4,$5,$6,$7,$8,$9)",
 		deliveryOrderDetail.ID, deliveryOrderDetail.RetailPrice, deliveryOrderDetail.QTY, deliveryOrderDetail.Subtotal,
 		deliveryOrderDetail.Remark, deliveryOrderDetail.DataOrder, deliveryOrderDetail.DeliveryOrderID,
 		deliveryOrderDetail.ProductID, deliveryOrderDetail.PurchaseDetailID,
