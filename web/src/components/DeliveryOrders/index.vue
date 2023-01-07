@@ -274,6 +274,7 @@ export default {
             item.OrderAt = null;
             item.SendAt = null;
             item.ArriveAt = null;
+            item.Status = 1;
             await postDeliveryOrder(item)
                 .then(async (response) => {
                     await this.getDeliveryOrders();
