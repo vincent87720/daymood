@@ -23,7 +23,7 @@
             <v-container class="pa-6 mb-8">
                 <v-row>
                     <v-col xs="12" sm="12" class="ml-auto mr-auto">
-                        <v-card outlined>
+                        <c-card-rounded>
                             <c-data-table :prop_headers="purchaseDetailHeader" :prop_items="purchaseDetails"
                                 :prop_search="search" @edit="onClick_editButton" @delete="onClick_deleteButton">
                                 <template v-slot:item.Status="{ item }">
@@ -48,12 +48,12 @@
                                     </v-icon>
                                 </template>
                             </c-data-table>
-                        </v-card>
+                        </c-card-rounded>
                     </v-col>
                 </v-row>
                 <v-row>
                     <v-col xs="12" sm="12" class="ml-auto mr-auto">
-                        <v-card outlined class="pa-3 d-flex justify-end">
+                        <c-card-rounded class="pa-3 d-flex justify-end">
                             <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray"
                                 v-if="purchaseItem.PurchaseType == 1">
                                 <h2>商品總數</h2>
@@ -106,7 +106,7 @@
                             <div class="d-flex flex-column justify-end align-end">
                                 <h2>$ {{ calc_Total }}</h2>
                             </div>
-                        </v-card>
+                        </c-card-rounded>
                     </v-col>
                 </v-row>
             </v-container>
@@ -127,6 +127,7 @@
 
 <script>
 import Alert from '../../components/Alert/index.vue'
+import CardRounded from "../../components/Cards/CardRounded.vue";
 import ConfirmDialog from '../../components/ConfirmDialog/index.vue'
 import DatePicker from "../../components/Pickers/DatePicker.vue";
 import BtnAdd from "../../components/Buttons/BtnAdd.vue";
@@ -164,6 +165,7 @@ export default {
         PurchaseDetailImportDialog,
         "c-btn-add": BtnAdd,
         "c-btn-upload": BtnUpload,
+        "c-card-rounded": CardRounded,
         "c-date-picker": DatePicker,
         "c-data-table": DataTable,
     },

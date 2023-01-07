@@ -23,7 +23,7 @@
             <v-container class="pa-6 mb-8">
                 <v-row>
                     <v-col xs="12" sm="12" class="ml-auto mr-auto">
-                        <v-card outlined>
+                        <v-card outlined rounded="lg">
                             <c-data-table :prop_headers="deliveryOrderDetailHeader" :prop_items="deliveryOrderDetails"
                                 :prop_search="search" @edit="onClick_editButton" @delete="onClick_deleteButton">
                                 <template v-slot:item.ProductID="{ item }">
@@ -45,7 +45,7 @@
                 </v-row>
                 <v-row>
                     <v-col xs="12" sm="12" class="ml-auto mr-auto">
-                        <v-card outlined class="pa-3 d-flex justify-end">
+                        <c-card-rounded class="pa-3 d-flex justify-end">
                             <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
                                 <h2>商品總數</h2>
                                 <h2>商品總計</h2>
@@ -62,7 +62,7 @@
                             <div class="d-flex flex-column justify-end align-end">
                                 <h2>$ {{ calc_Total }}</h2>
                             </div>
-                        </v-card>
+                        </c-card-rounded>
                     </v-col>
                 </v-row>
             </v-container>
@@ -87,6 +87,7 @@ import ConfirmDialog from '../../components/ConfirmDialog/index.vue'
 import DatePicker from "../../components/Pickers/DatePicker.vue";
 import BtnAdd from "../../components/Buttons/BtnAdd.vue";
 import BtnUpload from "../../components/Buttons/BtnUpload.vue";
+import CardRounded from "../../components/Cards/CardRounded.vue";
 import DataTable from "../../components/DataTables/DataTable.vue";
 import DeliveryOrderDetailDialog from '../../components/DeliveryOrderDetailDialog/index.vue';
 // import DeliveryOrderDetailImportDialog from '../../components/DeliveryOrderDetailImportDialog/index.vue';
@@ -115,6 +116,7 @@ export default {
         // DeliveryOrderDetailImportDialog,
         "c-btn-add": BtnAdd,
         "c-btn-upload": BtnUpload,
+        "c-card-rounded": CardRounded,
         "c-date-picker": DatePicker,
         "c-data-table": DataTable,
     },

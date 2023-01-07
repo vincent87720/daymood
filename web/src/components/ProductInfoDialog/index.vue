@@ -56,7 +56,7 @@
                 </v-row>
                 <v-row>
                     <v-col cols="12" sm="12" lg="12">
-                        <v-card outlined>
+                        <c-card-rounded>
                             <c-data-table :prop_headers="historyHeader" :prop_items="histories" :prop_search="search">
                                 <template v-slot:top="{ item }">
                                     <div class="pa-4 text-h5 d-flex justify-center">採購歷史紀錄</div>
@@ -74,7 +74,7 @@
                                     </v-icon>
                                 </template>
                             </c-data-table>
-                        </v-card>
+                        </c-card-rounded>
                     </v-col>
                 </v-row>
             </v-container>
@@ -88,6 +88,7 @@
 
 <script>
 import Alert from '../../components/Alert/index.vue'
+import CardRounded from "../../components/Cards/CardRounded.vue";
 import DatePicker from "../../components/Pickers/DatePicker.vue";
 import DataTable from "../../components/DataTables/DataTable.vue";
 import PurchaseInfoDialog from '../../components/PurchaseInfoDialog/index.vue'
@@ -99,6 +100,7 @@ export default {
     components: {
         Alert,
         PurchaseInfoDialog,
+        "c-card-rounded": CardRounded,
         "c-date-picker": DatePicker,
         "c-data-table": DataTable,
     },
