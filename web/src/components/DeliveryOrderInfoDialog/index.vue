@@ -44,7 +44,21 @@
                     </v-col>
                 </v-row>
                 <v-row>
-                    <v-col xs="12" sm="12" class="ml-auto mr-auto">
+                    <v-col xs="12" sm="6" class="ml-auto mr-auto">
+                        <c-card-rounded class="pa-3 d-flex justify-end">
+                            <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
+                                <h2>下訂日期</h2>
+                                <h2>出貨日期</h2>
+                                <h2>送達日期</h2>
+                            </div>
+                            <div class="d-flex flex-column justify-end align-end">
+                                <h2>{{ deliveryOrderItem.OrderAt.substring(0,10) }}</h2>
+                                <h2>{{ deliveryOrderItem.SendAt.substring(0,10) }}</h2>
+                                <h2>{{ deliveryOrderItem.ArriveAt.substring(0,10) }}</h2>
+                            </div>
+                        </c-card-rounded>
+                    </v-col>
+                    <v-col xs="12" sm="6" class="ml-auto mr-auto">
                         <c-card-rounded class="pa-3 d-flex justify-end">
                             <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
                                 <h2>商品總數</h2>

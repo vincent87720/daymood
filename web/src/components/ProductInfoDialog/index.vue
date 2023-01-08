@@ -46,6 +46,10 @@
                                 <span class="text-subtitle-1 font-weight-medium">售價</span>
                                 <span class="text-subtitle-1 font-weight-bold"> {{ productItem.RetailPrice }}</span>
                             </div>
+                            <div class="d-flex justify-space-between align-center my-2">
+                                <span class="text-subtitle-1 font-weight-medium">庫存</span>
+                                <span class="text-subtitle-1 font-weight-bold"> {{ calcStocks() }}</span>
+                            </div>
                             <div class="d-flex justify-space-between my-2">
                                 <span class="text-subtitle-1 font-weight-medium">備註</span>
                                 <span class="text-subtitle-1 font-weight-bold d-flex justify-end"
@@ -57,7 +61,7 @@
                 <v-row>
                     <v-col cols="12" sm="12" lg="12">
                         <c-card-rounded>
-                            <c-data-table :prop_headers="historyHeader" :prop_items="histories" :prop_search="search">
+                            <c-data-table :prop_headers="purchaseHistoryHeader" :prop_items="purchaseHistories" :prop_search="search">
                                 <template v-slot:top="{ item }">
                                     <div class="pa-4 text-h5 d-flex justify-center">採購歷史紀錄</div>
                                     <v-divider></v-divider>
@@ -66,10 +70,33 @@
                                     <span>{{ convertDisplayText(allSuppliersList, item.SupplierID) }}</span>
                                 </template>
                                 <template v-slot:item.ShippingArriveAt="{ item }">
-                                    <span>{{ convertDateFormat(item) }}</span>
+                                    <span v-if="item.ShippingArriveAt">{{ convertDateFormat(item.ShippingArriveAt) }}</span>
                                 </template>
                                 <template v-slot:item.actions="{ item }">
-                                    <v-icon small class="mx-1" @click.stop="onClick_checkoutHistory(item)">
+                                    <v-icon small class="mx-1" @click.stop="onClick_checkoutPurchaseHistory(item)">
+                                        mdi-arrow-right-circle
+                                    </v-icon>
+                                </template>
+                            </c-data-table>
+                        </c-card-rounded>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col cols="12" sm="12" lg="12">
+                        <c-card-rounded>
+                            <c-data-table :prop_headers="historyHeader_delivery" :prop_items="deliveryHistories" :prop_search="search">
+                                <template v-slot:top="{ item }">
+                                    <div class="pa-4 text-h5 d-flex justify-center">出貨歷史紀錄</div>
+                                    <v-divider></v-divider>
+                                </template>
+                                <template v-slot:item.PurchaseSupplierID="{ item }">
+                                    <span>{{ convertDisplayText(allSuppliersList, item.SupplierID) }}</span>
+                                </template>
+                                <template v-slot:item.OrderAt="{ item }">
+                                    <span v-if="item.OrderAt">{{ convertDateFormat(item.OrderAt) }}</span>
+                                </template>
+                                <template v-slot:item.actions="{ item }">
+                                    <v-icon small class="mx-1" @click.stop="onClick_checkoutDeliveryHistory(item)">
                                         mdi-arrow-right-circle
                                     </v-icon>
                                 </template>
@@ -82,6 +109,9 @@
         <PurchaseInfoDialog :prop_purchaseInfoDialog.sync="purchaseInfoDialog"
             :prop_text_cardTitle="text_cardTitle_inner" :prop_text_confirmBtn="text_confirmBtn_inner"
             :prop_purchaseItem="purchase" @finish='onFinish_purchaseInfoDialog' />
+        <DeliveryOrderInfoDialog :prop_deliveryOrderInfoDialog.sync="deliveryOrderInfoDialog"
+            :prop_text_cardTitle="text_cardTitle_inner" :prop_text_confirmBtn="text_confirmBtn_inner"
+            :prop_deliveryOrderItem="deliveryOrder" @finish='onFinish_deliveryOrderInfoDialog' />
         <Alert :prop_alert.sync="alert" :prop_alertType="alertType" :prop_alertText="alertText"></Alert>
     </v-dialog>
 </template>
@@ -92,14 +122,17 @@ import CardRounded from "../../components/Cards/CardRounded.vue";
 import DatePicker from "../../components/Pickers/DatePicker.vue";
 import DataTable from "../../components/DataTables/DataTable.vue";
 import PurchaseInfoDialog from '../../components/PurchaseInfoDialog/index.vue'
-import { getProductPurchaseHistories } from "../../apis/ProductsAPI";
+import DeliveryOrderInfoDialog from '../../components/DeliveryOrderInfoDialog/index.vue'
+import { getProductPurchaseHistories, getProductDeliveryHistories } from "../../apis/ProductsAPI";
 import { getPurchase, putPurchase } from "../../apis/PurchasesAPI";
+import { getDeliveryOrder, putDeliveryOrder } from "../../apis/DeliveryOrdersAPI";
 
 export default {
     name: 'productInfoDialog',
     components: {
         Alert,
         PurchaseInfoDialog,
+        DeliveryOrderInfoDialog,
         "c-card-rounded": CardRounded,
         "c-date-picker": DatePicker,
         "c-data-table": DataTable,
@@ -116,11 +149,14 @@ export default {
             text_cardHint_inner: '',
             text_confirmBtn_inner: '',
             purchase: {},
+            deliveryOrder: {},
             purchaseInfoDialog: false,
+            deliveryOrderInfoDialog: false,
 
             //c-data-table
             search: '',
-            histories: [],
+            purchaseHistories: [],
+            deliveryHistories: [],
             historyHeader_product: [
                 { text: '採購名稱', value: 'PurchaseName' },
                 { text: '進貨廠商', value: 'PurchaseSupplierID' },
@@ -131,14 +167,22 @@ export default {
                 { text: '成本', value: 'Costs' },
                 { text: '毛利', value: 'GrossProfit' },
                 { text: '毛利率(%)', value: 'GrossMargin' },
-                { text: '', value: 'actions', sortable: false },
+                { text: '', value: 'actions', sortable: false, width: "1%" },
             ],
             historyHeader_material: [
                 { text: '採購名稱', value: 'PurchaseName' },
                 { text: '進貨廠商', value: 'PurchaseSupplierID' },
                 { text: '批價', value: 'WholesalePrice' },
                 { text: '數量', value: 'PurchaseDetailQTY' },
-                { text: '', value: 'actions', sortable: false, width: "5%" },
+                { text: '', value: 'actions', sortable: false, width: "1%" },
+            ],
+            historyHeader_delivery: [
+                { text: '出貨單編號', value: 'DeliveryOrderID' },
+                { text: '出貨時售價', value: 'RetailPrice' },
+                { text: '數量', value: 'QTY' },
+                { text: '總計', value: 'Subtotal' },
+                { text: '下單日期', value: 'OrderAt' },
+                { text: '', value: 'actions', sortable: false, width: "1%" },
             ],
         };
     },
@@ -185,7 +229,7 @@ export default {
                 this.$emit('update:prop_productItem', val)
             }
         },
-        historyHeader() {
+        purchaseHistoryHeader() {
             return this.isMaterials ? this.historyHeader_material : this.historyHeader_product;
         },
         isMaterials() {
@@ -220,24 +264,34 @@ export default {
             data.map(x => x = { key: x.ID, value: x.SKU + " " + x.Name });
             return data
         },
-        convertDateFormat(item) {
-            if (item.ShippingArriveAt) {
-                return item.ShippingArriveAt.substring(0, 10);
+        convertDateFormat(datetime) {
+            if (datetime) {
+                return datetime.substring(0, 10);
             }
             return ""
         },
         onClick_cancel() {
             this.productInfoDialog = false;
         },
-        async onClick_checkoutHistory(item) {
+        async onClick_checkoutPurchaseHistory(item) {
             this.text_cardTitle_inner = "採購案" + item.PurchaseName;
             this.text_confirmBtn_inner = "";
             await this.getPurchase(item.PurchaseID);
             this.purchaseInfoDialog = true;
         },
+        async onClick_checkoutDeliveryHistory(item) {
+            this.text_cardTitle_inner = "出貨單" + item.DeliveryOrderID;
+            this.text_confirmBtn_inner = "";
+            await this.getDeliveryOrder(item.DeliveryOrderID);
+            this.deliveryOrderInfoDialog = true;
+        },
         async onFinish_purchaseInfoDialog(item) {
             this.purchaseInfoDialog = false;
             await this.putPurchase(item);
+        },
+        async onFinish_deliveryOrderInfoDialog(item) {
+            this.deliveryOrderInfoDialog = false;
+            await this.putDeliveryOrder(item);
         },
         calcInfo(item) {
             let vthis = this;
@@ -334,7 +388,14 @@ export default {
             }
             return result.toFixed(2);
         },
-        preSend(item) {
+        calcStocks(){
+            let purchaseDetailQTYCount = 0;
+            let deliveryDetailQTYCount = 0;
+            this.purchaseHistories.map((x)=>{purchaseDetailQTYCount+=x.PurchaseDetailQTY});
+            this.deliveryHistories.map((x)=>{deliveryDetailQTYCount+=x.QTY});
+            return purchaseDetailQTYCount - deliveryDetailQTYCount;
+        },
+        preSendPurchase(item) {
             item.ID = parseFloat(item.ID);
             item.Status = parseFloat(item.Status);
             item.PurchaseType = parseFloat(item.PurchaseType);
@@ -362,7 +423,7 @@ export default {
                 });
         },
         async putPurchase(item) {
-            item = this.preSend(item);
+            item = this.preSendPurchase(item);
             await putPurchase(item)
                 .then(async (response) => {
                     await this.getPurchases();
@@ -376,15 +437,71 @@ export default {
                     this.alertText = "編輯採購案失敗";
                 });
         },
+        preSendDelivery(item) {
+            item.ID = parseFloat(item.ID);
+            item.DeliveryType = parseFloat(item.DeliveryType);
+            item.DeliveryStatus = parseFloat(item.DeliveryStatus);
+            item.DeliveryFeeStatus = parseFloat(item.DeliveryFeeStatus);
+            item.PaymentType = parseFloat(item.PaymentType);
+            item.PaymentStatus = parseFloat(item.PaymentStatus);
+            item.TotalOriginal = parseFloat(item.TotalOriginal);
+            item.Discount = parseFloat(item.Discount);
+            item.TotalDiscounted = parseFloat(item.TotalDiscounted);
+            item.DataOrder = parseFloat(item.DataOrder);
+            return item;
+        },
+        async getDeliveryOrder(deliveryOrderID) {
+            let filter = {
+                ID: deliveryOrderID,
+            }
+            await getDeliveryOrder(filter)
+                .then((response) => {
+                    if (response.data.records != null) {
+                        this.deliveryOrder = response.data.records[0];
+                    }
+                    else {
+                        this.deliveryOrder = {};
+                    }
+                })
+                .catch((error) => {
+                });
+        },
+        async putDeliveryOrder(item) {
+            item = this.preSendDelivery(item);
+            await putDeliveryOrder(item)
+                .then(async (response) => {
+                    await this.getDeliveryOrders();
+                    this.alert = true;
+                    this.alertType = "Success";
+                    this.alertText = "編輯出貨單成功";
+                })
+                .catch((error) => {
+                    this.alert = true;
+                    this.alertType = "Fail";
+                    this.alertText = "編輯出貨單失敗";
+                });
+        },
         async getProductPurchaseHistories() {
             await getProductPurchaseHistories(this.productItem)
                 .then((response) => {
                     if (response.data.records != null) {
                         let item = this.calcInfo(response.data.records);
-                        this.histories = item;
+                        this.purchaseHistories = item;
                     }
                     else {
-                        this.histories = [];
+                        this.purchaseHistories = [];
+                    }
+                });
+        },
+        async getProductDeliveryHistories() {
+            await getProductDeliveryHistories(this.productItem)
+                .then((response) => {
+                    if (response.data.records != null) {
+                        let item = this.calcInfo(response.data.records);
+                        this.deliveryHistories = item;
+                    }
+                    else {
+                        this.deliveryHistories = [];
                     }
                 });
         },
@@ -393,6 +510,7 @@ export default {
         productInfoDialog: async function (newVal, oldVal) {
             if (newVal == true) {
                 this.getProductPurchaseHistories();
+                this.getProductDeliveryHistories();
             }
         },
     }
