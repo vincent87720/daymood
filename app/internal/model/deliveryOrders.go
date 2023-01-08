@@ -70,21 +70,21 @@ func (deliveryOrder *DeliveryOrder) GetDeliveryOrder(db *sql.DB) (deliveryOrderX
 	}
 	defer row.Close()
 
-	var purchaseRow DeliveryOrder
+	var deliveryOrderRow DeliveryOrder
 	for row.Next() {
 		err := row.Scan(
-			&deliveryOrder.ID, &deliveryOrder.Status, &deliveryOrder.DeliveryType, &deliveryOrder.DeliveryStatus,
-			&deliveryOrder.DeliveryFeeStatus, &deliveryOrder.PaymentType, &deliveryOrder.PaymentStatus,
-			&deliveryOrder.TotalOriginal, &deliveryOrder.Discount, &deliveryOrder.TotalDiscounted,
-			&deliveryOrder.Remark, &deliveryOrder.DataOrder, &deliveryOrder.OrderAt,
-			&deliveryOrder.SendAt, &deliveryOrder.ArriveAt, &deliveryOrder.CreateAt,
-			&deliveryOrder.UpdateAt,
+			&deliveryOrderRow.ID, &deliveryOrderRow.Status, &deliveryOrderRow.DeliveryType, &deliveryOrderRow.DeliveryStatus,
+			&deliveryOrderRow.DeliveryFeeStatus, &deliveryOrderRow.PaymentType, &deliveryOrderRow.PaymentStatus,
+			&deliveryOrderRow.TotalOriginal, &deliveryOrderRow.Discount, &deliveryOrderRow.TotalDiscounted,
+			&deliveryOrderRow.Remark, &deliveryOrderRow.DataOrder, &deliveryOrderRow.OrderAt,
+			&deliveryOrderRow.SendAt, &deliveryOrderRow.ArriveAt, &deliveryOrderRow.CreateAt,
+			&deliveryOrderRow.UpdateAt,
 		)
 		if err != nil {
-			return nil, &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
+			return nil, &ModelError{Model: "deliveryOrders", Code: 0, Message: err.Error()}
 		}
 
-		deliveryOrderXi = append(deliveryOrderXi, purchaseRow)
+		deliveryOrderXi = append(deliveryOrderXi, deliveryOrderRow)
 	}
 
 	return deliveryOrderXi, nil
