@@ -14,9 +14,12 @@
           <Products />
         </v-window-item>
         <v-window-item key="2">
-          <Suppliers />
+          <Reports />
         </v-window-item>
         <v-window-item key="3">
+          <Suppliers />
+        </v-window-item>
+        <v-window-item key="4">
           <DeliveryOrders />
         </v-window-item>
       </v-window>
@@ -29,6 +32,10 @@
       <v-btn x-large>
         <span>商品管理</span>
         <v-icon>mdi-package-variant-closed</v-icon>
+      </v-btn>
+      <v-btn x-large>
+        <span>報表</span>
+        <v-icon>mdi-chart-bar</v-icon>
       </v-btn>
       <v-btn x-large>
         <span>廠商管理</span>
@@ -48,6 +55,7 @@ import Suppliers from './components/Suppliers/index.vue'
 import Purchases from './components/Purchases/index.vue'
 import DeliveryOrders from './components/DeliveryOrders/index.vue'
 import ProductDialog from './components/ProductDialog/index.vue'
+import Reports from './components/Reports/index.vue'
 
 export default {
   name: 'App',
@@ -57,6 +65,7 @@ export default {
     Purchases,
     DeliveryOrders,
     ProductDialog,
+    Reports,
   },
   data: () => ({
     onboarding: 0,
