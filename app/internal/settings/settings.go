@@ -12,18 +12,20 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type Trading struct {
+	Ajeossi      float32 `yaml:"Ajeossi"`
+	ShippingFee  float32 `yaml:"ShippingFee"`
+	ExchangeRate float32 `yaml:"ExchangeRate"`
+	Tariff       float32 `yaml:"Tariff"`
+	Markup       float32 `yaml:"Markup"`
+	Costs        []struct {
+		Key   string  `yaml:"Key"`
+		Value float32 `yaml:"Value"`
+	} `yaml:"Costs"`
+}
+
 type Y struct {
-	Trading struct {
-		Ajeossi      float32 `yaml:"ajeossi"`
-		ShippingFee  float32 `yaml:"shippingFee"`
-		ExchangeRate float32 `yaml:"exchangeRate"`
-		Tariff       float32 `yaml:"tariff"`
-		Markup       float32 `yaml:"markup"`
-		Costs        []struct {
-			Key   string  `yaml:"key"`
-			Value float32 `yaml:"value"`
-		}
-	}
+	Trading Trading `yaml:"Trading"`
 }
 
 type Settings struct {
@@ -154,21 +156,16 @@ func (s *Settings) GetDBConnectionString() string {
 	return "postgresql://" + s.database.username + ":" + s.database.password + "@" + s.database.host + "/" + s.database.db + "?sslmode=disable"
 }
 
-func (s *Settings) GetTradingSettings() (Y, error) {
-
-	return s.y, nil
+func (s *Settings) GetTradingSettings() (Trading, error) {
+	return s.y.Trading, nil
 }
 
-func (s *Settings) SetTradingSettings(y Y) error {
-	s.y = y
+func (s *Settings) SetTradingSettings(trading Trading) error {
+	s.y.Trading = trading
 	return nil
 }
 
 func (s *Settings) WriteFile() error {
-	s.Print()
-	fmt.Println(string(s.yamlByteXi))
-	fmt.Println(s.yamlPath)
-
 	err := ioutil.WriteFile(s.yamlPath, s.yamlByteXi, os.ModePerm)
 	if err != nil {
 		return err

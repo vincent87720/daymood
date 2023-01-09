@@ -1,19 +1,19 @@
-trading:
-  ajeossi: 2
-  shippingFee: 7200
-  exchangeRate: 40.9
-  tariff: 35
-  markup: 1.45
-  costs:
-    - key: 包材
-      value: 25
-    - key: 運費
-      value: 35
-    - key: 手續費
-      value: 20
-    - key: 平台
-      value: 15
-    - key: 廣告
-      value: 20
-    - key: 首購
-      value: 25
+Trading:
+    Ajeossi: 3
+    ShippingFee: 7300
+    ExchangeRate: 40.9
+    Tariff: 36
+    Markup: 1.45
+    Costs:
+        - Key: 包材
+          Value: 25
+        - Key: 運費
+          Value: 35
+        - Key: 手續費
+          Value: 20
+        - Key: 平台
+          Value: 15
+        - Key: 廣告
+          Value: 20
+        - Key: 首購
+          Value: 25
