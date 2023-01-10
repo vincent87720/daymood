@@ -52,9 +52,9 @@
                                 <h2>送達日期</h2>
                             </div>
                             <div class="d-flex flex-column justify-end align-end">
-                                <h2>{{ deliveryOrderItem.OrderAt.substring(0,10) }}</h2>
-                                <h2>{{ deliveryOrderItem.SendAt.substring(0,10) }}</h2>
-                                <h2>{{ deliveryOrderItem.ArriveAt.substring(0,10) }}</h2>
+                                <h2>{{ convertDisplayText_Date(deliveryOrderItem.OrderAt) }}</h2>
+                                <h2>{{ convertDisplayText_Date(deliveryOrderItem.SendAt) }}</h2>
+                                <h2>{{ convertDisplayText_Date(deliveryOrderItem.ArriveAt) }}</h2>
                             </div>
                         </c-card-rounded>
                     </v-col>
@@ -269,6 +269,13 @@ export default {
             }
             return "";
         },
+        convertDisplayText_Date(datetime) {
+            let result = "";
+            if(datetime){
+                result = datetime.substring(0,10);
+            }
+            return result;
+        },
         onClick_cancel() {
             this.deliveryOrderInfoDialog = false;
             this.enableEdit = false;
@@ -351,7 +358,6 @@ export default {
                 .then((response) => {
                     if (response.data.records != null) {
                         this.deliveryOrderDetails = response.data.records;
-                        console.log(this.deliveryOrderDetails)
                     }
                     else {
                         this.deliveryOrderDetails = [];
