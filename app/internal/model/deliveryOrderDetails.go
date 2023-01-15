@@ -11,6 +11,7 @@ import (
 type DeliveryOrderDetail struct {
 	ID              int64   //流水號
 	RetailPrice     float32 //出貨時售價
+	Cost            float32 //出貨時成本
 	QTY             int64   //數量
 	Subtotal        float32 //小計
 	Remark          *string //備註
@@ -36,7 +37,7 @@ func GetAllDeliveryOrderDetails(db *sql.DB) (deliveryOrderDetailXi []DeliveryOrd
 	var deliveryOrderDetail DeliveryOrderDetail
 	for row.Next() {
 		err := row.Scan(
-			&deliveryOrderDetail.ID, &deliveryOrderDetail.RetailPrice, &deliveryOrderDetail.QTY,
+			&deliveryOrderDetail.ID, &deliveryOrderDetail.RetailPrice, &deliveryOrderDetail.Cost, &deliveryOrderDetail.QTY,
 			&deliveryOrderDetail.Subtotal, &deliveryOrderDetail.Remark, &deliveryOrderDetail.DataOrder,
 			&deliveryOrderDetail.CreateAt, &deliveryOrderDetail.UpdateAt, &deliveryOrderDetail.DeliveryOrderID,
 			&deliveryOrderDetail.ProductID,
@@ -66,7 +67,7 @@ func GetDeliveryOrderDetails(db *sql.DB, deliveryOrderID int64) (deliveryOrderDe
 	var deliveryOrderDetail DeliveryOrderDetail
 	for row.Next() {
 		err := row.Scan(
-			&deliveryOrderDetail.ID, &deliveryOrderDetail.RetailPrice, &deliveryOrderDetail.QTY,
+			&deliveryOrderDetail.ID, &deliveryOrderDetail.RetailPrice, &deliveryOrderDetail.Cost, &deliveryOrderDetail.QTY,
 			&deliveryOrderDetail.Subtotal, &deliveryOrderDetail.Remark, &deliveryOrderDetail.DataOrder,
 			&deliveryOrderDetail.CreateAt, &deliveryOrderDetail.UpdateAt, &deliveryOrderDetail.DeliveryOrderID,
 			&deliveryOrderDetail.ProductID,
@@ -88,9 +89,9 @@ func (deliveryOrderDetail *DeliveryOrderDetail) Create(db *sql.DB) (modelErr *Mo
 	}
 
 	qryString := `INSERT INTO deliveryOrderDetails(
-		retail_price, qty, subtotal, remark, 
+		retail_price, cost, qty, subtotal, remark, 
 		data_order, delivery_order_id, product_id
-	) VALUES($1,$2,$3,$4,$5,$6,$7);`
+	) VALUES($1,$2,$3,$4,$5,$6,$7,$8);`
 
 	stmt, err := db.Prepare(qryString)
 	if err != nil {
@@ -99,7 +100,7 @@ func (deliveryOrderDetail *DeliveryOrderDetail) Create(db *sql.DB) (modelErr *Mo
 	defer stmt.Close()
 
 	res, err := stmt.Exec(
-		deliveryOrderDetail.RetailPrice, deliveryOrderDetail.QTY, deliveryOrderDetail.Subtotal,
+		deliveryOrderDetail.RetailPrice, deliveryOrderDetail.Cost, deliveryOrderDetail.QTY, deliveryOrderDetail.Subtotal,
 		deliveryOrderDetail.Remark, deliveryOrderDetail.DataOrder, deliveryOrderDetail.DeliveryOrderID,
 		deliveryOrderDetail.ProductID,
 	)
@@ -121,9 +122,9 @@ func (deliveryOrderDetail *DeliveryOrderDetail) CreateMultiple(db *sql.DB, deliv
 	}
 
 	qryString := `INSERT INTO deliveryOrderDetails(
-		retail_price, qty, subtotal, remark, data_order,
+		retail_price, cost, qty, subtotal, remark, data_order,
 		delivery_order_id, product_id
-	) VALUES($1,$2,$3,$4,$5,$6,$7);`
+	) VALUES($1,$2,$3,$4,$5,$6,$7,$8);`
 
 	stmt, err := db.Prepare(qryString)
 	if err != nil {
@@ -141,7 +142,7 @@ func (deliveryOrderDetail *DeliveryOrderDetail) CreateMultiple(db *sql.DB, deliv
 	for _, deliveryOrderDetail := range deliveryOrderDetailXi {
 
 		res, err := stmt.Exec(
-			deliveryOrderDetail.RetailPrice, deliveryOrderDetail.QTY, deliveryOrderDetail.Subtotal,
+			deliveryOrderDetail.RetailPrice, deliveryOrderDetail.Cost, deliveryOrderDetail.QTY, deliveryOrderDetail.Subtotal,
 			deliveryOrderDetail.Remark, deliveryOrderDetail.DataOrder, deliveryOrderDetail.DeliveryOrderID,
 			deliveryOrderDetail.ProductID,
 		)
@@ -169,8 +170,8 @@ func (deliveryOrderDetail *DeliveryOrderDetail) Update(db *sql.DB) (modelErr *Mo
 	}
 
 	_, err = db.Exec(
-		"CALL updateDeliveryOrderDetails($1,$2,$3,$4,$5,$6,$7,$8)",
-		deliveryOrderDetail.ID, deliveryOrderDetail.RetailPrice, deliveryOrderDetail.QTY, deliveryOrderDetail.Subtotal,
+		"CALL updateDeliveryOrderDetails($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+		deliveryOrderDetail.ID, deliveryOrderDetail.RetailPrice, deliveryOrderDetail.Cost, deliveryOrderDetail.QTY, deliveryOrderDetail.Subtotal,
 		deliveryOrderDetail.Remark, deliveryOrderDetail.DataOrder, deliveryOrderDetail.DeliveryOrderID,
 		deliveryOrderDetail.ProductID,
 	)
