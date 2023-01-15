@@ -178,10 +178,13 @@ export default {
             ],
             historyHeader_delivery: [
                 { text: '出貨單編號', value: 'DeliveryOrderID' },
+                { text: '下單日期', value: 'OrderAt' },
                 { text: '出貨時售價', value: 'RetailPrice' },
                 { text: '數量', value: 'QTY' },
                 { text: '總計', value: 'Subtotal' },
-                { text: '下單日期', value: 'OrderAt' },
+                { text: '出貨時成本', value: 'Cost' },
+                { text: '毛利', value: 'GrossProfit' },
+                { text: '毛利率(%)', value: 'GrossMargin' },
                 { text: '', value: 'actions', sortable: false, width: "1%" },
             ],
         };
@@ -293,7 +296,7 @@ export default {
             this.deliveryOrderInfoDialog = false;
             await this.putDeliveryOrder(item);
         },
-        calcInfo(item) {
+        calcPurchaseInfo(item) {
             let vthis = this;
             item.map(function (x) {
                 x.ImportCost = vthis.calcImportCost(x);
@@ -307,6 +310,19 @@ export default {
 
                 //計算毛利率
                 x.GrossMargin = vthis.calcGrossMargin(vthis.productItem.RetailPrice, x.Costs);
+
+            });
+            return item;
+        },
+        calcDeliveryInfo(item) {
+            let vthis = this;
+            item.map(function (x) {
+
+                //計算毛利
+                x.GrossProfit = vthis.calcGrossProfit(x.RetailPrice, x.Cost);
+
+                //計算毛利率
+                x.GrossMargin = vthis.calcGrossMargin(x.RetailPrice, x.Cost);
 
             });
             return item;
@@ -485,7 +501,7 @@ export default {
             await getProductPurchaseHistories(this.productItem)
                 .then((response) => {
                     if (response.data.records != null) {
-                        let item = this.calcInfo(response.data.records);
+                        let item = this.calcPurchaseInfo(response.data.records);
                         this.purchaseHistories = item;
                     }
                     else {
@@ -497,7 +513,7 @@ export default {
             await getProductDeliveryHistories(this.productItem)
                 .then((response) => {
                     if (response.data.records != null) {
-                        let item = this.calcInfo(response.data.records);
+                        let item = this.calcDeliveryInfo(response.data.records);
                         this.deliveryHistories = item;
                     }
                     else {
