@@ -8,6 +8,7 @@ type ProductDeliveryHistory struct {
 	DeliveryOrderID       int64    //出貨編號
 	DeliveryOrderDetailID int64    //出貨明細編號
 	RetailPrice           float32  //出貨時售價
+	Cost                  float32  //出貨時成本
 	QTY                   int64    //商品總數
 	Subtotal              *float32 //小計
 	OrderAt               *string  //下訂日期
@@ -31,6 +32,7 @@ func GetProductDeliveryHistories(db *sql.DB, productID int64) (historyXi []Produ
 			&history.DeliveryOrderID,
 			&history.DeliveryOrderDetailID,
 			&history.RetailPrice,
+			&history.Cost,
 			&history.QTY,
 			&history.Subtotal,
 			&history.OrderAt,
