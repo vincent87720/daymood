@@ -63,11 +63,13 @@
                             <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
                                 <h2>商品總數</h2>
                                 <h2>商品總計</h2>
+                                <h2>貨運運費</h2>
                                 <h2>折扣金額</h2>
                             </div>
                             <div class="d-flex flex-column justify-end align-end">
                                 <h2>${{ calc_TotalQTY }}</h2>
                                 <h2>${{ calc_Subtotals }}</h2>
+                                <h2>${{ calc_DeliveryFee }}</h2>
                                 <h2>${{ calc_Discount }}</h2>
                             </div>
                             <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
@@ -247,18 +249,30 @@ export default {
             })
             return result.toFixed(2);
         },
+        calc_DeliveryFee(){
+            let result = 0;
+            let shippingFee = this.systemConfigs.DeliveryTypeShippingFee.find(x => x.key == this.deliveryOrderItem.DeliveryType);
+            if(this.deliveryOrderItem.DeliveryFeeStatus == 2 && shippingFee != undefined){
+                //運費由賣家支付
+                result += parseFloat(shippingFee.value);
+            }
+            return result.toFixed(2);
+        },
         calc_Discount(){
             let result = 0;
             return result.toFixed(2);
         },
         calc_Total() {
-            //總計 = 商品總計 - 折扣
+            //總計 = 商品總計 - 折扣 - 賣家負擔運費
             let result = 0;
-            let total = parseFloat(this.calc_Subtotals) - parseFloat(this.calc_Discount);
+            let total = parseFloat(this.calc_Subtotals) - parseFloat(this.calc_Discount) - parseFloat(this.calc_DeliveryFee);
             if (isNaN(total) == false) {
                 result += total
             }
             return result.toFixed(2);
+        },
+        systemConfigs() {
+            return this.$store.state.systemConfigs;
         },
     },
     methods: {
