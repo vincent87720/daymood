@@ -56,8 +56,8 @@ func (discount *Discount) Create(db *sql.DB) (modelErr *ModelError) {
 
 	qryString := `INSERT INTO discounts(
 		name, price, discount_type,
-		remark, data_order, delivery_order_id,
-	) VALUES($1,$2,$3,$4,$5,$6,$7,$8);`
+		remark, data_order, delivery_order_id
+	) VALUES($1,$2,$3,$4,$5,$6);`
 
 	stmt, err := db.Prepare(qryString)
 	if err != nil {
@@ -87,7 +87,7 @@ func (discount *Discount) Update(db *sql.DB) (modelErr *ModelError) {
 	}
 
 	_, err = db.Exec(
-		"CALL updateDiscounts($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+		"CALL updateDiscounts($1,$2,$3,$4,$5,$6,$7)",
 		discount.ID, discount.Name, discount.Price,
 		discount.DiscountType, discount.Remark, discount.DataOrder,
 		discount.DeliveryOrderID,
