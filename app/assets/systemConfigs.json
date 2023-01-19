@@ -37,5 +37,7 @@
     {"id":"35", "type":"DeliveryTypeShippingFee", "key":1, "value":"80", "remark":""},
     {"id":"36", "type":"DeliveryTypeShippingFee", "key":2, "value":"70", "remark":""},
     {"id":"37", "type":"DeliveryTypeShippingFee", "key":3, "value":"70", "remark":""},
-    {"id":"38", "type":"DeliveryTypeShippingFee", "key":4, "value":"60", "remark":""}
+    {"id":"38", "type":"DeliveryTypeShippingFee", "key":4, "value":"60", "remark":""},
+    {"id":"39", "type":"DiscountType", "key":1, "value":"整筆訂單折扣", "remark":""},
+    {"id":"40", "type":"DiscountType", "key":2, "value":"單件商品折扣", "remark":""}
 ]
