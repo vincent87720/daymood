@@ -24,7 +24,7 @@
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <c-data-table :prop_headers="productHeader" :prop_items="products" :prop_search="search"
+                    <c-data-table :prop_headers="isSmalldevice? productHeaderLess : productHeader" :prop_items="products" :prop_search="search"
                         @edit="onClick_editButton" @delete="onClick_deleteButton">
                         <template v-slot:item.ProductType="{ item }">
                             <span>{{ convertDisplayText(systemConfigs.ProductType, item.ProductType) }}</span>
@@ -138,6 +138,11 @@ export default {
                 { text: '備註', value: 'Remark', width: "10%" },
                 { text: '', value: 'actions', sortable: false, width: "10%" },
             ],
+            productHeaderLess: [
+                { text: 'SKU', value: 'SKU'},
+                { text: '商品名稱', value: 'Name' },
+                { text: '', value: 'actions', sortable: false, width: "10%" },
+            ],
             productInfoDialog: false,
 
             tradingSettings: {},
@@ -156,6 +161,12 @@ export default {
     computed: {
         systemConfigs() {
             return this.$store.state.systemConfigs;
+        },
+        isSmalldevice() {
+            if(this.$vuetify.breakpoint.name == "xs"){
+                return true;
+            }
+            return false;
         },
     },
     methods: {

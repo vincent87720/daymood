@@ -23,7 +23,7 @@
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <c-data-table :prop_headers="deliveryOrderHeader" :prop_items="deliveryOrders" :prop_search="search"
+                    <c-data-table :prop_headers="isSmalldevice ? deliveryOrderHeaderLess : deliveryOrderHeader" :prop_items="deliveryOrders" :prop_search="search"
                         @edit="onClick_editButton" @delete="onClick_deleteButton">
                         <template v-slot:item.Status="{ item }">
                             <v-chip :color="getStatusChipColor(item.Status)" dark small>
@@ -161,6 +161,14 @@ export default {
                 { text: '備註', value: 'Remark' },
                 { text: '', value: 'actions', sortable: false, width: "10%" },
             ],
+            deliveryOrderHeaderLess: [
+                { text: '流水號', value: 'ID' },
+                { text: '出貨單狀態', value: 'Status', align: 'center' },
+                { text: '原價', value: 'TotalOriginal' },
+                { text: '折扣', value: 'Discount' },
+                { text: '總價', value: 'TotalDiscounted' },
+                { text: '', value: 'actions', sortable: false, width: "10%" },
+            ],
             deliveryOrderInfoDialog: false,
         };
     },
@@ -174,6 +182,12 @@ export default {
     computed: {
         systemConfigs() {
             return this.$store.state.systemConfigs;
+        },
+        isSmalldevice() {
+            if(this.$vuetify.breakpoint.name == "xs"){
+                return true;
+            }
+            return false;
         },
     },
     methods: {

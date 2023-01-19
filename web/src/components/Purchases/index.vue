@@ -23,7 +23,7 @@
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <c-data-table :prop_headers="purchaseHeader" :prop_items="purchases" :prop_search="search"
+                    <c-data-table :prop_headers="isSmalldevice ? purchaseHeaderLess : purchaseHeader" :prop_items="purchases" :prop_search="search"
                         @edit="onClick_editButton" @delete="onClick_deleteButton">
                         <template v-slot:item.Status="{ item }">
                             <v-chip :color="getStatusChipColor(item.Status)" dark small>
@@ -145,6 +145,11 @@ export default {
                 { text: "備註", value: "Remark", width: "10%" },
                 { text: '', value: 'actions', sortable: false, width: "10%" },
             ],
+            purchaseHeaderLess: [
+                { text: '採購狀態', value: 'Status', align: 'center' },
+                { text: '採購名稱', value: 'Name' },
+                { text: '', value: 'actions', sortable: false, width: "10%" },
+            ],
             purchaseInfoDialog: false,
         };
     },
@@ -158,6 +163,12 @@ export default {
     computed: {
         systemConfigs() {
             return this.$store.state.systemConfigs;
+        },
+        isSmalldevice() {
+            if(this.$vuetify.breakpoint.name == "xs"){
+                return true;
+            }
+            return false;
         },
     },
     methods: {

@@ -23,7 +23,7 @@
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <c-data-table :prop_headers="supplierHeader" :prop_items="suppliers" :prop_search="search"
+                    <c-data-table :prop_headers="isSmalldevice ? supplierHeaderLess : supplierHeader" :prop_items="suppliers" :prop_search="search"
                         @edit="onClick_editButton" @delete="onClick_deleteButton"></c-data-table>
                 </v-col>
             </v-row>
@@ -97,6 +97,10 @@ export default {
                 { text: "備註", value: "Remark" },
                 { text: "", value: "actions", sortable: false, width: "10%" },
             ],
+            supplierHeaderLess: [
+                { text: "廠商名稱", value: "Name" },
+                { text: "", value: "actions", sortable: false, width: "10%" },
+            ],
             suppliers: [],
 
             //Alert
@@ -113,6 +117,14 @@ export default {
         key("ctrl+/", this.onFocus_searchFields);
         await this.getSuppliers();
         // this.dumpFirms();
+    },
+    computed: {
+        isSmalldevice() {
+            if(this.$vuetify.breakpoint.name == "xs"){
+                return true;
+            }
+            return false;
+        },
     },
     methods: {
         onFocus_searchFields() {
