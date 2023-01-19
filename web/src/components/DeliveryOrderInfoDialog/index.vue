@@ -14,7 +14,8 @@
             <v-btn icon dark absolute top right @click="enableEdit = true" v-if="isEditEnable == false">
                 <v-icon>mdi-pencil</v-icon>
             </v-btn>
-            <v-btn icon dark absolute bottom left @click="onClick_finishDeliveryOrderButton" v-if="isEditEnable == true">
+            <v-btn icon dark absolute bottom left @click="onClick_finishDeliveryOrderButton"
+                v-if="isEditEnable == true">
                 <v-icon>mdi-cart-check</v-icon>
             </v-btn>
             <v-card-title class="text-h5 mt-8">
@@ -25,7 +26,8 @@
                     <v-col xs="12" sm="12" class="ml-auto mr-auto">
                         <v-card outlined rounded="lg">
                             <c-data-table :prop_headers="deliveryOrderDetailHeader" :prop_items="deliveryOrderDetails"
-                                :prop_search="search" @edit="onClick_editDetailButton" @delete="onClick_deleteDetailButton">
+                                :prop_search="search" @edit="onClick_editDetailButton"
+                                @delete="onClick_deleteDetailButton">
                                 <template v-slot:item.ProductID="{ item }">
                                     {{ convertDisplayText_Products(allProductsList, item.ProductID) }}
                                 </template>
@@ -64,7 +66,8 @@
                                     <v-container fluid>
                                         <v-row class="d-flex justify-center">
                                             <v-col>
-                                                <v-btn outlined block text @click="onClick_newDiscountButton()">新增折扣</v-btn>
+                                                <v-btn outlined block text
+                                                    @click="onClick_newDiscountButton()">新增折扣</v-btn>
                                             </v-col>
                                         </v-row>
                                     </v-container>
@@ -73,6 +76,20 @@
                         </c-card-rounded>
                     </v-col>
                     <v-col xs="12" sm="6" class="ml-auto mr-auto">
+                        <c-card-rounded class="pa-3 d-flex justify-end mb-6">
+                            <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
+                                <h2>毛利</h2>
+                            </div>
+                            <div class="d-flex flex-column justify-end align-end">
+                                <h2>{{ calcGrossProfit(calc_Total, calc_Cost) }}</h2>
+                            </div>
+                            <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
+                                <h2>毛利率</h2>
+                            </div>
+                            <div class="d-flex flex-column justify-end align-end">
+                                <h2>{{ calcGrossMargin(calc_Total, calc_Cost) }}%</h2>
+                            </div>
+                        </c-card-rounded>
                         <c-card-rounded class="pa-3 d-flex justify-end">
                             <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
                                 <h2>商品總數</h2>
@@ -81,10 +98,10 @@
                                 <h2>折扣金額</h2>
                             </div>
                             <div class="d-flex flex-column justify-end align-end">
-                                <h2>${{ calc_TotalQTY }}</h2>
+                                <h2>{{ calc_TotalQTY }}</h2>
                                 <h2>${{ calc_Subtotals }}</h2>
-                                <h2>${{ calc_DeliveryFee }}</h2>
-                                <h2>${{ calc_Discount }}</h2>
+                                <h2>$-{{ calc_DeliveryFee }}</h2>
+                                <h2>$-{{ calc_Discount }}</h2>
                             </div>
                             <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
                                 <h2>總計</h2>
@@ -101,10 +118,9 @@
             :prop_text_cardTitle="text_cardTitle_inner" :prop_text_confirmBtn="text_confirmBtn_inner"
             :prop_deliveryOrderItem="deliveryOrderItem" :prop_deliveryOrderDetailItem="deliveryOrderDetail"
             @confirm='onConfirm_deliveryOrderDetailDialog' />
-        <DiscountDialog :prop_discountDialog.sync="discountDialog"
-            :prop_text_cardTitle="text_cardTitle_inner" :prop_text_confirmBtn="text_confirmBtn_inner"
-            :prop_deliveryOrderItem="deliveryOrderItem" :prop_discountItem="discount"
-            @confirm='onConfirm_discountDialog' />
+        <DiscountDialog :prop_discountDialog.sync="discountDialog" :prop_text_cardTitle="text_cardTitle_inner"
+            :prop_text_confirmBtn="text_confirmBtn_inner" :prop_deliveryOrderItem="deliveryOrderItem"
+            :prop_discountItem="discount" @confirm='onConfirm_discountDialog' />
         <!-- <DeliveryOrderDetailImportDialog :prop_deliveryOrderDetailImportDialog.sync="deliveryOrderDetailImportDialog"
             :prop_text_cardTitle="text_cardTitle_inner" :prop_text_confirmBtn="text_confirmBtn_inner"
             @confirm='onConfirm_deliveryOrderDetailImportDialog' /> -->
@@ -130,16 +146,16 @@ import { getDeliveryOrderDetails, postDeliveryOrderDetails, postDeliveryOrderDet
 import { getDiscounts, postDiscount, putDiscount, deleteDiscount } from "../../apis/DiscountsAPI";
 
 class DeliveryOrderDetail {
-	ID = undefined;
-	RetailPrice = undefined;
-	QTY = undefined;
-	Subtotal = undefined;
-	Remark = "";
-	DataOrder = undefined;
-	CreateAt = "";
-	UpdateAt = "";
-	DeliveryOrderID = undefined;
-	ProductID = undefined;
+    ID = undefined;
+    RetailPrice = undefined;
+    QTY = undefined;
+    Subtotal = undefined;
+    Remark = "";
+    DataOrder = undefined;
+    CreateAt = "";
+    UpdateAt = "";
+    DeliveryOrderID = undefined;
+    ProductID = undefined;
 }
 
 class Discount {
@@ -191,6 +207,7 @@ export default {
             deliveryOrderDetails: [],
             deliveryOrderDetailHeader: [
                 { text: '商品', value: 'ProductID' },
+                { text: '成本', value: 'Cost' },
                 { text: '售價', value: 'RetailPrice' },
                 { text: '數量', value: 'QTY' },
                 { text: '小計', value: 'Subtotal' },
@@ -275,7 +292,7 @@ export default {
             }
             return false;
         },
-        calc_TotalQTY(){
+        calc_TotalQTY() {
             //數量
             let result = 0;
             this.deliveryOrderDetails.map(function (item) {
@@ -292,17 +309,23 @@ export default {
             })
             return result.toFixed(2);
         },
-        calc_DeliveryFee(){
+        calc_DeliveryFee() {
             let result = 0;
             let shippingFee = this.systemConfigs.DeliveryTypeShippingFee.find(x => x.key == this.deliveryOrderItem.DeliveryType);
-            if(this.deliveryOrderItem.DeliveryFeeStatus == 2 && shippingFee != undefined){
+            if (this.deliveryOrderItem.DeliveryFeeStatus == 2 && shippingFee != undefined) {
                 //運費由賣家支付
                 result += parseFloat(shippingFee.value);
             }
             return result.toFixed(2);
         },
-        calc_Discount(){
+        calc_Discount() {
             let result = 0;
+            this.discounts.map(x => result += parseFloat(x.Price));
+            return result.toFixed(2);
+        },
+        calc_Cost() {
+            let result = 0;
+            this.deliveryOrderDetails.map(x => result += parseFloat(x.Cost));
             return result.toFixed(2);
         },
         calc_Total() {
@@ -335,8 +358,8 @@ export default {
         },
         convertDisplayText_Date(datetime) {
             let result = "";
-            if(datetime){
-                result = datetime.substring(0,10);
+            if (datetime) {
+                result = datetime.substring(0, 10);
             }
             return result;
         },
@@ -409,7 +432,7 @@ export default {
             this.deliveryOrderDetailImportDialog = false;
             await this.postDeliveryOrderDetails(item);
         },
-       async onConfirm_discountDialog(item){
+        async onConfirm_discountDialog(item) {
             this.discountDialog = false;
             if (this.actionType == "post") {
                 await this.postDiscount(item);
@@ -423,10 +446,30 @@ export default {
                 await this.deleteDeliveryOrderDetail(item);
             } else if (this.actionType == "deleteDiscount") {
                 await this.deleteDiscount(item);
-            }else if (this.actionType == "finish") {
+            } else if (this.actionType == "finish") {
                 this.beforeDeliveryOrderFinish();
                 this.$emit('finish', this.deliveryOrderItem);//觸發一個在子元件中宣告的事件 childEvnet
             }
+        },
+        calcGrossProfit(retailPrice, cost) {
+            let result = 0;
+            let grossProfit = parseNumber(retailPrice) - parseNumber(cost);
+            if (isNaN(grossProfit) == false) {
+                result += grossProfit;
+            }
+            return result.toFixed(2);
+        },
+        calcGrossMargin(retailPrice, cost) {
+            if (isNaN(retailPrice) == true || retailPrice == null) {
+                x.GrossMargin = undefined;
+                return;
+            }
+            let result = 0;
+            let grossMargin = (parseNumber(retailPrice) - parseNumber(cost)) / parseNumber(retailPrice) * 100;
+            if (isNaN(grossMargin) == false) {
+                result += grossMargin;
+            }
+            return result.toFixed(2);
         },
         beforeDeliveryOrderFinish() {
             this.deliveryOrderItem.QTY = this.calc_TotalQTY;
@@ -603,4 +646,11 @@ export default {
         },
     }
 }
+const parseNumber = function (x) {
+    let parsed = parseFloat(x);
+    if (isNaN(parsed) == true) {
+        return 0;
+    }
+    return parsed;
+};
 </script>
