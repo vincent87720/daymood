@@ -25,16 +25,16 @@
                     <v-col xs="12" sm="12" class="ml-auto mr-auto">
                         <v-card outlined rounded="lg">
                             <c-data-table :prop_headers="deliveryOrderDetailHeader" :prop_items="deliveryOrderDetails"
-                                :prop_search="search" @edit="onClick_editButton" @delete="onClick_deleteButton">
+                                :prop_search="search" @edit="onClick_editDetailButton" @delete="onClick_deleteDetailButton">
                                 <template v-slot:item.ProductID="{ item }">
                                     {{ convertDisplayText_Products(allProductsList, item.ProductID) }}
                                 </template>
                                 <template v-slot:item.actions="{ item }">
-                                    <v-icon small class="mx-1" @click.stop="onClick_editButton(item)"
+                                    <v-icon small class="mx-1" @click.stop="onClick_editDetailButton(item)"
                                         v-if="isEditEnable == true">
                                         mdi-pencil
                                     </v-icon>
-                                    <v-icon small class="mx-1" @click.stop="onClick_deleteButton(item)"
+                                    <v-icon small class="mx-1" @click.stop="onClick_deleteDetailButton(item)"
                                         v-if="isEditEnable == true">
                                         mdi-delete
                                     </v-icon>
@@ -45,17 +45,31 @@
                 </v-row>
                 <v-row>
                     <v-col xs="12" sm="6" class="ml-auto mr-auto">
-                        <c-card-rounded class="pa-3 d-flex justify-end">
-                            <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
-                                <h2>下訂日期</h2>
-                                <h2>出貨日期</h2>
-                                <h2>送達日期</h2>
-                            </div>
-                            <div class="d-flex flex-column justify-end align-end">
-                                <h2>{{ convertDisplayText_Date(deliveryOrderItem.OrderAt) }}</h2>
-                                <h2>{{ convertDisplayText_Date(deliveryOrderItem.SendAt) }}</h2>
-                                <h2>{{ convertDisplayText_Date(deliveryOrderItem.ArriveAt) }}</h2>
-                            </div>
+                        <c-card-rounded>
+                            <c-data-table :prop_headers="discountHeader" :prop_items="discounts">
+                                <template v-slot:item.DiscountType="{ item }">
+                                    {{ convertDisplayText(systemConfigs.DiscountType, item.DiscountType) }}
+                                </template>
+                                <template v-slot:item.actions="{ item }">
+                                    <v-icon small class="mx-1" @click.stop="onClick_editDiscountButton(item)"
+                                        v-if="isEditEnable == true">
+                                        mdi-pencil
+                                    </v-icon>
+                                    <v-icon small class="mx-1" @click.stop="onClick_deleteDiscountButton(item)"
+                                        v-if="isEditEnable == true">
+                                        mdi-delete
+                                    </v-icon>
+                                </template>
+                                <template v-slot:footer>
+                                    <v-container fluid>
+                                        <v-row class="d-flex justify-center">
+                                            <v-col>
+                                                <v-btn outlined block text @click="onClick_newDiscountButton()">新增折扣</v-btn>
+                                            </v-col>
+                                        </v-row>
+                                    </v-container>
+                                </template>
+                            </c-data-table>
                         </c-card-rounded>
                     </v-col>
                     <v-col xs="12" sm="6" class="ml-auto mr-auto">
@@ -87,6 +101,10 @@
             :prop_text_cardTitle="text_cardTitle_inner" :prop_text_confirmBtn="text_confirmBtn_inner"
             :prop_deliveryOrderItem="deliveryOrderItem" :prop_deliveryOrderDetailItem="deliveryOrderDetail"
             @confirm='onConfirm_deliveryOrderDetailDialog' />
+        <DiscountDialog :prop_discountDialog.sync="discountDialog"
+            :prop_text_cardTitle="text_cardTitle_inner" :prop_text_confirmBtn="text_confirmBtn_inner"
+            :prop_deliveryOrderItem="deliveryOrderItem" :prop_discountItem="discount"
+            @confirm='onConfirm_discountDialog' />
         <!-- <DeliveryOrderDetailImportDialog :prop_deliveryOrderDetailImportDialog.sync="deliveryOrderDetailImportDialog"
             :prop_text_cardTitle="text_cardTitle_inner" :prop_text_confirmBtn="text_confirmBtn_inner"
             @confirm='onConfirm_deliveryOrderDetailImportDialog' /> -->
@@ -106,8 +124,10 @@ import BtnUpload from "../../components/Buttons/BtnUpload.vue";
 import CardRounded from "../../components/Cards/CardRounded.vue";
 import DataTable from "../../components/DataTables/DataTable.vue";
 import DeliveryOrderDetailDialog from '../../components/DeliveryOrderDetailDialog/index.vue';
+import DiscountDialog from '../../components/DiscountDialog/index.vue';
 // import DeliveryOrderDetailImportDialog from '../../components/DeliveryOrderDetailImportDialog/index.vue';
 import { getDeliveryOrderDetails, postDeliveryOrderDetails, postDeliveryOrderDetail, putDeliveryOrderDetail, deleteDeliveryOrderDetail } from "../../apis/DeliveryOrderDetailsAPI";
+import { getDiscounts, postDiscount, putDiscount, deleteDiscount } from "../../apis/DiscountsAPI";
 
 class DeliveryOrderDetail {
 	ID = undefined;
@@ -122,12 +142,25 @@ class DeliveryOrderDetail {
 	ProductID = undefined;
 }
 
+class Discount {
+    ID = undefined;
+    Name = "";
+    Price = undefined;
+    DiscountType = undefined;
+    Remark = "";
+    DataOrder = undefined;
+    CreateAt = "";
+    UpdateAt = "";
+    DeliveryOrderID = undefined;
+}
+
 export default {
     name: 'deliveryOrderInfoDialog',
     components: {
         Alert,
         ConfirmDialog,
         DeliveryOrderDetailDialog,
+        DiscountDialog,
         // DeliveryOrderDetailImportDialog,
         "c-btn-add": BtnAdd,
         "c-btn-upload": BtnUpload,
@@ -161,6 +194,16 @@ export default {
                 { text: '售價', value: 'RetailPrice' },
                 { text: '數量', value: 'QTY' },
                 { text: '小計', value: 'Subtotal' },
+                { text: '備註', value: 'Remark' },
+                { text: '', value: 'actions', sortable: false },
+            ],
+            discount: new Discount(),
+            discounts: [],
+            discountDialog: false,
+            discountHeader: [
+                { text: '折扣名稱', value: 'Name' },
+                { text: '折扣方式', value: 'DiscountType' },
+                { text: '折扣金額', value: 'Price' },
                 { text: '備註', value: 'Remark' },
                 { text: '', value: 'actions', sortable: false },
             ],
@@ -276,6 +319,13 @@ export default {
         },
     },
     methods: {
+        convertDisplayText(list, key) {
+            let result = list.find(x => x.key == key);
+            if (result) {
+                return result.value
+            }
+            return "";
+        },
         convertDisplayText_Products(list, key) {
             let result = list.find(x => x.key == key);
             if (result) {
@@ -301,17 +351,17 @@ export default {
             this.deliveryOrderDetail = new DeliveryOrderDetail();
             this.deliveryOrderDetailDialog = true;
         },
-        onClick_editButton(item) {
+        onClick_editDetailButton(item) {
             this.text_cardTitle_inner = "編輯出貨明細";
             this.text_confirmBtn_inner = "修改";
             this.actionType = "put";
             this.deliveryOrderDetail = item;
             this.deliveryOrderDetailDialog = true;
         },
-        onClick_deleteButton(item) {
+        onClick_deleteDetailButton(item) {
             this.text_cardTitle_inner = "確認刪除";
             this.text_confirmBtn_inner = "刪除";
-            this.actionType = "delete";
+            this.actionType = "deleteDetail";
             this.confirmDialog = true;
             this.confirmTarget = item;
         },
@@ -326,6 +376,27 @@ export default {
             this.text_confirmBtn_inner = "確定";
             this.deliveryOrderDetailImportDialog = true;
         },
+        onClick_newDiscountButton() {
+            this.text_cardTitle_inner = "新增折扣";
+            this.text_confirmBtn_inner = "新增";
+            this.actionType = "post";
+            this.discount = new Discount();
+            this.discountDialog = true;
+        },
+        onClick_editDiscountButton(item) {
+            this.text_cardTitle_inner = "編輯折扣";
+            this.text_confirmBtn_inner = "修改";
+            this.actionType = "put";
+            this.discount = item;
+            this.discountDialog = true;
+        },
+        onClick_deleteDiscountButton(item) {
+            this.text_cardTitle_inner = "確認刪除";
+            this.text_confirmBtn_inner = "刪除";
+            this.actionType = "deleteDiscount";
+            this.confirmTarget = item;
+            this.confirmDialog = true;
+        },
         async onConfirm_deliveryOrderDetailDialog(item) {
             this.deliveryOrderDetailDialog = false;
             if (this.actionType == "post") {
@@ -338,11 +409,21 @@ export default {
             this.deliveryOrderDetailImportDialog = false;
             await this.postDeliveryOrderDetails(item);
         },
+       async onConfirm_discountDialog(item){
+            this.discountDialog = false;
+            if (this.actionType == "post") {
+                await this.postDiscount(item);
+            } else if (this.actionType == "put") {
+                await this.putDiscount(item);
+            }
+        },
         async onConfirm_confirmDialog(item) {
             this.confirmDialog = false;
-            if (this.actionType == "delete") {
+            if (this.actionType == "deleteDetail") {
                 await this.deleteDeliveryOrderDetail(item);
-            } else if (this.actionType == "finish") {
+            } else if (this.actionType == "deleteDiscount") {
+                await this.deleteDiscount(item);
+            }else if (this.actionType == "finish") {
                 this.beforeDeliveryOrderFinish();
                 this.$emit('finish', this.deliveryOrderItem);//觸發一個在子元件中宣告的事件 childEvnet
             }
@@ -443,11 +524,81 @@ export default {
                     this.alertText = "新增出貨明細失敗";
                 });
         },
+        preSendDiscounts(item) {
+            item.ID = parseFloat(item.ID);
+            item.Price = parseFloat(item.Price);
+            item.DiscountType = parseFloat(item.DiscountType);
+            item.DataOrder = parseFloat(item.DataOrder);
+            item.DeliveryOrderID = parseFloat(item.DeliveryOrderID);
+            return item;
+        },
+        async getDiscounts() {
+            let filter = {
+                DeliveryOrderID: this.deliveryOrderItem.ID,
+            }
+            await getDiscounts(filter)
+                .then((response) => {
+                    if (response.data.records != null) {
+                        this.discounts = response.data.records;
+                    }
+                    else {
+                        this.discounts = [];
+                    }
+                })
+                .catch((error) => {
+                });
+        },
+        async postDiscount(item) {
+            item = this.preSendDiscounts(item);
+            item.DeliveryOrderID = this.deliveryOrderItem.ID;
+            await postDiscount(item)
+                .then(async (response) => {
+                    await this.getDiscounts();
+                    this.alert = true;
+                    this.alertType = "Success";
+                    this.alertText = "新增折扣成功";
+                })
+                .catch((error) => {
+                    this.alert = true;
+                    this.alertType = "Fail";
+                    this.alertText = "新增折扣失敗";
+                });
+        },
+        async putDiscount(item) {
+            item = this.preSendDiscounts(item);
+            await putDiscount(item)
+                .then(async (response) => {
+                    await this.getDiscounts();
+                    this.alert = true;
+                    this.alertType = "Success";
+                    this.alertText = "編輯折扣成功";
+                })
+                .catch((error) => {
+                    this.alert = true;
+                    this.alertType = "Fail";
+                    this.alertText = "編輯折扣失敗";
+                });
+        },
+        async deleteDiscount(item) {
+            await deleteDiscount(item)
+                .then(async (response) => {
+                    await this.getDiscounts();
+                    this.alert = true;
+                    this.alertType = "Success";
+                    this.alertText = "刪除折扣成功";
+                })
+                .catch((error) => {
+                    this.alert = true;
+                    this.alertType = "Fail";
+                    this.alertText = "刪除折扣失敗";
+                });
+        },
     },
     watch: {
         deliveryOrderInfoDialog: async function (newVal, oldVal) {
             if (newVal == true) {
-                await this.getDeliveryOrderDetails();
+                this.getDeliveryOrderDetails();
+                this.getDiscounts();
             }
         },
     }
