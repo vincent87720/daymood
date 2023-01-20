@@ -270,9 +270,9 @@ export default {
         },
         async postPurchase(item) {
             item = this.preSend(item);
-            item.ShippingArriveAt = null;
-            item.ShippingCreateAt = null;
-            item.ShippingEndAt = null;
+            item.ShippingArriveAt = item.ShippingArriveAt || null;
+            item.ShippingCreateAt = item.ShippingCreateAt || null;
+            item.ShippingEndAt = item.ShippingEndAt || null;
             await postPurchase(item)
                 .then(async (response) => {
                     await this.getPurchases();
