@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import DatePicker from "../../components/Pickers/DatePicker.vue";
+import DatePicker from "@/components/Pickers/DatePicker.vue";
 
 export default {
     name: 'DeliveryOrderDialog',

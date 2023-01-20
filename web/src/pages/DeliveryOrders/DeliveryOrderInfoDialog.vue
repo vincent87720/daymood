@@ -29,7 +29,9 @@
                                 :prop_search="search" @edit="onClick_editDetailButton"
                                 @delete="onClick_deleteDetailButton">
                                 <template v-slot:item.ProductID="{ item }">
-                                    {{ convertDisplayText_Products(allProductsList, item.ProductID) }}
+                                    {{
+                                        convertDisplayText_Products(allProductsList, item.ProductID)
+                                    }}
                                 </template>
                                 <template v-slot:item.actions="{ item }">
                                     <v-icon small class="mx-1" @click.stop="onClick_editDetailButton(item)"
@@ -50,7 +52,12 @@
                         <c-card-rounded>
                             <c-data-table :prop_headers="discountHeader" :prop_items="discounts">
                                 <template v-slot:item.DiscountType="{ item }">
-                                    {{ convertDisplayText(systemConfigs.DiscountType, item.DiscountType) }}
+                                    {{
+                                        convertDisplayText(
+                                            systemConfigs.DiscountType,
+                                        item.DiscountType
+                                                                        )
+                                    }}
                                 </template>
                                 <template v-slot:item.actions="{ item }">
                                     <v-icon small class="mx-1" @click.stop="onClick_editDiscountButton(item)"
@@ -117,33 +124,44 @@
         <DeliveryOrderDetailDialog :prop_deliveryOrderDetailDialog.sync="deliveryOrderDetailDialog"
             :prop_text_cardTitle="text_cardTitle_inner" :prop_text_confirmBtn="text_confirmBtn_inner"
             :prop_deliveryOrderItem="deliveryOrderItem" :prop_deliveryOrderDetailItem="deliveryOrderDetail"
-            @confirm='onConfirm_deliveryOrderDetailDialog' />
+            @confirm="onConfirm_deliveryOrderDetailDialog" />
         <DiscountDialog :prop_discountDialog.sync="discountDialog" :prop_text_cardTitle="text_cardTitle_inner"
             :prop_text_confirmBtn="text_confirmBtn_inner" :prop_deliveryOrderItem="deliveryOrderItem"
-            :prop_discountItem="discount" @confirm='onConfirm_discountDialog' />
+            :prop_discountItem="discount" @confirm="onConfirm_discountDialog" />
         <!-- <DeliveryOrderDetailImportDialog :prop_deliveryOrderDetailImportDialog.sync="deliveryOrderDetailImportDialog"
             :prop_text_cardTitle="text_cardTitle_inner" :prop_text_confirmBtn="text_confirmBtn_inner"
             @confirm='onConfirm_deliveryOrderDetailImportDialog' /> -->
         <ConfirmDialog :prop_confirmDialog.sync="confirmDialog" :prop_text_cardTitle="text_cardTitle_inner"
             :prop_text_cardHint="text_cardHint_inner" :prop_text_confirmBtn="text_confirmBtn_inner"
-            :prop_confirmTarget.sync="confirmTarget" v-on:confirmClick='onConfirm_confirmDialog' />
+            :prop_confirmTarget.sync="confirmTarget" v-on:confirmClick="onConfirm_confirmDialog" />
         <Alert :prop_alert.sync="alert" :prop_alertType="alertType" :prop_alertText="alertText"></Alert>
     </v-dialog>
 </template>
 
 <script>
-import Alert from '../../components/Alert/index.vue'
-import ConfirmDialog from '../../components/ConfirmDialog/index.vue'
-import DatePicker from "../../components/Pickers/DatePicker.vue";
-import BtnAdd from "../../components/Buttons/BtnAdd.vue";
-import BtnUpload from "../../components/Buttons/BtnUpload.vue";
-import CardRounded from "../../components/Cards/CardRounded.vue";
-import DataTable from "../../components/DataTables/DataTable.vue";
-import DeliveryOrderDetailDialog from '../../components/DeliveryOrderDetailDialog/index.vue';
-import DiscountDialog from '../../components/DiscountDialog/index.vue';
+import Alert from "@/components/Alert/index.vue";
+import ConfirmDialog from "@/components/ConfirmDialog/index.vue";
+import DatePicker from "@/components/Pickers/DatePicker.vue";
+import BtnAdd from "@/components/Buttons/BtnAdd.vue";
+import BtnUpload from "@/components/Buttons/BtnUpload.vue";
+import CardRounded from "@/components/Cards/CardRounded.vue";
+import DataTable from "@/components/DataTables/DataTable.vue";
+import DeliveryOrderDetailDialog from "@/pages/DeliveryOrders/DeliveryOrderDetailDialog.vue";
+import DiscountDialog from "@/pages/DeliveryOrders/DiscountDialog.vue";
 // import DeliveryOrderDetailImportDialog from '../../components/DeliveryOrderDetailImportDialog/index.vue';
-import { getDeliveryOrderDetails, postDeliveryOrderDetails, postDeliveryOrderDetail, putDeliveryOrderDetail, deleteDeliveryOrderDetail } from "../../apis/DeliveryOrderDetailsAPI";
-import { getDiscounts, postDiscount, putDiscount, deleteDiscount } from "../../apis/DiscountsAPI";
+import {
+    getDeliveryOrderDetails,
+    postDeliveryOrderDetails,
+    postDeliveryOrderDetail,
+    putDeliveryOrderDetail,
+    deleteDeliveryOrderDetail,
+} from "@/apis/DeliveryOrderDetailsAPI";
+import {
+    getDiscounts,
+    postDiscount,
+    putDiscount,
+    deleteDiscount,
+} from "@/apis/DiscountsAPI";
 
 class DeliveryOrderDetail {
     ID = undefined;
@@ -171,7 +189,7 @@ class Discount {
 }
 
 export default {
-    name: 'deliveryOrderInfoDialog',
+    name: "deliveryOrderInfoDialog",
     components: {
         Alert,
         ConfirmDialog,
@@ -193,12 +211,12 @@ export default {
 
             // ConfirmDialog
             confirmDialog: false,
-            text_cardTitle_inner: '',
-            text_cardHint_inner: '',
-            text_confirmBtn_inner: '',
+            text_cardTitle_inner: "",
+            text_cardHint_inner: "",
+            text_confirmBtn_inner: "",
             confirmTarget: null,
 
-            search: '',
+            search: "",
             actionType: "",
             enableEdit: false,
 
@@ -206,23 +224,23 @@ export default {
             deliveryOrderDetailDialog: false,
             deliveryOrderDetails: [],
             deliveryOrderDetailHeader: [
-                { text: '商品', value: 'ProductID' },
-                { text: '成本', value: 'Cost' },
-                { text: '售價', value: 'RetailPrice' },
-                { text: '數量', value: 'QTY' },
-                { text: '小計', value: 'Subtotal' },
-                { text: '備註', value: 'Remark' },
-                { text: '', value: 'actions', sortable: false },
+                { text: "商品", value: "ProductID" },
+                { text: "成本", value: "Cost" },
+                { text: "售價", value: "RetailPrice" },
+                { text: "數量", value: "QTY" },
+                { text: "小計", value: "Subtotal" },
+                { text: "備註", value: "Remark" },
+                { text: "", value: "actions", sortable: false },
             ],
             discount: new Discount(),
             discounts: [],
             discountDialog: false,
             discountHeader: [
-                { text: '折扣名稱', value: 'Name' },
-                { text: '折扣方式', value: 'DiscountType' },
-                { text: '折扣金額', value: 'Price' },
-                { text: '備註', value: 'Remark' },
-                { text: '', value: 'actions', sortable: false },
+                { text: "折扣名稱", value: "Name" },
+                { text: "折扣方式", value: "DiscountType" },
+                { text: "折扣金額", value: "Price" },
+                { text: "備註", value: "Remark" },
+                { text: "", value: "actions", sortable: false },
             ],
 
             // deliveryOrderDetailImportDialog: false,
@@ -231,19 +249,19 @@ export default {
     props: {
         prop_deliveryOrderInfoDialog: {
             type: Boolean,
-            required: true
+            required: true,
         },
         prop_text_cardTitle: {
             type: String,
-            required: true
+            required: true,
         },
         prop_text_confirmBtn: {
             type: String,
-            required: true
+            required: true,
         },
         prop_deliveryOrderItem: {
             type: Object,
-            required: false
+            required: false,
         },
     },
     mounted() {
@@ -252,36 +270,35 @@ export default {
     computed: {
         deliveryOrderInfoDialog: {
             get() {
-                return this.prop_deliveryOrderInfoDialog
+                return this.prop_deliveryOrderInfoDialog;
             },
             set(val) {
-                this.$emit('update:prop_deliveryOrderInfoDialog', val)
-
-            }
+                this.$emit("update:prop_deliveryOrderInfoDialog", val);
+            },
         },
         text_cardTitle: {
             get() {
-                return this.prop_text_cardTitle
+                return this.prop_text_cardTitle;
             },
             set(val) {
-                this.$emit('update:prop_text_cardTitle', val)
-            }
+                this.$emit("update:prop_text_cardTitle", val);
+            },
         },
         text_confirmBtn: {
             get() {
-                return this.prop_text_confirmBtn
+                return this.prop_text_confirmBtn;
             },
             set(val) {
-                this.$emit('update:prop_text_confirmBtn', val)
-            }
+                this.$emit("update:prop_text_confirmBtn", val);
+            },
         },
         deliveryOrderItem: {
             get() {
-                return this.prop_deliveryOrderItem
+                return this.prop_deliveryOrderItem;
             },
             set(val) {
-                this.$emit('update:prop_deliveryOrderItem', val)
-            }
+                this.$emit("update:prop_deliveryOrderItem", val);
+            },
         },
         allProductsList() {
             return this.$store.state.allProducts;
@@ -297,22 +314,26 @@ export default {
             let result = 0;
             this.deliveryOrderDetails.map(function (item) {
                 result += parseFloat(item.QTY);
-            })
+            });
             return result;
-
         },
         calc_Subtotals() {
             //商品總計
             let result = 0;
             this.deliveryOrderDetails.map(function (item) {
                 result += parseFloat(item.Subtotal);
-            })
+            });
             return result.toFixed(2);
         },
         calc_DeliveryFee() {
             let result = 0;
-            let shippingFee = this.systemConfigs.DeliveryTypeShippingFee.find(x => x.key == this.deliveryOrderItem.DeliveryType);
-            if (this.deliveryOrderItem.DeliveryFeeStatus == 2 && shippingFee != undefined) {
+            let shippingFee = this.systemConfigs.DeliveryTypeShippingFee.find(
+                (x) => x.key == this.deliveryOrderItem.DeliveryType
+            );
+            if (
+                this.deliveryOrderItem.DeliveryFeeStatus == 2 &&
+                shippingFee != undefined
+            ) {
                 //運費由賣家支付
                 result += parseFloat(shippingFee.value);
             }
@@ -320,20 +341,23 @@ export default {
         },
         calc_Discount() {
             let result = 0;
-            this.discounts.map(x => result += parseFloat(x.Price));
+            this.discounts.map((x) => (result += parseFloat(x.Price)));
             return result.toFixed(2);
         },
         calc_Cost() {
             let result = 0;
-            this.deliveryOrderDetails.map(x => result += parseFloat(x.Cost));
+            this.deliveryOrderDetails.map((x) => (result += parseFloat(x.Cost)));
             return result.toFixed(2);
         },
         calc_Total() {
             //總計 = 商品總計 - 折扣 - 賣家負擔運費
             let result = 0;
-            let total = parseFloat(this.calc_Subtotals) - parseFloat(this.calc_Discount) - parseFloat(this.calc_DeliveryFee);
+            let total =
+                parseFloat(this.calc_Subtotals) -
+                parseFloat(this.calc_Discount) -
+                parseFloat(this.calc_DeliveryFee);
             if (isNaN(total) == false) {
-                result += total
+                result += total;
             }
             return result.toFixed(2);
         },
@@ -343,16 +367,16 @@ export default {
     },
     methods: {
         convertDisplayText(list, key) {
-            let result = list.find(x => x.key == key);
+            let result = list.find((x) => x.key == key);
             if (result) {
-                return result.value
+                return result.value;
             }
             return "";
         },
         convertDisplayText_Products(list, key) {
-            let result = list.find(x => x.key == key);
+            let result = list.find((x) => x.key == key);
             if (result) {
-                return `${result.SKU} ${result.value}`
+                return `${result.SKU} ${result.value}`;
             }
             return "";
         },
@@ -448,7 +472,7 @@ export default {
                 await this.deleteDiscount(item);
             } else if (this.actionType == "finish") {
                 this.beforeDeliveryOrderFinish();
-                this.$emit('finish', this.deliveryOrderItem);//觸發一個在子元件中宣告的事件 childEvnet
+                this.$emit("finish", this.deliveryOrderItem); //觸發一個在子元件中宣告的事件 childEvnet
             }
         },
         calcGrossProfit(retailPrice, cost) {
@@ -465,7 +489,10 @@ export default {
                 return;
             }
             let result = 0;
-            let grossMargin = (parseNumber(retailPrice) - parseNumber(cost)) / parseNumber(retailPrice) * 100;
+            let grossMargin =
+                ((parseNumber(retailPrice) - parseNumber(cost)) /
+                    parseNumber(retailPrice)) *
+                100;
             if (isNaN(grossMargin) == false) {
                 result += grossMargin;
             }
@@ -491,18 +518,16 @@ export default {
         async getDeliveryOrderDetails() {
             let filter = {
                 DeliveryOrderID: this.deliveryOrderItem.ID,
-            }
+            };
             await getDeliveryOrderDetails(filter)
                 .then((response) => {
                     if (response.data.records != null) {
                         this.deliveryOrderDetails = response.data.records;
-                    }
-                    else {
+                    } else {
                         this.deliveryOrderDetails = [];
                     }
                 })
-                .catch((error) => {
-                });
+                .catch((error) => { });
         },
         async postDeliveryOrderDetail(item) {
             item = this.preSend(item);
@@ -550,7 +575,7 @@ export default {
                 });
         },
         async postDeliveryOrderDetails(item) {
-            item.map(x => {
+            item.map((x) => {
                 x.DeliveryOrderID = this.deliveryOrderItem.ID;
                 x = this.preSend(x);
             });
@@ -578,18 +603,16 @@ export default {
         async getDiscounts() {
             let filter = {
                 DeliveryOrderID: this.deliveryOrderItem.ID,
-            }
+            };
             await getDiscounts(filter)
                 .then((response) => {
                     if (response.data.records != null) {
                         this.discounts = response.data.records;
-                    }
-                    else {
+                    } else {
                         this.discounts = [];
                     }
                 })
-                .catch((error) => {
-                });
+                .catch((error) => { });
         },
         async postDiscount(item) {
             item = this.preSendDiscounts(item);
@@ -644,8 +667,8 @@ export default {
                 this.getDiscounts();
             }
         },
-    }
-}
+    },
+};
 const parseNumber = function (x) {
     let parsed = parseFloat(x);
     if (isNaN(parsed) == true) {

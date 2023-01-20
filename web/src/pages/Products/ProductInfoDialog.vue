@@ -61,7 +61,8 @@
                 <v-row>
                     <v-col cols="12" sm="12" lg="12">
                         <c-card-rounded>
-                            <c-data-table :prop_headers="purchaseHistoryHeader" :prop_items="purchaseHistories" :prop_search="search">
+                            <c-data-table :prop_headers="purchaseHistoryHeader" :prop_items="purchaseHistories"
+                                :prop_search="search">
                                 <template v-slot:top="{ item }">
                                     <div class="pa-4 text-h5 d-flex justify-center">採購歷史紀錄</div>
                                     <v-divider></v-divider>
@@ -70,7 +71,9 @@
                                     <span>{{ convertDisplayText(allSuppliersList, item.SupplierID) }}</span>
                                 </template>
                                 <template v-slot:item.ShippingArriveAt="{ item }">
-                                    <span v-if="item.ShippingArriveAt">{{ convertDateFormat(item.ShippingArriveAt) }}</span>
+                                    <span v-if="item.ShippingArriveAt">{{
+                                        convertDateFormat(item.ShippingArriveAt)
+                                    }}</span>
                                 </template>
                                 <template v-slot:item.actions="{ item }">
                                     <v-icon small class="mx-1" @click.stop="onClick_checkoutPurchaseHistory(item)">
@@ -84,7 +87,8 @@
                 <v-row>
                     <v-col cols="12" sm="12" lg="12">
                         <c-card-rounded>
-                            <c-data-table :prop_headers="historyHeader_delivery" :prop_items="deliveryHistories" :prop_search="search">
+                            <c-data-table :prop_headers="historyHeader_delivery" :prop_items="deliveryHistories"
+                                :prop_search="search">
                                 <template v-slot:top="{ item }">
                                     <div class="pa-4 text-h5 d-flex justify-center">出貨歷史紀錄</div>
                                     <v-divider></v-divider>
@@ -117,18 +121,18 @@
 </template>
 
 <script>
-import Alert from '../../components/Alert/index.vue'
-import CardRounded from "../../components/Cards/CardRounded.vue";
-import DatePicker from "../../components/Pickers/DatePicker.vue";
-import DataTable from "../../components/DataTables/DataTable.vue";
-import PurchaseInfoDialog from '../../components/PurchaseInfoDialog/index.vue'
-import DeliveryOrderInfoDialog from '../../components/DeliveryOrderInfoDialog/index.vue'
-import { getProductPurchaseHistories, getProductDeliveryHistories } from "../../apis/ProductsAPI";
-import { getPurchase, putPurchase } from "../../apis/PurchasesAPI";
-import { getDeliveryOrder, putDeliveryOrder } from "../../apis/DeliveryOrdersAPI";
+import Alert from '@/components/Alert/index.vue'
+import CardRounded from "@/components/Cards/CardRounded.vue";
+import DatePicker from "@/components/Pickers/DatePicker.vue";
+import DataTable from "@/components/DataTables/DataTable.vue";
+import PurchaseInfoDialog from '@/pages/Purchases/PurchaseInfoDialog.vue'
+import DeliveryOrderInfoDialog from '@/pages/DeliveryOrders/DeliveryOrderInfoDialog.vue'
+import { getProductPurchaseHistories, getProductDeliveryHistories } from "@/apis/ProductsAPI";
+import { getPurchase, putPurchase } from "@/apis/PurchasesAPI";
+import { getDeliveryOrder, putDeliveryOrder } from "@/apis/DeliveryOrdersAPI";
 
 export default {
-    name: 'productInfoDialog',
+    name: 'ProductInfoDialog',
     components: {
         Alert,
         PurchaseInfoDialog,
@@ -404,11 +408,11 @@ export default {
             }
             return result.toFixed(2);
         },
-        calcStocks(){
+        calcStocks() {
             let purchaseDetailQTYCount = 0;
             let deliveryDetailQTYCount = 0;
-            this.purchaseHistories.map((x)=>{purchaseDetailQTYCount+=x.PurchaseDetailQTY});
-            this.deliveryHistories.map((x)=>{deliveryDetailQTYCount+=x.QTY});
+            this.purchaseHistories.map((x) => { purchaseDetailQTYCount += x.PurchaseDetailQTY });
+            this.deliveryHistories.map((x) => { deliveryDetailQTYCount += x.QTY });
             return purchaseDetailQTYCount - deliveryDetailQTYCount;
         },
         preSendPurchase(item) {

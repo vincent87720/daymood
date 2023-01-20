@@ -84,10 +84,10 @@
 </template>
 
 <script>
-import { getPurchaseDetails } from "../../apis/PurchaseDetailsAPI";
+import { getPurchaseDetails } from "@/apis/PurchaseDetailsAPI";
 
 export default {
-    name: 'purchaseDetailDialog',
+    name: 'PurchaseDetailDialog',
     components: {
     },
     data() {

@@ -23,8 +23,9 @@
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <c-data-table :prop_headers="isSmalldevice ? deliveryOrderHeaderLess : deliveryOrderHeader" :prop_items="deliveryOrders" :prop_search="search"
-                        @edit="onClick_editButton" @delete="onClick_deleteButton">
+                    <c-data-table :prop_headers="isSmalldevice ? deliveryOrderHeaderLess : deliveryOrderHeader"
+                        :prop_items="deliveryOrders" :prop_search="search" @edit="onClick_editButton"
+                        @delete="onClick_deleteButton">
                         <template v-slot:item.Status="{ item }">
                             <v-chip :color="getStatusChipColor(item.Status)" dark small>
                                 {{ convertDisplayText(systemConfigs.DeliveryOrderStatus, item.Status) }}
@@ -46,13 +47,13 @@
                             }}</span>
                         </template>
                         <template v-slot:item.OrderAt="{ item }">
-                            <span>{{ item.OrderAt.substring(0,10)}}</span>
+                            <span>{{ item.OrderAt.substring(0, 10) }}</span>
                         </template>
                         <template v-slot:item.SendAt="{ item }">
-                            <span>{{ item.SendAt.substring(0,10)}}</span>
+                            <span>{{ item.SendAt.substring(0, 10) }}</span>
                         </template>
                         <template v-slot:item.ArriveAt="{ item }">
-                            <span>{{ item.ArriveAt.substring(0,10)}}</span>
+                            <span>{{ item.ArriveAt.substring(0, 10) }}</span>
                         </template>
                         <template v-slot:item.actions.plus="{ item }">
                             <v-icon small class="mx-1" @click.stop="onClick_checkoutDeliveryOrderInfo(item)">
@@ -79,20 +80,20 @@
 
 <script>
 import key from 'keymaster'
-import Alert from '../../components/Alert/index.vue'
-import ConfirmDialog from '../../components/ConfirmDialog/index.vue'
-import DeliveryOrderDialog from '../../components/DeliveryOrderDialog/index.vue'
-import DeliveryOrderInfoDialog from '../../components/DeliveryOrderInfoDialog/index.vue'
-import BtnAdd from "../../components/Buttons/BtnAdd.vue";
-import BtnDownload from "../../components/Buttons/BtnDownload.vue";
-import BtnSetting from "../../components/Buttons/BtnSetting.vue";
-import DataTable from "../../components/DataTables/DataTable.vue";
+import Alert from '@/components/Alert/index.vue'
+import ConfirmDialog from '@/components/ConfirmDialog/index.vue'
+import BtnAdd from "@/components/Buttons/BtnAdd.vue";
+import BtnDownload from "@/components/Buttons/BtnDownload.vue";
+import BtnSetting from "@/components/Buttons/BtnSetting.vue";
+import DataTable from "@/components/DataTables/DataTable.vue";
+import DeliveryOrderDialog from '@/pages/DeliveryOrders/DeliveryOrderDialog.vue'
+import DeliveryOrderInfoDialog from '@/pages/DeliveryOrders/DeliveryOrderInfoDialog.vue'
 import {
     getDeliveryOrders,
     postDeliveryOrder,
     putDeliveryOrder,
     deleteDeliveryOrder,
-} from "../../apis/DeliveryOrdersAPI";
+} from "@/apis/DeliveryOrdersAPI";
 
 
 class DeliveryOrder {
@@ -184,7 +185,7 @@ export default {
             return this.$store.state.systemConfigs;
         },
         isSmalldevice() {
-            if(this.$vuetify.breakpoint.name == "xs"){
+            if (this.$vuetify.breakpoint.name == "xs") {
                 return true;
             }
             return false;

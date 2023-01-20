@@ -126,16 +126,16 @@
 </template>
 
 <script>
-import Alert from '../../components/Alert/index.vue'
-import CardRounded from "../../components/Cards/CardRounded.vue";
-import ConfirmDialog from '../../components/ConfirmDialog/index.vue'
-import DatePicker from "../../components/Pickers/DatePicker.vue";
-import BtnAdd from "../../components/Buttons/BtnAdd.vue";
-import BtnUpload from "../../components/Buttons/BtnUpload.vue";
-import DataTable from "../../components/DataTables/DataTable.vue";
-import PurchaseDetailDialog from '../../components/PurchaseDetailDialog/index.vue';
-import PurchaseDetailImportDialog from '../../components/PurchaseDetailImportDialog/index.vue';
-import { getPurchaseDetails, postPurchaseDetails, postPurchaseDetail, putPurchaseDetail, deletePurchaseDetail } from "../../apis/PurchaseDetailsAPI";
+import Alert from '@/components/Alert/index.vue'
+import CardRounded from "@/components/Cards/CardRounded.vue";
+import ConfirmDialog from '@/components/ConfirmDialog/index.vue'
+import DatePicker from "@/components/Pickers/DatePicker.vue";
+import BtnAdd from "@/components/Buttons/BtnAdd.vue";
+import BtnUpload from "@/components/Buttons/BtnUpload.vue";
+import DataTable from "@/components/DataTables/DataTable.vue";
+import PurchaseDetailDialog from '@/pages/Purchases/PurchaseDetailDialog.vue';
+import PurchaseDetailImportDialog from '@/pages/Purchases/PurchaseDetailImportDialog.vue';
+import { getPurchaseDetails, postPurchaseDetails, postPurchaseDetail, putPurchaseDetail, deletePurchaseDetail } from "@/apis/PurchaseDetailsAPI";
 
 class PurchaseDetail {
     ID = undefined;
@@ -157,7 +157,7 @@ class PurchaseDetail {
 }
 
 export default {
-    name: 'purchaseInfoDialog',
+    name: 'PurchaseInfoDialog',
     components: {
         Alert,
         ConfirmDialog,

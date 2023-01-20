@@ -57,7 +57,7 @@
 <script>
 
 export default {
-    name: 'discountDialog',
+    name: 'DiscountDialog',
     components: {
     },
     data() {

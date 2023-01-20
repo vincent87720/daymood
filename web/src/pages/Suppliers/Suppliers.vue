@@ -45,19 +45,19 @@
 
 <script>
 import key from "keymaster";
-import SupplierDialog from "../../components/SupplierDialog/index.vue";
-import Alert from "../../components/Alert/index.vue";
-import ConfirmDialog from "../../components/ConfirmDialog/index.vue";
-import BtnAdd from "../../components/Buttons/BtnAdd.vue";
-import BtnDownload from "../../components/Buttons/BtnDownload.vue";
-import BtnSetting from "../../components/Buttons/BtnSetting.vue";
-import DataTable from "../../components/DataTables/DataTable.vue";
+import Alert from "@/components/Alert/index.vue";
+import ConfirmDialog from "@/components/ConfirmDialog/index.vue";
+import BtnAdd from "@/components/Buttons/BtnAdd.vue";
+import BtnDownload from "@/components/Buttons/BtnDownload.vue";
+import BtnSetting from "@/components/Buttons/BtnSetting.vue";
+import DataTable from "@/components/DataTables/DataTable.vue";
+import SupplierDialog from "@/pages/Suppliers/SupplierDialog.vue";
 import {
     getSuppliers,
     postSupplier,
     putSupplier,
     deleteSupplier,
-} from "../../apis/SuppliersAPI";
+} from "@/apis/SuppliersAPI";
 
 class Supplier {
     ID = undefined;

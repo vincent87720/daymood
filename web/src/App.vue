@@ -50,12 +50,12 @@
 </template>
 
 <script>
-import Products from './components/Products/index.vue'
-import Suppliers from './components/Suppliers/index.vue'
-import Purchases from './components/Purchases/index.vue'
-import DeliveryOrders from './components/DeliveryOrders/index.vue'
-import ProductDialog from './components/ProductDialog/index.vue'
-import Reports from './components/Reports/index.vue'
+import Products from './pages/Products/Products.vue'
+import Suppliers from './pages/Suppliers/Suppliers.vue'
+import Purchases from './pages/Purchases/Purchases.vue'
+import DeliveryOrders from './pages/DeliveryOrders/DeliveryOrders.vue'
+import ProductDialog from './pages/Products/ProductDialog.vue'
+import Reports from './pages/Reports/index.vue'
 
 export default {
   name: 'App',

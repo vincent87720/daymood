@@ -62,7 +62,7 @@
 <script>
 
 export default {
-    name: 'deliveryOrderDetailDialog',
+    name: 'DeliveryOrderDetailDialog',
     components: {
     },
     data() {

@@ -24,8 +24,9 @@
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <c-data-table :prop_headers="isSmalldevice? productHeaderLess : productHeader" :prop_items="products" :prop_search="search"
-                        @edit="onClick_editButton" @delete="onClick_deleteButton">
+                    <c-data-table :prop_headers="isSmalldevice ? productHeaderLess : productHeader"
+                        :prop_items="products" :prop_search="search" @edit="onClick_editButton"
+                        @delete="onClick_deleteButton">
                         <template v-slot:item.ProductType="{ item }">
                             <span>{{ convertDisplayText(systemConfigs.ProductType, item.ProductType) }}</span>
                         </template>
@@ -61,23 +62,23 @@
 
 <script>
 import key from 'keymaster'
-import ProductDialog from '../../components/ProductDialog/index.vue'
-import ProductInfoDialog from '../../components/ProductInfoDialog/index.vue'
-import ProductImportDialog from '../../components/ProductImportDialog/index.vue'
-import Alert from '../../components/Alert/index.vue'
-import ConfirmDialog from '../../components/ConfirmDialog/index.vue'
-import BtnAdd from "../../components/Buttons/BtnAdd.vue";
-import BtnDownload from "../../components/Buttons/BtnDownload.vue";
-import BtnUpload from "../../components/Buttons/BtnUpload.vue";
-import BtnSetting from "../../components/Buttons/BtnSetting.vue";
-import DataTable from "../../components/DataTables/DataTable.vue";
+import Alert from '@/components/Alert/index.vue'
+import ConfirmDialog from '@/components/ConfirmDialog/index.vue'
+import BtnAdd from "@/components/Buttons/BtnAdd.vue";
+import BtnDownload from "@/components/Buttons/BtnDownload.vue";
+import BtnUpload from "@/components/Buttons/BtnUpload.vue";
+import BtnSetting from "@/components/Buttons/BtnSetting.vue";
+import DataTable from "@/components/DataTables/DataTable.vue";
+import ProductDialog from '@/pages/Products/ProductDialog.vue'
+import ProductInfoDialog from '@/pages/Products/ProductInfoDialog.vue'
+import ProductImportDialog from '@/pages/Products/ProductImportDialog.vue'
 import {
     getProducts,
     postProducts,
     postProduct,
     putProduct,
     deleteProduct,
-} from "../../apis/ProductsAPI";
+} from "@/apis/ProductsAPI";
 const FileDownload = require('js-file-download');
 
 class Product {
@@ -139,7 +140,7 @@ export default {
                 { text: '', value: 'actions', sortable: false, width: "10%" },
             ],
             productHeaderLess: [
-                { text: 'SKU', value: 'SKU'},
+                { text: 'SKU', value: 'SKU' },
                 { text: '商品名稱', value: 'Name' },
                 { text: '', value: 'actions', sortable: false, width: "10%" },
             ],
@@ -163,7 +164,7 @@ export default {
             return this.$store.state.systemConfigs;
         },
         isSmalldevice() {
-            if(this.$vuetify.breakpoint.name == "xs"){
+            if (this.$vuetify.breakpoint.name == "xs") {
                 return true;
             }
             return false;

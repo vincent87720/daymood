@@ -27,8 +27,8 @@
 </template>
 
 <script>
-import CardRounded from "../../components/Cards/CardRounded.vue";
-import { getBalancesReports } from "../../apis/ReportsAPI";
+import CardRounded from "@/components/Cards/CardRounded.vue";
+import { getBalancesReports } from "@/apis/ReportsAPI";
 
 
 class Balance {

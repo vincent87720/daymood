@@ -1,8 +1,8 @@
 <template>
-    <v-dialog v-model="purchaseDetailImportDialog" hide-overlay @click:outside="onClick_cancel" fullscreen
+    <v-dialog v-model="productImportDialog" hide-overlay @click:outside="onClick_cancel" fullscreen
         transition="slide-x-reverse-transition">
         <v-card class="d-flex align-center flex-column justify-center">
-            <v-btn icon dark absolute top left @click="purchaseDetailImportDialog = false">
+            <v-btn icon dark absolute top left @click="productImportDialog = false">
                 <v-icon>mdi-arrow-left</v-icon>
             </v-btn>
             <v-card-title class="text-h5">
@@ -14,27 +14,23 @@
                         <v-file-input truncate-length="15" v-model="files" label="選擇檔案" outlined
                             prepend-icon="mdi-table-large" @change="onUpload"
                             @click:clear="onClick_clear"></v-file-input>
-                    </v-col>
-                </v-row>
-                <v-row class="ma-0 d-flex justify-center ">
-                    <v-col cols="6" class="d-flex justify-center ma-0">
-                        <span class="d-flex overflow-x-auto">
+                        <div class="d-flex flex-row justify-center mb-4">
                             <v-btn v-for="worksheet in worksheets" class="mx-1"
                                 @click="onSelect_worksheet(worksheet)">{{ worksheet }}</v-btn>
-                        </span>
+                        </div>
                     </v-col>
                 </v-row>
                 <v-row class="d-flex justify-center">
                     <v-col cols="10">
                         <v-card outlined v-if="items.length > 0">
                             <c-data-table :prop_headers="headers" :prop_items.sync="items">
-                                <template v-slot:item.ProductID="props">
-                                    <v-edit-dialog :return-value.sync="props.item.ProductID">
-                                        {{ convertDisplayText_SKU(allProductsList, props.item.ProductID) }}
+                                <template v-slot:item.ProductType="props">
+                                    <v-edit-dialog :return-value.sync="props.item.ProductType">
+                                        {{ convertDisplayText(systemConfigs.ProductType, props.item.ProductType) }}
                                         <template v-slot:input>
-                                            <v-select label="商品" v-model="props.item.ProductID"
-                                                prepend-icon="mdi-tournament" :items="allProductsList" item-text="SKU"
-                                                item-value="key"></v-select>
+                                            <v-select label="商品種類" v-model="props.item.ProductType"
+                                                prepend-icon="mdi-tournament" :items="systemConfigs.ProductType"
+                                                item-text="value" item-value="key"></v-select>
                                         </template>
                                     </v-edit-dialog>
                                 </template>
@@ -42,20 +38,9 @@
                                     <v-edit-dialog :return-value.sync="props.item.SupplierID">
                                         {{ convertDisplayText(allSuppliersList, props.item.SupplierID) }}
                                         <template v-slot:input>
-                                            <v-select label="廠商名稱" v-model="props.item.SupplierID"
-                                                prepend-icon="mdi-tournament" :items="allSuppliersList"
+                                            <v-select label="商品種類" v-model="props.item.SupplierID"
+                                                prepend-icon="mdi-tournament" :items="systemConfigs.ProductType"
                                                 item-text="value" item-value="key"></v-select>
-                                        </template>
-                                    </v-edit-dialog>
-                                </template>
-                                <template v-slot:item.Status="props">
-                                    <v-edit-dialog :return-value.sync="props.item.Status">
-                                        {{ convertDisplayText(systemConfigs.PurchaseDetailStatus, props.item.Status) }}
-                                        <template v-slot:input>
-                                            <v-select label="是否採用" v-model="props.item.Status"
-                                                prepend-icon="mdi-tournament"
-                                                :items="systemConfigs.PurchaseDetailStatus" item-text="value"
-                                                item-value="key"></v-select>
                                         </template>
                                     </v-edit-dialog>
                                 </template>
@@ -79,13 +64,13 @@
 </template>
 
 <script>
-import Alert from '../../components/Alert/index.vue'
-import DatePicker from "../../components/Pickers/DatePicker.vue";
-import DataTable from "../../components/DataTables/DataTable.vue";
+import Alert from '@/components/Alert/index.vue'
+import DatePicker from "@/components/Pickers/DatePicker.vue";
+import DataTable from "@/components/DataTables/DataTable.vue";
 const Excel = require('exceljs');
 
 export default {
-    name: 'purchaseDetailImportDialog',
+    name: 'ProductImportDialog',
     components: {
         Alert,
         "c-date-picker": DatePicker,
@@ -102,20 +87,18 @@ export default {
             worksheets: [],
             items: [],
             headers: [
-                { text: '是否採用', value: 'Status' },
                 { text: '廠商名稱', value: 'SupplierID' },
-                { text: 'SKU', value: 'ProductID' },
-                { text: '採購商品編號', value: 'NamedID' },
+                { text: 'SKU', value: 'SKU' },
                 { text: '商品名稱', value: 'Name' },
-                { text: '批價', value: 'WholesalePrice' },
-                { text: '數量', value: 'QTY' },
-                { text: '小計', value: 'Subtotal' },
-                { text: '備註', value: 'Remark' },
+                { text: '商品種類', value: 'ProductType' },
+                { text: '庫存(個)', value: 'Stocks' },
+                { text: '售價', value: 'RetailPrice' },
+                { text: '重量(g)', value: 'Weight' },
             ],
         };
     },
     props: {
-        prop_purchaseDetailImportDialog: {
+        prop_productImportDialog: {
             type: Boolean,
             required: true
         },
@@ -131,12 +114,12 @@ export default {
     mounted() {
     },
     computed: {
-        purchaseDetailImportDialog: {
+        productImportDialog: {
             get() {
-                return this.prop_purchaseDetailImportDialog
+                return this.prop_productImportDialog
             },
             set(val) {
-                this.$emit('update:prop_purchaseDetailImportDialog', val)
+                this.$emit('update:prop_productImportDialog', val)
 
             }
         },
@@ -159,30 +142,20 @@ export default {
         systemConfigs() {
             return this.$store.state.systemConfigs;
         },
-        allSuppliersList() {
-            return this.$store.state.allSuppliers;
-        },
-        allProductsList() {
-            return this.$store.state.allProducts;
-        },
-        PurchaseDetailStatusMaps() {
+        ProductTypeMaps() {
             let map = {};
-            this.$store.state.systemConfigs.PurchaseDetailStatus.map(function (x) {
+            this.$store.state.systemConfigs.ProductType.map(function (x) {
                 map[x.value] = x.key;
             })
             return map;
+        },
+        allSuppliersList() {
+            return this.$store.state.allSuppliers;
         },
         SupplierMaps() {
             let map = {};
             this.$store.state.allSuppliers.map(function (x) {
                 map[x.value] = x.key;
-            })
-            return map;
-        },
-        ProductMaps() {
-            let map = {};
-            this.$store.state.allProducts.map(function (x) {
-                map[x.SKU] = x.key;
             })
             return map;
         },
@@ -195,18 +168,11 @@ export default {
             }
             return "";
         },
-        convertDisplayText_SKU(list, key) {
-            let result = list.find(x => x.key == key);
-            if (result) {
-                return result.SKU
-            }
-            return "";
-        },
-        onClick_confirm: function () {
-            this.$emit('confirm', this.items);
+        onClick_confirm: function () { //有子元件的事件觸發 自定義事件childevent
+            this.$emit('confirm', this.items);//觸發一個在子元件中宣告的事件 childEvnet
         },
         onClick_cancel() {
-            this.purchaseDetailImportDialog = false;
+            this.productImportDialog = false;
         },
         onClick_clear() {
             this.files = undefined;
@@ -248,15 +214,14 @@ export default {
                     worksheet.eachRow({ includeEmpty: true }, function (row, rowNumber) {
                         if (rowNumber > 1) {
                             let obj = {
-                                Status: vthis.PurchaseDetailStatusMaps[row.getCell(headers["是否採用"]).value],
-                                SupplierID: vthis.SupplierMaps[row.getCell(headers["廠商"]).value],
-                                ProductID: vthis.ProductMaps[row.getCell(headers["SKU"]).value],
-                                NamedID: row.getCell(headers["採購編號"]).value,
+                                SupplierID: vthis.SupplierMaps[row.getCell(headers["廠商名稱"]).value],
+                                SKU: row.getCell(headers["SKU"]).value,
                                 Name: row.getCell(headers["商品名稱"]).value,
-                                WholesalePrice: row.getCell(headers["韓幣批價"]).value,
-                                QTY: row.getCell(headers["數量"]).value,
-                                Subtotal: row.getCell(headers["批價總額(WON)"]).value,
-                                Remark: row.getCell(headers["備註"]).value,
+                                ProductType: vthis.ProductTypeMaps[row.getCell(headers["商品種類"]).value],
+                                Stocks: row.getCell(headers["庫存"]).value,
+                                RetailPrice: row.getCell(headers["售價"]).value,
+                                Weight: row.getCell(headers["重量"]).value,
+                                DataStatus: 1,
                             }
                             dataAry.push(obj)
                         }
@@ -266,7 +231,7 @@ export default {
                 .catch(function () {
                     vthis.alert = true;
                     vthis.alertType = "Fail";
-                    vthis.alertText = "格式錯誤，請確認資料表包含「廠商名稱」、「SKU」、「採購商品編號」、「商品名稱」、「批價」、「數量」、「小計」及「是否採用」欄位";
+                    vthis.alertText = "格式錯誤，請確認資料表包含「廠商名稱」、「SKU」、「商品名稱」、「商品種類」、「庫存」、「售價」及「重量」欄位";
                 });
         },
     },

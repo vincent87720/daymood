@@ -23,8 +23,9 @@
             </v-row>
             <v-row>
                 <v-col cols="12">
-                    <c-data-table :prop_headers="isSmalldevice ? purchaseHeaderLess : purchaseHeader" :prop_items="purchases" :prop_search="search"
-                        @edit="onClick_editButton" @delete="onClick_deleteButton">
+                    <c-data-table :prop_headers="isSmalldevice ? purchaseHeaderLess : purchaseHeader"
+                        :prop_items="purchases" :prop_search="search" @edit="onClick_editButton"
+                        @delete="onClick_deleteButton">
                         <template v-slot:item.Status="{ item }">
                             <v-chip :color="getStatusChipColor(item.Status)" dark small>
                                 {{ convertDisplayText(systemConfigs.PurchaseStatus, item.Status) }}
@@ -58,20 +59,20 @@
 
 <script>
 import key from 'keymaster'
-import Alert from '../../components/Alert/index.vue'
-import ConfirmDialog from '../../components/ConfirmDialog/index.vue'
-import PurchaseDialog from '../../components/PurchaseDialog/index.vue'
-import PurchaseInfoDialog from '../../components/PurchaseInfoDialog/index.vue'
-import BtnAdd from "../../components/Buttons/BtnAdd.vue";
-import BtnDownload from "../../components/Buttons/BtnDownload.vue";
-import BtnSetting from "../../components/Buttons/BtnSetting.vue";
-import DataTable from "../../components/DataTables/DataTable.vue";
+import Alert from '@/components/Alert/index.vue'
+import ConfirmDialog from '@/components/ConfirmDialog/index.vue'
+import BtnAdd from "@/components/Buttons/BtnAdd.vue";
+import BtnDownload from "@/components/Buttons/BtnDownload.vue";
+import BtnSetting from "@/components/Buttons/BtnSetting.vue";
+import DataTable from "@/components/DataTables/DataTable.vue";
+import PurchaseDialog from '@/pages/Purchases/PurchaseDialog.vue'
+import PurchaseInfoDialog from '@/pages/Purchases/PurchaseInfoDialog.vue'
 import {
     getPurchases,
     postPurchase,
     putPurchase,
     deletePurchase,
-} from "../../apis/PurchasesAPI";
+} from "@/apis/PurchasesAPI";
 
 
 class Purchase {
@@ -165,7 +166,7 @@ export default {
             return this.$store.state.systemConfigs;
         },
         isSmalldevice() {
-            if(this.$vuetify.breakpoint.name == "xs"){
+            if (this.$vuetify.breakpoint.name == "xs") {
                 return true;
             }
             return false;
