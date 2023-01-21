@@ -186,21 +186,49 @@ func (purchase *Purchase) Delete(db *sql.DB) (modelErr *ModelError) {
 		return &ModelError{Model: "purchases", Code: 0, Message: err.Error()}
 	}
 
-	stmt, err := db.Prepare("DELETE FROM purchases WHERE id = $1;")
+	deletePurchaseDetailsStmt, err := db.Prepare("DELETE FROM purchaseDetails WHERE purchase_id = $1;")
 	if err != nil {
 		return &ModelError{Model: "purchases", Code: 0, Message: err.Error()}
 	}
-	defer stmt.Close()
+	defer deletePurchaseDetailsStmt.Close()
 
-	res, err := stmt.Exec(purchase.ID)
-	if err, ok := err.(*pq.Error); ok {
-		fmt.Println(err.Code.Name())
-		return &ModelError{Model: "purchases", Code: 1, Message: "purchases still have children."}
+	deletePurchaseStmt, err := db.Prepare("DELETE FROM purchases WHERE id = $1;")
+	if err != nil {
+		return &ModelError{Model: "purchases", Code: 0, Message: err.Error()}
+	}
+	defer deletePurchaseStmt.Close()
+
+	ctx := context.Background()
+
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return normalError("purchases", err)
 	}
 
-	rowsAff, err := res.RowsAffected()
-	if rowsAff != 1 {
-		return &ModelError{Model: "purchases", Code: 2, Message: "RowsAffected incorrect."}
+	res, err := deletePurchaseDetailsStmt.Exec(purchase.ID)
+	if err, ok := err.(*pq.Error); ok {
+		_ = tx.Rollback()
+		return &ModelError{Model: "purchases", Code: 1, Message: err.Message}
+	}
+	rowsAff, execErr := res.RowsAffected()
+	if execErr != nil || err != nil || rowsAff != 1 {
+		_ = tx.Rollback()
+		return transactionError("purchases")
+	}
+
+	res, err = deletePurchaseStmt.Exec(purchase.ID)
+	if err, ok := err.(*pq.Error); ok {
+		_ = tx.Rollback()
+		return &ModelError{Model: "purchases", Code: 1, Message: err.Message}
+	}
+	rowsAff, execErr = res.RowsAffected()
+	if execErr != nil || err != nil || rowsAff != 1 {
+		_ = tx.Rollback()
+		return transactionError("purchases")
+	}
+
+	if err := tx.Commit(); err != nil {
+		return normalError("purchases", err)
 	}
 	return nil
 }
