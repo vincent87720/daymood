@@ -47,13 +47,13 @@
                             }}</span>
                         </template>
                         <template v-slot:item.OrderAt="{ item }">
-                            <span>{{ item.OrderAt.substring(0, 10) }}</span>
+                            <span v-if="item.OrderAt">{{ item.OrderAt.substring(0, 10) }}</span>
                         </template>
                         <template v-slot:item.SendAt="{ item }">
-                            <span>{{ item.SendAt.substring(0, 10) }}</span>
+                            <span v-if="item.SendAt">{{ item.SendAt.substring(0, 10) }}</span>
                         </template>
                         <template v-slot:item.ArriveAt="{ item }">
-                            <span>{{ item.ArriveAt.substring(0, 10) }}</span>
+                            <span v-if="item.ArriveAt">{{ item.ArriveAt.substring(0, 10) }}</span>
                         </template>
                         <template v-slot:item.actions.plus="{ item }">
                             <v-icon small class="mx-1" @click.stop="onClick_checkoutDeliveryOrderInfo(item)">
@@ -286,9 +286,9 @@ export default {
         },
         async postDeliveryOrder(item) {
             item = this.preSend(item);
-            item.OrderAt = null;
-            item.SendAt = null;
-            item.ArriveAt = null;
+            item.OrderAt = item.OrderAt || null;
+            item.SendAt = item.SendAt || null;
+            item.ArriveAt = item.ArriveAt || null;
             item.Status = 1;
             await postDeliveryOrder(item)
                 .then(async (response) => {
