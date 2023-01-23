@@ -14,7 +14,7 @@ type ProductDeliveryHistory struct {
 	OrderAt               *string  //下訂日期
 }
 
-func GetProductDeliveryHistories(db *sql.DB, productID int64) (historyXi []ProductDeliveryHistory, modelErr *ModelError) {
+func (productDeliveryHistory *ProductDeliveryHistory) ReadAll(db *sql.DB, productID int64) (historyXi []ProductDeliveryHistory, modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {
 		return nil, normalError("productDeliveryHistories", err)

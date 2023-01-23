@@ -5,11 +5,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vincent87720/daymood/app/internal/model"
-	"github.com/vincent87720/daymood/app/internal/settings"
+	usecases "github.com/vincent87720/daymood/app/internal/usecases"
 )
 
-func SetupReportRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*gin.Engine, error) {
+func SetupReportRouters(router *gin.Engine, db *sql.DB) (*gin.Engine, error) {
 
 	router.GET("/reports/balances", GetBalancesHandler(db))
 
@@ -18,7 +17,8 @@ func SetupReportRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*g
 
 func GetBalancesHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
-		balanceXi, modelErr := model.GetBalances(db)
+		balance := usecases.NewBalance()
+		balanceXi, modelErr := balance.Read(db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return

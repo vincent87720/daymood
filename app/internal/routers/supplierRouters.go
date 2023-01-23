@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vincent87720/daymood/app/internal/model"
 	"github.com/vincent87720/daymood/app/internal/settings"
+	"github.com/vincent87720/daymood/app/internal/usecases"
 )
 
 func SetupSupplierRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*gin.Engine, error) {
@@ -23,7 +24,10 @@ func SetupSupplierRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (
 
 func GetSuppliersHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
-		supplierXi, modelErr := model.GetAllSuppliers(db)
+		supplierModel := &model.Supplier{}
+
+		supplier := usecases.NewSupplier(supplierModel)
+		supplierXi, modelErr := model.ReadAll(supplier, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -42,23 +46,21 @@ func GetSuppliersHandler(db *sql.DB) gin.HandlerFunc {
 func PostSupplierHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
-		supplier := model.Supplier{}
+		supplierModel := &model.Supplier{}
 
-		err := context.BindJSON(&supplier)
+		err := context.BindJSON(&supplierModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		if checkEmpty(supplier.Name) == true {
+		if checkEmpty(supplierModel.Name) == true {
 			context.JSON(http.StatusBadRequest, emptyError("name"))
 			return
 		}
 
-		//DataStatus預設為使用中
-		supplier.DataStatus = 1
-
-		modelErr := supplier.Create(db)
+		supplier := usecases.NewSupplier(supplierModel)
+		modelErr := usecases.Create(supplier, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -88,22 +90,23 @@ func PutSupplierHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		supplier := model.Supplier{}
+		supplierModel := &model.Supplier{}
 
-		err = context.BindJSON(&supplier)
+		err = context.BindJSON(&supplierModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		if checkEmpty(supplier.Name) == true {
+		if checkEmpty(supplierModel.Name) == true {
 			context.JSON(http.StatusBadRequest, emptyError("name"))
 			return
 		}
 
-		supplier.ID = supplierIDVal
+		supplierModel.ID = supplierIDVal
 
-		modelErr := supplier.Update(db)
+		supplier := usecases.NewSupplier(supplierModel)
+		modelErr := usecases.Update(supplier, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -134,11 +137,12 @@ func DeleteSupplierHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		supplier := model.Supplier{
+		supplierModel := &model.Supplier{
 			ID: supplierIDVal,
 		}
 
-		modelErr := supplier.Delete(db)
+		supplier := usecases.NewSupplier(supplierModel)
+		modelErr := usecases.Delete(supplier, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return

@@ -20,7 +20,7 @@ func SetupRouters(db *sql.DB, s settings.Settings) (*gin.Engine, error) {
 	SetupDeliveryOrderRouters(router, db)
 	SetupDeliveryOrderDetailRouters(router, db, s)
 	SetupDiscountRouters(router, db, s)
-	SetupReportRouters(router, db, s)
+	SetupReportRouters(router, db)
 	SetupSettingsRouters(router, db, &s)
 	SetupSystemConfigRouters(router, s)
 

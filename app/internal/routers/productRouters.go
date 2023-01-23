@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vincent87720/daymood/app/internal/model"
 	"github.com/vincent87720/daymood/app/internal/settings"
+	"github.com/vincent87720/daymood/app/internal/usecases"
 )
 
 func SetupProductRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*gin.Engine, error) {
@@ -29,7 +30,9 @@ func SetupProductRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*
 
 func GetProductsHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
-		productXi, modelErr := model.GetAllProducts(db)
+		productModel := &model.Product{}
+		product := usecases.NewProduct(productModel)
+		productXi, modelErr := usecases.ReadAll(product, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -48,22 +51,21 @@ func GetProductsHandler(db *sql.DB) gin.HandlerFunc {
 func PostProductHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
-		product := model.Product{}
+		productModel := &model.Product{}
 
-		err := context.BindJSON(&product)
+		err := context.BindJSON(&productModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		if checkEmpty(product.Name) == true {
+		if checkEmpty(productModel.Name) == true {
 			context.JSON(http.StatusBadRequest, emptyError("name"))
 			return
 		}
 
-		product.DataStatus = 1
-
-		modelErr := product.Create(db)
+		product := usecases.NewProduct(productModel)
+		modelErr := usecases.Create(product, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -94,12 +96,10 @@ func PostProductsHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 				context.JSON(http.StatusBadRequest, emptyError("name"))
 				return
 			}
-			val.DataStatus = 1
 		}
 
-		var product model.Product
-
-		modelErr := product.CreateMultiple(db, productXi)
+		product := usecases.NewProduct(&model.Product{})
+		modelErr := usecases.CreateMultiple(product, db, productXi)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -130,23 +130,23 @@ func PutProductHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 			return
 		}
 
-		productForm := model.Product{}
+		productModel := &model.Product{}
 
-		err = context.BindJSON(&productForm)
+		err = context.BindJSON(&productModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		if checkEmpty(productForm.Name) == true {
+		if checkEmpty(productModel.Name) == true {
 			context.JSON(http.StatusBadRequest, emptyError("name"))
 			return
 		}
 
-		product := productForm
-		product.ID = productIDVal
+		productModel.ID = productIDVal
 
-		modelErr := product.Update(db)
+		product := usecases.NewProduct(productModel)
+		modelErr := usecases.Update(product, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -181,11 +181,12 @@ func DeleteProductHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 			return
 		}
 
-		product := model.Product{
+		productModel := &model.Product{
 			ID: productIDVal,
 		}
 
-		modelErr := product.Delete(db)
+		product := usecases.NewProduct(productModel)
+		modelErr := usecases.Delete(product, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -214,7 +215,9 @@ func GetProductPurchaseHistoriesHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		historyXi, modelErr := model.GetProductPurchaseHistories(db, productIDVal)
+		productModel := &model.Product{}
+		product := usecases.NewProduct(productModel)
+		historyXi, modelErr := product.ReadPurchaseHistories(db, productIDVal)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -244,7 +247,9 @@ func GetProductDeliveryHistoriesHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		historyXi, modelErr := model.GetProductDeliveryHistories(db, productIDVal)
+		productModel := &model.Product{}
+		product := usecases.NewProduct(productModel)
+		historyXi, modelErr := product.ReadDeliveryHistories(db, productIDVal)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return

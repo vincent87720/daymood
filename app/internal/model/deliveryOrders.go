@@ -1,8 +1,8 @@
 package model
 
 import (
+	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/lib/pq"
 )
@@ -27,7 +27,7 @@ type DeliveryOrder struct {
 	UpdateAt          string  //最後編輯時間
 }
 
-func GetAllDeliveryOrders(db *sql.DB) (deliveryOrderXi []DeliveryOrder, modelErr *ModelError) {
+func (deliveryOrder *DeliveryOrder) ReadAll(db *sql.DB) (deliveryOrderXi []interface{}, modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {
 		return nil, &ModelError{Model: "deliveryOrders", Code: 0, Message: err.Error()}
@@ -39,26 +39,26 @@ func GetAllDeliveryOrders(db *sql.DB) (deliveryOrderXi []DeliveryOrder, modelErr
 	}
 	defer row.Close()
 
-	var deliveryOrder DeliveryOrder
+	var deliveryOrderRow DeliveryOrder
 	for row.Next() {
 		err := row.Scan(
-			&deliveryOrder.ID, &deliveryOrder.Status, &deliveryOrder.DeliveryType, &deliveryOrder.DeliveryStatus,
-			&deliveryOrder.DeliveryFeeStatus, &deliveryOrder.PaymentType, &deliveryOrder.PaymentStatus,
-			&deliveryOrder.TotalOriginal, &deliveryOrder.Discount, &deliveryOrder.TotalDiscounted,
-			&deliveryOrder.Remark, &deliveryOrder.DataOrder, &deliveryOrder.OrderAt,
-			&deliveryOrder.SendAt, &deliveryOrder.ArriveAt, &deliveryOrder.CreateAt,
-			&deliveryOrder.UpdateAt,
+			&deliveryOrderRow.ID, &deliveryOrderRow.Status, &deliveryOrderRow.DeliveryType, &deliveryOrderRow.DeliveryStatus,
+			&deliveryOrderRow.DeliveryFeeStatus, &deliveryOrderRow.PaymentType, &deliveryOrderRow.PaymentStatus,
+			&deliveryOrderRow.TotalOriginal, &deliveryOrderRow.Discount, &deliveryOrderRow.TotalDiscounted,
+			&deliveryOrderRow.Remark, &deliveryOrderRow.DataOrder, &deliveryOrderRow.OrderAt,
+			&deliveryOrderRow.SendAt, &deliveryOrderRow.ArriveAt, &deliveryOrderRow.CreateAt,
+			&deliveryOrderRow.UpdateAt,
 		)
 		if err != nil {
 			return nil, &ModelError{Model: "deliveryOrders", Code: 0, Message: err.Error()}
 		}
 
-		deliveryOrderXi = append(deliveryOrderXi, deliveryOrder)
+		deliveryOrderXi = append(deliveryOrderXi, deliveryOrderRow)
 	}
 
 	return deliveryOrderXi, nil
 }
-func (deliveryOrder *DeliveryOrder) GetDeliveryOrder(db *sql.DB) (deliveryOrderXi []DeliveryOrder, modelErr *ModelError) {
+func (deliveryOrder *DeliveryOrder) Read(db *sql.DB) (deliveryOrderXi []interface{}, modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {
 		return nil, &ModelError{Model: "deliveryOrders", Code: 0, Message: err.Error()}
@@ -155,75 +155,48 @@ func (deliveryOrder *DeliveryOrder) Delete(db *sql.DB) (modelErr *ModelError) {
 		return &ModelError{Model: "deliveryOrders", Code: 0, Message: err.Error()}
 	}
 
-	stmt, err := db.Prepare("DELETE FROM deliveryOrders WHERE id = $1;")
+	ctx := context.Background()
+
+	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
-		return &ModelError{Model: "deliveryOrders", Code: 0, Message: err.Error()}
+		return transactionError("deliveryOrders")
 	}
-	defer stmt.Close()
+	defer tx.Rollback()
 
-	res, err := stmt.Exec(deliveryOrder.ID)
+	deleteDeliveryOrderDetailsStmt := "DELETE FROM deliveryOrderDetails WHERE delivery_order_id = $1;"
+	res, err := tx.Exec(deleteDeliveryOrderDetailsStmt, deliveryOrder.ID)
 	if err, ok := err.(*pq.Error); ok {
-		fmt.Println(err.Code.Name())
-		return &ModelError{Model: "deliveryOrders", Code: 1, Message: "deliveryOrders still have children."}
+		return &ModelError{Model: "deliveryOrders", Code: 1, Message: err.Message}
+	}
+	rowsAff, execErr := res.RowsAffected()
+	if execErr != nil || err != nil {
+		return transactionError("deliveryOrders")
 	}
 
-	rowsAff, err := res.RowsAffected()
-	if rowsAff != 1 {
-		return &ModelError{Model: "deliveryOrders", Code: 2, Message: "RowsAffected incorrect."}
+	deleteDiscountsStmt := "DELETE FROM discounts WHERE delivery_order_id = $1;"
+	res, err = tx.Exec(deleteDiscountsStmt, deliveryOrder.ID)
+	if err, ok := err.(*pq.Error); ok {
+		return &ModelError{Model: "deliveryOrders", Code: 1, Message: err.Message}
+	}
+	rowsAff, execErr = res.RowsAffected()
+	if execErr != nil || err != nil {
+		return transactionError("deliveryOrders")
+	}
+
+	deleteDeliveryOrdersStmt := "DELETE FROM deliveryOrders WHERE id = $1;"
+	res, err = tx.Exec(deleteDeliveryOrdersStmt, deliveryOrder.ID)
+	if err, ok := err.(*pq.Error); ok {
+		_ = tx.Rollback()
+		return &ModelError{Model: "deliveryOrders", Code: 1, Message: err.Message}
+	}
+	rowsAff, execErr = res.RowsAffected()
+	if execErr != nil || err != nil || rowsAff != 1 {
+		_ = tx.Rollback()
+		return transactionError("deliveryOrders")
+	}
+
+	if err := tx.Commit(); err != nil {
+		return normalError("deliveryOrders", err)
 	}
 	return nil
 }
-
-// ID
-// Status
-// DeliveryType
-// DeliveryStatus
-// DeliveryFeeStatus
-// PaymentType
-// PaymentStatus
-// TotalOriginal
-// Discount
-// TotalDiscounted
-// Remark
-// DataOrder
-// OrderAt
-// SendAt
-// ArriveAt
-// CreateAt
-// UpdateAt
-
-// id
-// status
-// delivery_type
-// delivery_status
-// delivery_fee_status
-// payment_type
-// payment_status
-// total_original
-// discount
-// total_discounted
-// remark
-// data_order
-// order_at
-// send_at
-// arrive_at
-// create_at
-// update_at
-
-// &deliveryOrder.ID,
-// &deliveryOrder.Status,
-// &deliveryOrder.DeliveryType,
-// &deliveryOrder.DeliveryStatus,
-// &deliveryOrder.DeliveryFeeStatus,
-// &deliveryOrder.PaymentType,
-// &deliveryOrder.PaymentStatus,
-// &deliveryOrder.TotalOriginal,
-// &deliveryOrder.Discount,
-// &deliveryOrder.TotalDiscounted,
-// &deliveryOrder.Remark,
-// &deliveryOrder.DataOrder,
-// &deliveryOrder.OrderAt,
-// &deliveryOrder.SendAt,
-// &deliveryOrder.ArriveAt,
-// &deliveryOrder.CreateAt,
-// &deliveryOrder.UpdateAt,

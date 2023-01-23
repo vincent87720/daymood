@@ -22,7 +22,7 @@ type DeliveryOrderDetail struct {
 	ProductID       *int64  //商品編號
 }
 
-func GetAllDeliveryOrderDetails(db *sql.DB) (deliveryOrderDetailXi []DeliveryOrderDetail, modelErr *ModelError) {
+func (deliveryOrderDetail *DeliveryOrderDetail) ReadAll(db *sql.DB) (deliveryOrderDetailXi []interface{}, modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {
 		return nil, normalError("deliveryOrderDetails", err)
@@ -34,49 +34,49 @@ func GetAllDeliveryOrderDetails(db *sql.DB) (deliveryOrderDetailXi []DeliveryOrd
 	}
 	defer row.Close()
 
-	var deliveryOrderDetail DeliveryOrderDetail
+	var deliveryOrderDetailRow DeliveryOrderDetail
 	for row.Next() {
 		err := row.Scan(
-			&deliveryOrderDetail.ID, &deliveryOrderDetail.RetailPrice, &deliveryOrderDetail.Cost, &deliveryOrderDetail.QTY,
-			&deliveryOrderDetail.Subtotal, &deliveryOrderDetail.Remark, &deliveryOrderDetail.DataOrder,
-			&deliveryOrderDetail.CreateAt, &deliveryOrderDetail.UpdateAt, &deliveryOrderDetail.DeliveryOrderID,
-			&deliveryOrderDetail.ProductID,
+			&deliveryOrderDetailRow.ID, &deliveryOrderDetailRow.RetailPrice, &deliveryOrderDetailRow.Cost, &deliveryOrderDetailRow.QTY,
+			&deliveryOrderDetailRow.Subtotal, &deliveryOrderDetailRow.Remark, &deliveryOrderDetailRow.DataOrder,
+			&deliveryOrderDetailRow.CreateAt, &deliveryOrderDetailRow.UpdateAt, &deliveryOrderDetailRow.DeliveryOrderID,
+			&deliveryOrderDetailRow.ProductID,
 		)
 		if err != nil {
 			return nil, normalError("deliveryOrderDetails", err)
 		}
 
-		deliveryOrderDetailXi = append(deliveryOrderDetailXi, deliveryOrderDetail)
+		deliveryOrderDetailXi = append(deliveryOrderDetailXi, deliveryOrderDetailRow)
 	}
 
 	return deliveryOrderDetailXi, nil
 }
 
-func GetDeliveryOrderDetails(db *sql.DB, deliveryOrderID int64) (deliveryOrderDetailXi []DeliveryOrderDetail, modelErr *ModelError) {
+func (deliveryOrderDetail *DeliveryOrderDetail) Read(db *sql.DB) (deliveryOrderDetailXi []interface{}, modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {
 		return nil, normalError("deliveryOrderDetails", err)
 	}
 
-	row, err := db.Query("SELECT * FROM deliveryOrderDetails WHERE delivery_order_id = $1 ORDER BY id DESC;", deliveryOrderID)
+	row, err := db.Query("SELECT * FROM deliveryOrderDetails WHERE delivery_order_id = $1 ORDER BY id DESC;", deliveryOrderDetail.DeliveryOrderID)
 	if err != nil {
 		return nil, normalError("deliveryOrderDetails", err)
 	}
 	defer row.Close()
 
-	var deliveryOrderDetail DeliveryOrderDetail
+	var deliveryOrderDetailRow DeliveryOrderDetail
 	for row.Next() {
 		err := row.Scan(
-			&deliveryOrderDetail.ID, &deliveryOrderDetail.RetailPrice, &deliveryOrderDetail.Cost, &deliveryOrderDetail.QTY,
-			&deliveryOrderDetail.Subtotal, &deliveryOrderDetail.Remark, &deliveryOrderDetail.DataOrder,
-			&deliveryOrderDetail.CreateAt, &deliveryOrderDetail.UpdateAt, &deliveryOrderDetail.DeliveryOrderID,
-			&deliveryOrderDetail.ProductID,
+			&deliveryOrderDetailRow.ID, &deliveryOrderDetailRow.RetailPrice, &deliveryOrderDetailRow.Cost, &deliveryOrderDetailRow.QTY,
+			&deliveryOrderDetailRow.Subtotal, &deliveryOrderDetailRow.Remark, &deliveryOrderDetailRow.DataOrder,
+			&deliveryOrderDetailRow.CreateAt, &deliveryOrderDetailRow.UpdateAt, &deliveryOrderDetailRow.DeliveryOrderID,
+			&deliveryOrderDetailRow.ProductID,
 		)
 		if err != nil {
 			return nil, normalError("deliveryOrderDetails", err)
 		}
 
-		deliveryOrderDetailXi = append(deliveryOrderDetailXi, deliveryOrderDetail)
+		deliveryOrderDetailXi = append(deliveryOrderDetailXi, deliveryOrderDetailRow)
 	}
 
 	return deliveryOrderDetailXi, nil
@@ -206,27 +206,3 @@ func (deliveryOrderDetail *DeliveryOrderDetail) Delete(db *sql.DB) (modelErr *Mo
 	}
 	return nil
 }
-
-// ID
-// RetailPrice
-// QTY
-// Subtotal
-// Remark
-// DataOrder
-// CreateAt
-// UpdateAt
-// DeliveryOrderID
-// ProductID
-// PurchaseDetailID
-
-// id
-// retail_price
-// qty
-// subtotal
-// remark
-// data_order
-// create_at
-// update_at
-// delivery_order_id
-// product_id
-// purchase_detail_id

@@ -23,7 +23,7 @@ type ProductPurchaseHistory struct {
 	TariffTwd               *float32 //關稅
 }
 
-func GetProductPurchaseHistories(db *sql.DB, productID int64) (historyXi []ProductPurchaseHistory, modelErr *ModelError) {
+func (productPurchaseHistory *ProductPurchaseHistory) ReadAll(db *sql.DB, productID int64) (historyXi []ProductPurchaseHistory, modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {
 		return nil, normalError("productPurchaseHistories", err)

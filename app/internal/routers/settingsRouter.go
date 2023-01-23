@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vincent87720/daymood/app/internal/settings"
+	usecases "github.com/vincent87720/daymood/app/internal/usecases"
 )
 
 func SetupSettingsRouters(router *gin.Engine, db *sql.DB, s *settings.Settings) (*gin.Engine, error) {
@@ -18,7 +19,8 @@ func SetupSettingsRouters(router *gin.Engine, db *sql.DB, s *settings.Settings) 
 
 func GetTradingsHandler(db *sql.DB, s *settings.Settings) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
-		trading, err := s.GetTradingSettings()
+		trading := usecases.NewTradings(s)
+		tradingData, err := trading.Read()
 		if err != nil {
 			context.JSON(http.StatusBadRequest, gin.H{
 				"status": "FAIL",
@@ -28,7 +30,7 @@ func GetTradingsHandler(db *sql.DB, s *settings.Settings) gin.HandlerFunc {
 
 		context.JSON(http.StatusOK, gin.H{
 			"status":  "OK",
-			"trading": trading,
+			"trading": tradingData,
 		})
 		return
 	}
@@ -39,39 +41,24 @@ func GetTradingsHandler(db *sql.DB, s *settings.Settings) gin.HandlerFunc {
 func PutTradingsHandler(db *sql.DB, s *settings.Settings) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
-		var trading settings.Trading
+		var tradingData *settings.Trading
 
-		err := context.BindYAML(&trading)
+		err := context.BindYAML(&tradingData)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		err = s.SetTradingSettings(trading)
+		trading := usecases.NewTradings(s)
+
+		err = trading.Update(*tradingData)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, gin.H{
 				"status": "FAIL",
 			})
-			return
 		}
 
-		err = s.MarshalSettings()
-		if err != nil {
-			context.JSON(http.StatusBadRequest, gin.H{
-				"status": "FAIL",
-			})
-			return
-		}
-
-		err = s.WriteFile()
-		if err != nil {
-			context.JSON(http.StatusBadRequest, gin.H{
-				"status": "FAIL",
-			})
-			return
-		}
-
-		trading, err = s.GetTradingSettings()
+		tradingData, err = trading.Read()
 		if err != nil {
 			context.JSON(http.StatusBadRequest, gin.H{
 				"status": "FAIL",
@@ -81,7 +68,7 @@ func PutTradingsHandler(db *sql.DB, s *settings.Settings) gin.HandlerFunc {
 
 		context.JSON(http.StatusOK, gin.H{
 			"status":  "OK",
-			"trading": trading,
+			"trading": tradingData,
 		})
 		return
 	}

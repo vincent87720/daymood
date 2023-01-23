@@ -1,5 +1,35 @@
 package model
 
+import "database/sql"
+
+type Model interface {
+	Create(db *sql.DB) *ModelError
+	Read(db *sql.DB) ([]interface{}, *ModelError)
+	ReadAll(db *sql.DB) ([]interface{}, *ModelError)
+	Update(db *sql.DB) *ModelError
+	Delete(db *sql.DB) *ModelError
+}
+
+func Create(model Model, db *sql.DB) *ModelError {
+	return model.Create(db)
+}
+
+func Read(model Model, db *sql.DB) ([]interface{}, *ModelError) {
+	return model.Read(db)
+}
+
+func ReadAll(model Model, db *sql.DB) ([]interface{}, *ModelError) {
+	return model.ReadAll(db)
+}
+
+func Update(model Model, db *sql.DB) *ModelError {
+	return model.Update(db)
+}
+
+func Delete(model Model, db *sql.DB) *ModelError {
+	return model.Delete(db)
+}
+
 type ModelError struct {
 	Model   string
 	Code    int

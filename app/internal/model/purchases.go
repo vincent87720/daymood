@@ -1,9 +1,9 @@
 package model
 
 import (
+	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"github.com/lib/pq"
 )
@@ -54,7 +54,7 @@ func NewPurchase(name string, status int64, purchaseType int64) (Purchase, error
 	return purchase, nil
 }
 
-func GetAllPurchases(db *sql.DB) (purchaseXi []Purchase, modelErr *ModelError) {
+func (purchase *Purchase) ReadAll(db *sql.DB) (purchaseXi []interface{}, modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {
 		return nil, &ModelError{Model: "purchases", Code: 0, Message: err.Error()}
@@ -66,28 +66,28 @@ func GetAllPurchases(db *sql.DB) (purchaseXi []Purchase, modelErr *ModelError) {
 	}
 	defer row.Close()
 
-	var purchase Purchase
+	var purchaseRow Purchase
 	for row.Next() {
 		err := row.Scan(
-			&purchase.ID, &purchase.Name, &purchase.Status, &purchase.PurchaseType, &purchase.QTY,
-			&purchase.ShippingAgent, &purchase.ShippingAgentCutKrw, &purchase.ShippingAgentCutPercent, &purchase.ShippingInitiator,
-			&purchase.ShippingCreateAt, &purchase.ShippingEndAt, &purchase.ShippingArriveAt, &purchase.Weight,
-			&purchase.ShippingFeeKr, &purchase.ShippingFeeTw, &purchase.ShippingFeeKokusaiKrw, &purchase.ShippingFeeKokusaiPerKilo,
-			&purchase.ExchangeRateKrw, &purchase.TariffTwd, &purchase.TariffPerKilo, &purchase.TotalKrw,
-			&purchase.TotalTwd, &purchase.Total, &purchase.Remark, &purchase.DataOrder,
-			&purchase.CreateAt, &purchase.UpdateAt,
+			&purchaseRow.ID, &purchaseRow.Name, &purchaseRow.Status, &purchaseRow.PurchaseType, &purchaseRow.QTY,
+			&purchaseRow.ShippingAgent, &purchaseRow.ShippingAgentCutKrw, &purchaseRow.ShippingAgentCutPercent, &purchaseRow.ShippingInitiator,
+			&purchaseRow.ShippingCreateAt, &purchaseRow.ShippingEndAt, &purchaseRow.ShippingArriveAt, &purchaseRow.Weight,
+			&purchaseRow.ShippingFeeKr, &purchaseRow.ShippingFeeTw, &purchaseRow.ShippingFeeKokusaiKrw, &purchaseRow.ShippingFeeKokusaiPerKilo,
+			&purchaseRow.ExchangeRateKrw, &purchaseRow.TariffTwd, &purchaseRow.TariffPerKilo, &purchaseRow.TotalKrw,
+			&purchaseRow.TotalTwd, &purchaseRow.Total, &purchaseRow.Remark, &purchaseRow.DataOrder,
+			&purchaseRow.CreateAt, &purchaseRow.UpdateAt,
 		)
 		if err != nil {
 			return nil, &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
 		}
 
-		purchaseXi = append(purchaseXi, purchase)
+		purchaseXi = append(purchaseXi, purchaseRow)
 	}
 
 	return purchaseXi, nil
 }
 
-func (purchase *Purchase) GetPurchase(db *sql.DB) (purchaseXi []Purchase, modelErr *ModelError) {
+func (purchase *Purchase) Read(db *sql.DB) (purchaseXi []interface{}, modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {
 		return nil, &ModelError{Model: "purchases", Code: 0, Message: err.Error()}
@@ -186,44 +186,31 @@ func (purchase *Purchase) Delete(db *sql.DB) (modelErr *ModelError) {
 		return &ModelError{Model: "purchases", Code: 0, Message: err.Error()}
 	}
 
-	deletePurchaseDetailsStmt, err := db.Prepare("DELETE FROM purchaseDetails WHERE purchase_id = $1;")
-	if err != nil {
-		return &ModelError{Model: "purchases", Code: 0, Message: err.Error()}
-	}
-	defer deletePurchaseDetailsStmt.Close()
-
-	deletePurchaseStmt, err := db.Prepare("DELETE FROM purchases WHERE id = $1;")
-	if err != nil {
-		return &ModelError{Model: "purchases", Code: 0, Message: err.Error()}
-	}
-	defer deletePurchaseStmt.Close()
-
 	ctx := context.Background()
 
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return normalError("purchases", err)
 	}
+	defer tx.Rollback()
 
-	res, err := deletePurchaseDetailsStmt.Exec(purchase.ID)
+	deletePurchaseDetailsStmt := "DELETE FROM purchaseDetails WHERE purchase_id = $1;"
+	res, err := tx.Exec(deletePurchaseDetailsStmt, purchase.ID)
 	if err, ok := err.(*pq.Error); ok {
-		_ = tx.Rollback()
 		return &ModelError{Model: "purchases", Code: 1, Message: err.Message}
 	}
 	rowsAff, execErr := res.RowsAffected()
-	if execErr != nil || err != nil || rowsAff != 1 {
-		_ = tx.Rollback()
+	if execErr != nil || err != nil {
 		return transactionError("purchases")
 	}
 
-	res, err = deletePurchaseStmt.Exec(purchase.ID)
+	deletePurchaseStmt := "DELETE FROM purchases WHERE id = $1;"
+	res, err = tx.Exec(deletePurchaseStmt, purchase.ID)
 	if err, ok := err.(*pq.Error); ok {
-		_ = tx.Rollback()
 		return &ModelError{Model: "purchases", Code: 1, Message: err.Message}
 	}
 	rowsAff, execErr = res.RowsAffected()
 	if execErr != nil || err != nil || rowsAff != 1 {
-		_ = tx.Rollback()
 		return transactionError("purchases")
 	}
 
@@ -232,57 +219,3 @@ func (purchase *Purchase) Delete(db *sql.DB) (modelErr *ModelError) {
 	}
 	return nil
 }
-
-// ID
-// Name
-// Status
-// PurchaseType
-// ShippingAgent
-// ShippingAgentCutKrw
-// ShippingAgentCutPercent
-// ShippingInitiator
-// ShippingCreateAt
-// ShippingEndAt
-// ShippingArriveAt
-// Weight
-// ShippingFeeKr
-// ShippingFeeTw
-// ShippingFeeKokusaiKrw
-// ShippingFeeKokusaiPerKilo
-// ExchangeRateKrw
-// TariffTwd
-// TariffPerKilo
-// TotalKrw
-// TotalTwd
-// Total
-// Remark
-// DataOrder
-// CreateAt
-// UpdateAt
-
-// id
-// name
-// status
-// purchase_type
-// shipping_agent
-// shipping_agent_cut_krw
-// shipping_agent_cut_percent
-// shipping_initiator
-// shipping_create_at
-// shipping_end_at
-// shipping_arrive_at
-// weight
-// shipping_fee_kr
-// shipping_fee_tw
-// shipping_fee_kokusai_krw
-// shipping_fee_kokusai_per_kilo
-// exchange_rate_krw
-// tariff_twd
-// tariff_per_kilo
-// total_krw
-// total_twd
-// total
-// remark
-// data_order
-// create_at
-// update_at

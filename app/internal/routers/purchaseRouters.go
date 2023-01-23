@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vincent87720/daymood/app/internal/model"
 	"github.com/vincent87720/daymood/app/internal/settings"
+	"github.com/vincent87720/daymood/app/internal/usecases"
 )
 
 func SetupPurchaseRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*gin.Engine, error) {
@@ -24,7 +25,10 @@ func SetupPurchaseRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (
 
 func GetPurchasesHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
-		purchaseXi, modelErr := model.GetAllPurchases(db)
+		purchaseModel := &model.Purchase{}
+
+		purchase := usecases.NewPurchase(purchaseModel)
+		purchaseXi, modelErr := usecases.ReadAll(purchase, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -54,11 +58,12 @@ func GetPurchaseHandler(db *sql.DB) gin.HandlerFunc {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
 		}
-		purchase := model.Purchase{
+		purchaseModel := &model.Purchase{
 			ID: purchaseIDVal,
 		}
 
-		purchaseXi, modelErr := purchase.GetPurchase(db)
+		purchase := usecases.NewPurchase(purchaseModel)
+		purchaseXi, modelErr := usecases.Read(purchase, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -77,20 +82,21 @@ func GetPurchaseHandler(db *sql.DB) gin.HandlerFunc {
 func PostPurchaseHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
-		purchase := model.Purchase{}
+		purchaseModel := &model.Purchase{}
 
-		err := context.BindJSON(&purchase)
+		err := context.BindJSON(&purchaseModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		if checkEmpty(purchase.Name) == true {
+		if checkEmpty(purchaseModel.Name) == true {
 			context.JSON(http.StatusBadRequest, emptyError("name"))
 			return
 		}
 
-		modelErr := purchase.Create(db)
+		purchase := usecases.NewPurchase(purchaseModel)
+		modelErr := usecases.Create(purchase, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -120,23 +126,23 @@ func PutPurchaseHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		purchaseForm := model.Purchase{}
+		purchaseModel := &model.Purchase{}
 
-		err = context.BindJSON(&purchaseForm)
+		err = context.BindJSON(&purchaseModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		if checkEmpty(purchaseForm.Name) == true {
+		if checkEmpty(purchaseModel.Name) == true {
 			context.JSON(http.StatusBadRequest, emptyError("name"))
 			return
 		}
 
-		purchase := purchaseForm
-		purchase.ID = supplierIDVal
+		purchaseModel.ID = supplierIDVal
 
-		modelErr := purchase.Update(db)
+		purchase := usecases.NewPurchase(purchaseModel)
+		modelErr := usecases.Update(purchase, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -167,11 +173,12 @@ func DeletePurchaseHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		purchase := model.Purchase{
+		purchaseModel := &model.Purchase{
 			ID: purchaseIDVal,
 		}
 
-		modelErr := purchase.Delete(db)
+		purchase := usecases.NewPurchase(purchaseModel)
+		modelErr := usecases.Delete(purchase, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return

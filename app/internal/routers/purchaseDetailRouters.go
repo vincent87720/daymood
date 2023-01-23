@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vincent87720/daymood/app/internal/model"
 	"github.com/vincent87720/daymood/app/internal/settings"
+	"github.com/vincent87720/daymood/app/internal/usecases"
 )
 
 func SetupPurchaseDetailRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*gin.Engine, error) {
@@ -25,7 +26,9 @@ func SetupPurchaseDetailRouters(router *gin.Engine, db *sql.DB, s settings.Setti
 
 func GetAllPurchaseDetailsHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
-		purchaseDetailXi, modelErr := model.GetAllPurchaseDetails(db)
+		purchaseDetailModel := &model.PurchaseDetail{}
+		purchaseDetail := usecases.NewPurchaseDetail(purchaseDetailModel)
+		purchaseDetailXi, modelErr := model.ReadAll(purchaseDetail, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -59,9 +62,8 @@ func PostPurchaseDetailsHandler(db *sql.DB) gin.HandlerFunc {
 			}
 		}
 
-		var purchaseDetail model.PurchaseDetail
-
-		modelErr := purchaseDetail.CreateMultiple(db, purchaseDetailXi)
+		purchaseDetail := usecases.NewPurchaseDetail(&model.PurchaseDetail{})
+		modelErr := usecases.CreateMultiple(purchaseDetail, db, purchaseDetailXi)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -84,12 +86,16 @@ func GetPurchaseDetailsHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		purchaseDetailIDVal, err := strconv.ParseInt(purchaseID, 10, 64)
+		purchaseIDVal, err := strconv.ParseInt(purchaseID, 10, 64)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
 		}
-		purchaseDetailXi, modelErr := model.GetPurchaseDetails(db, purchaseDetailIDVal)
+		purchaseDetailModel := &model.PurchaseDetail{
+			PurchaseID: purchaseIDVal,
+		}
+		purchaseDetail := usecases.NewPurchaseDetail(purchaseDetailModel)
+		purchaseDetailXi, modelErr := usecases.Read(purchaseDetail, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -108,20 +114,21 @@ func GetPurchaseDetailsHandler(db *sql.DB) gin.HandlerFunc {
 func PostPurchaseDetailHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
-		purchaseDetail := model.PurchaseDetail{}
+		purchaseDetailModel := &model.PurchaseDetail{}
 
-		err := context.BindJSON(&purchaseDetail)
+		err := context.BindJSON(&purchaseDetailModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		if checkEmpty(purchaseDetail.Name) == true {
+		if checkEmpty(purchaseDetailModel.Name) == true {
 			context.JSON(http.StatusBadRequest, emptyError("name"))
 			return
 		}
 
-		modelErr := purchaseDetail.Create(db)
+		purchaseDetail := usecases.NewPurchaseDetail(purchaseDetailModel)
+		modelErr := usecases.Create(purchaseDetail, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -151,23 +158,23 @@ func PutPurchaseDetailHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		purchaseDetailForm := model.PurchaseDetail{}
+		purchaseDetailModel := &model.PurchaseDetail{}
 
-		err = context.BindJSON(&purchaseDetailForm)
+		err = context.BindJSON(&purchaseDetailModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		if checkEmpty(purchaseDetailForm.Name) == true {
+		if checkEmpty(purchaseDetailModel.Name) == true {
 			context.JSON(http.StatusBadRequest, emptyError("name"))
 			return
 		}
 
-		purchaseDetail := purchaseDetailForm
-		purchaseDetail.ID = purchaseDetailIDVal
+		purchaseDetailModel.ID = purchaseDetailIDVal
 
-		modelErr := purchaseDetail.Update(db)
+		purchaseDetail := usecases.NewPurchaseDetail(purchaseDetailModel)
+		modelErr := usecases.Update(purchaseDetail, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -198,11 +205,12 @@ func DeletePurchaseDetailHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		purchaseDetail := model.PurchaseDetail{
+		purchaseDetailModel := &model.PurchaseDetail{
 			ID: purchaseDetailIDVal,
 		}
 
-		modelErr := purchaseDetail.Delete(db)
+		purchaseDetail := usecases.NewPurchaseDetail(purchaseDetailModel)
+		modelErr := usecases.Delete(purchaseDetail, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return

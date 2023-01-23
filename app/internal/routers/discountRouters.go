@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vincent87720/daymood/app/internal/model"
 	"github.com/vincent87720/daymood/app/internal/settings"
+	usecases "github.com/vincent87720/daymood/app/internal/usecases"
 )
 
 func SetupDiscountRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*gin.Engine, error) {
@@ -28,12 +29,17 @@ func GetDiscountsHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		discountIDVal, err := strconv.ParseInt(deliveryOrderID, 10, 64)
+		deliveryOrderIDVal, err := strconv.ParseInt(deliveryOrderID, 10, 64)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
 		}
-		discountXi, modelErr := model.GetDiscounts(db, discountIDVal)
+		discountModel := &model.Discount{
+			DeliveryOrderID: deliveryOrderIDVal,
+		}
+
+		discount := usecases.NewDiscount(discountModel)
+		discountXi, modelErr := usecases.Read(discount, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -52,15 +58,16 @@ func GetDiscountsHandler(db *sql.DB) gin.HandlerFunc {
 func PostDiscountHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
-		discount := model.Discount{}
+		discountModel := &model.Discount{}
 
-		err := context.BindJSON(&discount)
+		err := context.BindJSON(&discountModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		modelErr := discount.Create(db)
+		discount := usecases.NewDiscount(discountModel)
+		modelErr := usecases.Create(discount, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -90,18 +97,18 @@ func PutDiscountHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		discountForm := model.Discount{}
+		discountModel := &model.Discount{}
 
-		err = context.BindJSON(&discountForm)
+		err = context.BindJSON(&discountModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		discount := discountForm
-		discount.ID = discountIDVal
+		discountModel.ID = discountIDVal
 
-		modelErr := discount.Update(db)
+		discount := usecases.NewDiscount(discountModel)
+		modelErr := usecases.Update(discount, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -132,11 +139,12 @@ func DeleteDiscountHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		discount := model.Discount{
+		discountModel := &model.Discount{
 			ID: discountIDVal,
 		}
 
-		modelErr := discount.Delete(db)
+		discount := usecases.NewDiscount(discountModel)
+		modelErr := usecases.Delete(discount, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return

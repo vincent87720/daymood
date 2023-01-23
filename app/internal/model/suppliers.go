@@ -35,13 +35,47 @@ func NewSupplier(name string, address *string, remark *string, dataStatus int64)
 	return supplier, nil
 }
 
-func GetAllSuppliers(db *sql.DB) (supplierXi []Supplier, modelErr *ModelError) {
+func (supplier *Supplier) ReadAll(db *sql.DB) (supplierXi []interface{}, modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {
 		return nil, &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
 	}
 
 	row, err := db.Query("SELECT * FROM suppliers ORDER BY id DESC;")
+	if err != nil {
+		return nil, &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
+	}
+	defer row.Close()
+
+	var supplierSchema Supplier
+	for row.Next() {
+		err := row.Scan(&supplierSchema.ID, &supplierSchema.Name, &supplierSchema.Address, &supplierSchema.Remark, &supplierSchema.DataStatus, &supplierSchema.CreateAt, &supplierSchema.UpdateAt)
+		if err != nil {
+			return nil, &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
+		}
+		tempSupplier := Supplier{
+			ID:         supplierSchema.ID,
+			Name:       supplierSchema.Name,
+			Address:    supplierSchema.Address,
+			Remark:     supplierSchema.Remark,
+			DataStatus: supplierSchema.DataStatus,
+			CreateAt:   supplierSchema.CreateAt,
+			UpdateAt:   supplierSchema.UpdateAt,
+		}
+
+		supplierXi = append(supplierXi, tempSupplier)
+	}
+
+	return supplierXi, nil
+}
+
+func (supplier *Supplier) Read(db *sql.DB) (supplierXi []interface{}, modelErr *ModelError) {
+	err := db.Ping()
+	if err != nil {
+		return nil, &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
+	}
+
+	row, err := db.Query("SELECT * FROM suppliers WHERE id = $1 ORDER BY id DESC;", supplier.ID)
 	if err != nil {
 		return nil, &ModelError{Model: "suppliers", Code: 0, Message: err.Error()}
 	}

@@ -19,30 +19,59 @@ type Discount struct {
 	DeliveryOrderID int64   //出貨編號
 }
 
-func GetDiscounts(db *sql.DB, deliveryOrderID int64) (discountXi []Discount, modelErr *ModelError) {
+func (discount *Discount) ReadAll(db *sql.DB) (discountXi []interface{}, modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {
 		return nil, normalError("discounts", err)
 	}
 
-	row, err := db.Query("SELECT * FROM discounts WHERE delivery_order_id = $1 ORDER BY id DESC;", deliveryOrderID)
+	row, err := db.Query("SELECT * FROM discounts ORDER BY id DESC;")
 	if err != nil {
 		return nil, normalError("discounts", err)
 	}
 	defer row.Close()
 
-	var discount Discount
+	var discountRow Discount
 	for row.Next() {
 		err := row.Scan(
-			&discount.ID, &discount.Name, &discount.Price,
-			&discount.DiscountType, &discount.Remark, &discount.DataOrder,
-			&discount.CreateAt, &discount.UpdateAt, &discount.DeliveryOrderID,
+			&discountRow.ID, &discountRow.Name, &discountRow.Price,
+			&discountRow.DiscountType, &discountRow.Remark, &discountRow.DataOrder,
+			&discountRow.CreateAt, &discountRow.UpdateAt, &discountRow.DeliveryOrderID,
 		)
 		if err != nil {
 			return nil, normalError("discounts", err)
 		}
 
-		discountXi = append(discountXi, discount)
+		discountXi = append(discountXi, discountRow)
+	}
+
+	return discountXi, nil
+}
+
+func (discount *Discount) Read(db *sql.DB) (discountXi []interface{}, modelErr *ModelError) {
+	err := db.Ping()
+	if err != nil {
+		return nil, normalError("discounts", err)
+	}
+
+	row, err := db.Query("SELECT * FROM discounts WHERE delivery_order_id = $1 ORDER BY id DESC;", discount.DeliveryOrderID)
+	if err != nil {
+		return nil, normalError("discounts", err)
+	}
+	defer row.Close()
+
+	var discountRow Discount
+	for row.Next() {
+		err := row.Scan(
+			&discountRow.ID, &discountRow.Name, &discountRow.Price,
+			&discountRow.DiscountType, &discountRow.Remark, &discountRow.DataOrder,
+			&discountRow.CreateAt, &discountRow.UpdateAt, &discountRow.DeliveryOrderID,
+		)
+		if err != nil {
+			return nil, normalError("discounts", err)
+		}
+
+		discountXi = append(discountXi, discountRow)
 	}
 
 	return discountXi, nil
@@ -122,26 +151,3 @@ func (discount *Discount) Delete(db *sql.DB) (modelErr *ModelError) {
 	}
 	return nil
 }
-
-// ID
-// Name
-// Price
-// DiscountType
-// Remark
-// DataOrder
-// CreateAt
-// UpdateAt
-// DeliveryOrderID
-
-// id
-// name
-// price
-// discount_type
-// remark
-// data_order
-// create_at
-// update_at
-// delivery_order_id
-
-// name, price, discount_type,
-// remark, data_order, delivery_order_id,

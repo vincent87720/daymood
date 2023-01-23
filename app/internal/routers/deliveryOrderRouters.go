@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vincent87720/daymood/app/internal/model"
+	usecases "github.com/vincent87720/daymood/app/internal/usecases"
 )
 
 func SetupDeliveryOrderRouters(router *gin.Engine, db *sql.DB) (*gin.Engine, error) {
@@ -20,7 +21,9 @@ func SetupDeliveryOrderRouters(router *gin.Engine, db *sql.DB) (*gin.Engine, err
 }
 func GetDeliveryOrdersHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
-		deliveryOrderXi, modelErr := model.GetAllDeliveryOrders(db)
+		deliveryOrderModel := &model.DeliveryOrder{}
+		deliveryOrder := usecases.NewDeliveryOrder(deliveryOrderModel)
+		deliveryOrderXi, modelErr := usecases.ReadAll(deliveryOrder, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -50,11 +53,12 @@ func GetDeliveryOrderHandler(db *sql.DB) gin.HandlerFunc {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
 		}
-		deliveryOrder := model.DeliveryOrder{
+		deliveryOrderModel := &model.DeliveryOrder{
 			ID: deliveryOrderIDVal,
 		}
 
-		deliveryOrderXi, modelErr := deliveryOrder.GetDeliveryOrder(db)
+		deliveryOrder := usecases.NewDeliveryOrder(deliveryOrderModel)
+		deliveryOrderXi, modelErr := usecases.Read(deliveryOrder, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -73,15 +77,16 @@ func GetDeliveryOrderHandler(db *sql.DB) gin.HandlerFunc {
 func PostDeliveryOrderHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
-		deliveryOrder := model.DeliveryOrder{}
+		deliveryOrderModel := &model.DeliveryOrder{}
 
-		err := context.BindJSON(&deliveryOrder)
+		err := context.BindJSON(&deliveryOrderModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		modelErr := deliveryOrder.Create(db)
+		deliveryOrder := usecases.NewDeliveryOrder(deliveryOrderModel)
+		modelErr := usecases.Create(deliveryOrder, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -111,18 +116,18 @@ func PutDeliveryOrderHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		deliveryOrderForm := model.DeliveryOrder{}
+		deliveryOrderModel := &model.DeliveryOrder{}
 
-		err = context.BindJSON(&deliveryOrderForm)
+		err = context.BindJSON(&deliveryOrderModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		deliveryOrder := deliveryOrderForm
-		deliveryOrder.ID = supplierIDVal
+		deliveryOrderModel.ID = supplierIDVal
 
-		modelErr := deliveryOrder.Update(db)
+		deliveryOrder := usecases.NewDeliveryOrder(deliveryOrderModel)
+		modelErr := model.Update(deliveryOrder, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -153,11 +158,12 @@ func DeleteDeliveryOrderHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		deliveryOrder := model.DeliveryOrder{
+		deliveryOrderModel := &model.DeliveryOrder{
 			ID: deliveryOrderIDVal,
 		}
 
-		modelErr := deliveryOrder.Delete(db)
+		deliveryOrder := usecases.NewDeliveryOrder(deliveryOrderModel)
+		modelErr := model.Delete(deliveryOrder, db)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return

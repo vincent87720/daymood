@@ -44,7 +44,7 @@ func NewPurchaseDetail(name string, status int64, qty int64, subtotalTwd float32
 	return purchaseDetail, nil
 }
 
-func GetAllPurchaseDetails(db *sql.DB) (purchaseDetailXi []PurchaseDetail, modelErr *ModelError) {
+func (purchaseDetail *PurchaseDetail) ReadAll(db *sql.DB) (purchaseDetailXi []interface{}, modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {
 		return nil, normalError("purchaseDetails", err)
@@ -56,53 +56,54 @@ func GetAllPurchaseDetails(db *sql.DB) (purchaseDetailXi []PurchaseDetail, model
 	}
 	defer row.Close()
 
-	var purchaseDetail PurchaseDetail
+	var purchaseDetailRow PurchaseDetail
 	for row.Next() {
 		err := row.Scan(
-			&purchaseDetail.ID, &purchaseDetail.NamedID, &purchaseDetail.Name,
-			&purchaseDetail.Status, &purchaseDetail.WholesalePrice, &purchaseDetail.QTY,
-			&purchaseDetail.Cost, &purchaseDetail.Currency, &purchaseDetail.Subtotal,
-			&purchaseDetail.Remark, &purchaseDetail.DataOrder, &purchaseDetail.CreateAt,
-			&purchaseDetail.UpdateAt, &purchaseDetail.PurchaseID, &purchaseDetail.SupplierID,
-			&purchaseDetail.ProductID,
+			&purchaseDetailRow.ID, &purchaseDetailRow.NamedID, &purchaseDetailRow.Name,
+			&purchaseDetailRow.Status, &purchaseDetailRow.WholesalePrice, &purchaseDetailRow.QTY,
+			&purchaseDetailRow.Cost, &purchaseDetailRow.Currency, &purchaseDetailRow.Subtotal,
+			&purchaseDetailRow.Remark, &purchaseDetailRow.DataOrder, &purchaseDetailRow.CreateAt,
+			&purchaseDetailRow.UpdateAt, &purchaseDetailRow.PurchaseID, &purchaseDetailRow.SupplierID,
+			&purchaseDetailRow.ProductID,
 		)
 		if err != nil {
 			return nil, normalError("purchaseDetails", err)
 		}
 
-		purchaseDetailXi = append(purchaseDetailXi, purchaseDetail)
+		purchaseDetailXi = append(purchaseDetailXi, purchaseDetailRow)
 	}
 
 	return purchaseDetailXi, nil
 }
 
-func GetPurchaseDetails(db *sql.DB, purchaseID int64) (purchaseDetailXi []PurchaseDetail, modelErr *ModelError) {
+func (purchaseDetail *PurchaseDetail) Read(db *sql.DB) (purchaseDetailXi []interface{}, modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {
 		return nil, normalError("purchaseDetails", err)
 	}
 
-	row, err := db.Query("SELECT * FROM purchaseDetails WHERE purchase_id = $1 ORDER BY id DESC;", purchaseID)
+	fmt.Println(purchaseDetail.PurchaseID)
+	row, err := db.Query("SELECT * FROM purchaseDetails WHERE purchase_id = $1 ORDER BY id DESC;", purchaseDetail.PurchaseID)
 	if err != nil {
 		return nil, normalError("purchaseDetails", err)
 	}
 	defer row.Close()
 
-	var purchaseDetail PurchaseDetail
+	var purchaseDetailRow PurchaseDetail
 	for row.Next() {
 		err := row.Scan(
-			&purchaseDetail.ID, &purchaseDetail.NamedID, &purchaseDetail.Name,
-			&purchaseDetail.Status, &purchaseDetail.WholesalePrice, &purchaseDetail.QTY,
-			&purchaseDetail.Cost, &purchaseDetail.Currency, &purchaseDetail.Subtotal,
-			&purchaseDetail.Remark, &purchaseDetail.DataOrder, &purchaseDetail.CreateAt,
-			&purchaseDetail.UpdateAt, &purchaseDetail.PurchaseID, &purchaseDetail.SupplierID,
-			&purchaseDetail.ProductID,
+			&purchaseDetailRow.ID, &purchaseDetailRow.NamedID, &purchaseDetailRow.Name,
+			&purchaseDetailRow.Status, &purchaseDetailRow.WholesalePrice, &purchaseDetailRow.QTY,
+			&purchaseDetailRow.Cost, &purchaseDetailRow.Currency, &purchaseDetailRow.Subtotal,
+			&purchaseDetailRow.Remark, &purchaseDetailRow.DataOrder, &purchaseDetailRow.CreateAt,
+			&purchaseDetailRow.UpdateAt, &purchaseDetailRow.PurchaseID, &purchaseDetailRow.SupplierID,
+			&purchaseDetailRow.ProductID,
 		)
 		if err != nil {
 			return nil, normalError("purchaseDetails", err)
 		}
 
-		purchaseDetailXi = append(purchaseDetailXi, purchaseDetail)
+		purchaseDetailXi = append(purchaseDetailXi, purchaseDetailRow)
 	}
 
 	return purchaseDetailXi, nil
@@ -240,37 +241,3 @@ func (purchaseDetail *PurchaseDetail) Delete(db *sql.DB) (modelErr *ModelError) 
 	}
 	return nil
 }
-
-// ID
-// NamedID
-// Name
-// Status
-// WholesalePrice
-// QTY
-// Cost
-// Currency
-// Subtotal
-// Remark
-// DataOrder
-// CreateAt
-// UpdateAt
-// PurchaseID
-// SupplierID
-// ProductID
-
-// id
-// named_id
-// name
-// status
-// wholesale_price
-// qty
-// cost
-// currency
-// subtotal
-// remark
-// data_order
-// create_at
-// update_at
-// purchase_id
-// supplier_id
-// product_id

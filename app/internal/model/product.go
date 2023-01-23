@@ -45,7 +45,7 @@ func NewProduct(name string, productType int64, stocks int64, retailPrice float3
 	return product, nil
 }
 
-func GetAllProducts(db *sql.DB) (productXi []Product, modelErr *ModelError) {
+func (product *Product) ReadAll(db *sql.DB) (productXi []interface{}, modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {
 		return nil, connectionError("products")
@@ -57,17 +57,45 @@ func GetAllProducts(db *sql.DB) (productXi []Product, modelErr *ModelError) {
 	}
 	defer row.Close()
 
-	var product Product
+	var productRow Product
 	for row.Next() {
-		err := row.Scan(&product.ID, &product.SKU, &product.Name,
-			&product.ProductType, &product.ImgName, &product.ImgID,
-			&product.Stocks, &product.Weight, &product.RetailPrice,
-			&product.Remark, &product.DataStatus, &product.CreateAt,
-			&product.UpdateAt, &product.SupplierID)
+		err := row.Scan(&productRow.ID, &productRow.SKU, &productRow.Name,
+			&productRow.ProductType, &productRow.ImgName, &productRow.ImgID,
+			&productRow.Stocks, &productRow.Weight, &productRow.RetailPrice,
+			&productRow.Remark, &productRow.DataStatus, &productRow.CreateAt,
+			&productRow.UpdateAt, &productRow.SupplierID)
 		if err != nil {
 			return nil, normalError("products", err)
 		}
-		productXi = append(productXi, product)
+		productXi = append(productXi, productRow)
+	}
+
+	return productXi, nil
+}
+
+func (product *Product) Read(db *sql.DB) (productXi []interface{}, modelErr *ModelError) {
+	err := db.Ping()
+	if err != nil {
+		return nil, connectionError("products")
+	}
+
+	row, err := db.Query("SELECT * FROM products WHERE id = $1 ORDER BY id DESC;", product.ID)
+	if err != nil {
+		return nil, normalError("products", err)
+	}
+	defer row.Close()
+
+	var productRow Product
+	for row.Next() {
+		err := row.Scan(&productRow.ID, &productRow.SKU, &productRow.Name,
+			&productRow.ProductType, &productRow.ImgName, &productRow.ImgID,
+			&productRow.Stocks, &productRow.Weight, &productRow.RetailPrice,
+			&productRow.Remark, &productRow.DataStatus, &productRow.CreateAt,
+			&productRow.UpdateAt, &productRow.SupplierID)
+		if err != nil {
+			return nil, normalError("products", err)
+		}
+		productXi = append(productXi, productRow)
 	}
 
 	return productXi, nil
