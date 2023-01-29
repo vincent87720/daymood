@@ -7,6 +7,7 @@
                     <c-btn-download @click="onClick_download"></c-btn-download>
                     <c-btn-upload @click="onClick_upload"></c-btn-upload>
                     <c-btn-setting></c-btn-setting>
+                    <c-btn-logout></c-btn-logout>
                 </v-col>
             </v-row>
         </v-container>
@@ -68,6 +69,7 @@ import BtnAdd from "@/components/Buttons/BtnAdd.vue";
 import BtnDownload from "@/components/Buttons/BtnDownload.vue";
 import BtnUpload from "@/components/Buttons/BtnUpload.vue";
 import BtnSetting from "@/components/Buttons/BtnSetting.vue";
+import BtnLogout from "@/components/Buttons/BtnLogout.vue";
 import DataTable from "@/components/DataTables/DataTable.vue";
 import ProductDialog from '@/pages/Products/ProductDialog.vue'
 import ProductInfoDialog from '@/pages/Products/ProductInfoDialog.vue'
@@ -109,6 +111,7 @@ export default {
         "c-btn-download": BtnDownload,
         "c-btn-upload": BtnUpload,
         "c-btn-setting": BtnSetting,
+        "c-btn-logout": BtnLogout,
         "c-data-table": DataTable,
     },
     data() {

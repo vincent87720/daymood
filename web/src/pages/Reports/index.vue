@@ -1,32 +1,44 @@
 <template>
-    <v-container class="d-flex align-center justify-center">
-        <v-row class="pa-3">
-            <v-col cols="12" sm="4">
-                <c-card-rounded class="pa-5 d-flex flex-column align-center">
-                    <h1>總支出</h1>
-                    <h2>$ {{ balance.PurchaseTotal }}</h2>
-                </c-card-rounded>
-
-            </v-col>
-            <v-col cols="12" sm="4">
-                <c-card-rounded class="pa-5 d-flex flex-column align-center">
-                    <h1>收支差</h1>
-                    <h2 :class="[isNegative ? 'text-color-red' : 'text-color-green']">$ {{ calcBalance(balance.PurchaseTotal,balance.DeliveryTotal) }}</h2>
-                </c-card-rounded>
-
-            </v-col>
-            <v-col cols="12" sm="4">
-                <c-card-rounded class="pa-5 d-flex flex-column align-center">
-                    <h1>總收入</h1>
-                    <h2>$ {{ balance.DeliveryTotal }}</h2>
-                </c-card-rounded>
-
-            </v-col>
-        </v-row>
-    </v-container>
+    <div>
+        <v-container fluid class="d-none d-lg-block">
+                <v-row class="ma-0">
+                    <v-col class="pa-0 d-flex justify-end">
+                        <c-btn-setting></c-btn-setting>
+                        <c-btn-logout></c-btn-logout>
+                    </v-col>
+                </v-row>
+            </v-container>
+        <v-container class="d-flex align-center justify-center">
+            <v-row class="pa-3">
+                <v-col cols="12" sm="4">
+                    <c-card-rounded class="pa-5 d-flex flex-column align-center">
+                        <h1>總支出</h1>
+                        <h2>$ {{ balance.PurchaseTotal }}</h2>
+                    </c-card-rounded>
+    
+                </v-col>
+                <v-col cols="12" sm="4">
+                    <c-card-rounded class="pa-5 d-flex flex-column align-center">
+                        <h1>收支差</h1>
+                        <h2 :class="[isNegative ? 'text-color-red' : 'text-color-green']">$ {{ calcBalance(balance.PurchaseTotal,balance.DeliveryTotal) }}</h2>
+                    </c-card-rounded>
+    
+                </v-col>
+                <v-col cols="12" sm="4">
+                    <c-card-rounded class="pa-5 d-flex flex-column align-center">
+                        <h1>總收入</h1>
+                        <h2>$ {{ balance.DeliveryTotal }}</h2>
+                    </c-card-rounded>
+    
+                </v-col>
+            </v-row>
+        </v-container>
+    </div>
 </template>
 
 <script>
+import BtnSetting from "@/components/Buttons/BtnSetting.vue";
+import BtnLogout from "@/components/Buttons/BtnLogout.vue";
 import CardRounded from "@/components/Cards/CardRounded.vue";
 import { getBalancesReports } from "@/apis/ReportsAPI";
 
@@ -39,6 +51,8 @@ class Balance {
 export default {
     name: 'Reports',
     components: {
+        "c-btn-setting": BtnSetting,
+        "c-btn-logout": BtnLogout,
         "c-card-rounded": CardRounded,
     },
     data() {
