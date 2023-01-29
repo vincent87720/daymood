@@ -1,6 +1,9 @@
 package model
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+)
 
 type Model interface {
 	Create(db *sql.DB) *ModelError
@@ -34,6 +37,10 @@ type ModelError struct {
 	Model   string
 	Code    int
 	Message string
+}
+
+func (modelError *ModelError) Error() string {
+	return fmt.Sprintf("[Model] %v | Code %v | %v", modelError.Model, modelError.Code, modelError.Message)
 }
 
 var normalError = func(model string, err error) (modelErr *ModelError) {
