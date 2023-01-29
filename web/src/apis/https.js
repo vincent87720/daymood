@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 var instance = axios.create({
-    baseURL: process.env.VUE_APP_BASE_URL
+    withCredentials: true,
+    baseURL: process.env.VUE_APP_BASE_URL,
 })
 
 export default function (method, url, data = null) {
