@@ -3,5 +3,13 @@ module.exports = {
     'vuetify'
   ],
   publicPath: '/daymood/',
-  outputDir: 'daymoodui'
+  outputDir: 'daymoodui',
+  devServer: {
+		proxy:{
+      '/api': {
+        target: 'http://app:8000/',
+        changeOrigin: true,
+      },
+    }
+	}
 }
