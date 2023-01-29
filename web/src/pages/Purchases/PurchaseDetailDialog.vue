@@ -170,13 +170,13 @@ export default {
             }
         },
         systemConfigs() {
-            return this.$store.state.systemConfigs;
+            return this.$store.state.conf.systemConfigs;
         },
         productList() {
-            return this.$store.state.products;
+            return this.$store.state.data.products;
         },
         supplierList() {
-            return this.$store.state.suppliers;
+            return this.$store.state.data.suppliers;
         },
         calc_Subtotal() {
             this.purchaseDetailItem.Subtotal = "";

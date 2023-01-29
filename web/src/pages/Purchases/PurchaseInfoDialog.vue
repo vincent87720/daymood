@@ -268,16 +268,16 @@ export default {
             }
         },
         systemConfigs() {
-            return this.$store.state.systemConfigs;
+            return this.$store.state.conf.systemConfigs;
         },
         tradingSettings() {
-            return this.$store.state.tradingSettings;
+            return this.$store.state.conf.tradingSettings;
         },
         allProductsList() {
-            return this.$store.state.allProducts;
+            return this.$store.state.data.allProducts;
         },
         allSuppliersList() {
-            return this.$store.state.allSuppliers;
+            return this.$store.state.data.allSuppliers;
         },
         isEditEnable() {
             if (this.purchaseItem.Status == 1 || this.enableEdit == true) {

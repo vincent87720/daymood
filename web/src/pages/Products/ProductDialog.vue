@@ -168,10 +168,10 @@ export default {
             }
         },
         systemConfigs() {
-            return this.$store.state.systemConfigs;
+            return this.$store.state.conf.systemConfigs;
         },
         supplierList() {
-            return this.$store.state.suppliers;
+            return this.$store.state.data.suppliers;
         },
     },
     methods: {

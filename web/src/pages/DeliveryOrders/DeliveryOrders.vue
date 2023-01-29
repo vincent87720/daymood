@@ -182,7 +182,7 @@ export default {
     },
     computed: {
         systemConfigs() {
-            return this.$store.state.systemConfigs;
+            return this.$store.state.conf.systemConfigs;
         },
         isSmalldevice() {
             if (this.$vuetify.breakpoint.name == "xs") {

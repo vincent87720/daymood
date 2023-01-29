@@ -140,21 +140,21 @@ export default {
             }
         },
         systemConfigs() {
-            return this.$store.state.systemConfigs;
+            return this.$store.state.conf.systemConfigs;
         },
         ProductTypeMaps() {
             let map = {};
-            this.$store.state.systemConfigs.ProductType.map(function (x) {
+            this.$store.state.conf.systemConfigs.ProductType.map(function (x) {
                 map[x.value] = x.key;
             })
             return map;
         },
         allSuppliersList() {
-            return this.$store.state.allSuppliers;
+            return this.$store.state.data.allSuppliers;
         },
         SupplierMaps() {
             let map = {};
-            this.$store.state.allSuppliers.map(function (x) {
+            this.$store.state.data.allSuppliers.map(function (x) {
                 map[x.value] = x.key;
             })
             return map;

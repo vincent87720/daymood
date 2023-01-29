@@ -301,7 +301,7 @@ export default {
             },
         },
         allProductsList() {
-            return this.$store.state.allProducts;
+            return this.$store.state.data.allProducts;
         },
         isEditEnable() {
             if (this.deliveryOrderItem.Status == 1 || this.enableEdit == true) {
@@ -362,7 +362,7 @@ export default {
             return result.toFixed(2);
         },
         systemConfigs() {
-            return this.$store.state.systemConfigs;
+            return this.$store.state.conf.systemConfigs;
         },
     },
     methods: {

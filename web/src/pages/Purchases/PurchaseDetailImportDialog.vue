@@ -157,31 +157,31 @@ export default {
             }
         },
         systemConfigs() {
-            return this.$store.state.systemConfigs;
+            return this.$store.state.conf.systemConfigs;
         },
         allSuppliersList() {
-            return this.$store.state.allSuppliers;
+            return this.$store.state.data.allSuppliers;
         },
         allProductsList() {
-            return this.$store.state.allProducts;
+            return this.$store.state.data.allProducts;
         },
         PurchaseDetailStatusMaps() {
             let map = {};
-            this.$store.state.systemConfigs.PurchaseDetailStatus.map(function (x) {
+            this.$store.state.conf.systemConfigs.PurchaseDetailStatus.map(function (x) {
                 map[x.value] = x.key;
             })
             return map;
         },
         SupplierMaps() {
             let map = {};
-            this.$store.state.allSuppliers.map(function (x) {
+            this.$store.state.data.allSuppliers.map(function (x) {
                 map[x.value] = x.key;
             })
             return map;
         },
         ProductMaps() {
             let map = {};
-            this.$store.state.allProducts.map(function (x) {
+            this.$store.state.data.allProducts.map(function (x) {
                 map[x.SKU] = x.key;
             })
             return map;

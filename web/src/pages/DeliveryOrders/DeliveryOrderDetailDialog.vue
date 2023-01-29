@@ -132,7 +132,7 @@ export default {
             }
         },
         productList() {
-            return this.$store.state.products;
+            return this.$store.state.data.products;
         },
         calc_Subtotal() {
             this.deliveryOrderDetailItem.Subtotal = "";

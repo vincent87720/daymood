@@ -250,13 +250,13 @@ export default {
             }
         },
         systemConfigs() {
-            return this.$store.state.systemConfigs;
+            return this.$store.state.conf.systemConfigs;
         },
         tradingSettings() {
-            return this.$store.state.tradingSettings;
+            return this.$store.state.conf.tradingSettings;
         },
         allSuppliersList() {
-            return this.$store.state.allSuppliers;
+            return this.$store.state.data.allSuppliers;
         },
     },
     methods: {
