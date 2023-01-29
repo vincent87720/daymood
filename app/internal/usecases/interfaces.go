@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/vincent87720/daymood/app/internal/model"
+	"github.com/vincent87720/daymood/app/internal/settings"
 )
 
 type Usecase interface {
@@ -37,4 +38,17 @@ func Update(usecase Usecase, db *sql.DB) *model.ModelError {
 
 func Delete(usecase Usecase, db *sql.DB) *model.ModelError {
 	return usecase.Delete(db)
+}
+
+type AuthUsecase interface {
+	Login(db *sql.DB, s settings.Settings) (valid bool, err error)
+	Logout(db *sql.DB) (err error)
+}
+
+func Login(authUsecase AuthUsecase, db *sql.DB, s settings.Settings) (valid bool, err error) {
+	return authUsecase.Login(db, s)
+}
+
+func Logout(authUsecase AuthUsecase, db *sql.DB) (err error) {
+	return authUsecase.Logout(db)
 }
