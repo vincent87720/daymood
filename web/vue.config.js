@@ -11,5 +11,14 @@ module.exports = {
         changeOrigin: true,
       },
     }
-	}
+	},
+  pwa: {
+    manifestOptions: {
+      name: "Daymood",
+      short_name: "Daymood",
+      display: "standalone",
+      theme_color: "#E2DDD3",
+    },
+    themeColor: "#E2DDD3",
+  },
 }
