@@ -138,7 +138,7 @@ func (user *User) Update(db *sql.DB) (modelErr *ModelError) {
 		return &ModelError{Model: "users", Code: 0, Message: err.Error()}
 	}
 
-	_, err = db.Exec("CALL updateUsers($1,$2,$3,$4,$5)", user.ID, user.Username, user.Password, user.Name, user.Email)
+	_, err = db.Exec("CALL updateUsers($1,$2,$3,$4)", user.ID, user.Username, user.Name, user.Email)
 	if err != nil {
 		return &ModelError{Model: "users", Code: 0, Message: err.Error()}
 	}
