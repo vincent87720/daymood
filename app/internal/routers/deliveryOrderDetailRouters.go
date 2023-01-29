@@ -11,14 +11,14 @@ import (
 	usecases "github.com/vincent87720/daymood/app/internal/usecases"
 )
 
-func SetupDeliveryOrderDetailRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*gin.Engine, error) {
+func SetupDeliveryOrderDetailRouters(router *gin.RouterGroup, db *sql.DB, s settings.Settings) (*gin.RouterGroup, error) {
 
-	router.GET("/deliveryOrderDetails", GetAllDeliveryOrderDetailsHandler(db))
-	router.POST("/deliveryOrderDetails/multiple", PostDeliveryOrderDetailsHandler(db, s))
-	router.GET("/deliveryOrders/:id/deliveryOrderDetails", GetDeliveryOrderDetailsHandler(db))
-	router.POST("/deliveryOrderDetails", PostDeliveryOrderDetailHandler(db, s))
-	router.PUT("/deliveryOrderDetails/:id", PutDeliveryOrderDetailHandler(db))
-	router.DELETE("/deliveryOrderDetails/:id", DeleteDeliveryOrderDetailHandler(db))
+	router.GET("/api/deliveryOrderDetails", GetAllDeliveryOrderDetailsHandler(db))
+	router.POST("/api/deliveryOrderDetails/multiple", PostDeliveryOrderDetailsHandler(db, s))
+	router.GET("/api/deliveryOrders/:id/deliveryOrderDetails", GetDeliveryOrderDetailsHandler(db))
+	router.POST("/api/deliveryOrderDetails", PostDeliveryOrderDetailHandler(db, s))
+	router.PUT("/api/deliveryOrderDetails/:id", PutDeliveryOrderDetailHandler(db))
+	router.DELETE("/api/deliveryOrderDetails/:id", DeleteDeliveryOrderDetailHandler(db))
 
 	return router, nil
 }

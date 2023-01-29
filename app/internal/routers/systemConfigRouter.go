@@ -9,9 +9,9 @@ import (
 	"github.com/vincent87720/daymood/app/internal/settings"
 )
 
-func SetupSystemConfigRouters(router *gin.Engine, s settings.Settings) (*gin.Engine, error) {
+func SetupSystemConfigRouters(router *gin.RouterGroup, s settings.Settings) (*gin.RouterGroup, error) {
 
-	router.GET("/systemConfigs", GetSystemConfigsHandler(s))
+	router.GET("/api/systemConfigs", GetSystemConfigsHandler(s))
 
 	return router, nil
 }

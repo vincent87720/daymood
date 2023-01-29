@@ -12,15 +12,15 @@ import (
 	"github.com/vincent87720/daymood/app/internal/usecases"
 )
 
-func SetupProductRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*gin.Engine, error) {
+func SetupProductRouters(router *gin.RouterGroup, db *sql.DB, s settings.Settings) (*gin.RouterGroup, error) {
 
-	router.GET("/products", GetProductsHandler(db))
-	router.POST("/products", PostProductHandler(db, s))
-	router.POST("/products/multiple", PostProductsHandler(db, s))
-	router.PUT("/products/:id", PutProductHandler(db, s))
-	router.DELETE("/products/:id", DeleteProductHandler(db, s))
-	router.GET("/products/:id/purchaseHistories", GetProductPurchaseHistoriesHandler(db))
-	router.GET("/products/:id/deliveryHistories", GetProductDeliveryHistoriesHandler(db))
+	router.GET("/api/products", GetProductsHandler(db))
+	router.POST("/api/products", PostProductHandler(db, s))
+	router.POST("/api/products/multiple", PostProductsHandler(db, s))
+	router.PUT("/api/products/:id", PutProductHandler(db, s))
+	router.DELETE("/api/products/:id", DeleteProductHandler(db, s))
+	router.GET("/api/products/:id/purchaseHistories", GetProductPurchaseHistoriesHandler(db))
+	router.GET("/api/products/:id/deliveryHistories", GetProductDeliveryHistoriesHandler(db))
 	// router.GET("/products/dumping", DumpProductHandler(db, s))
 	// router.POST("/stocks/:id", PostStocksHandler(db)) //新增庫存
 	// router.GET("/products/images/:id", GetProductImgHandler(db, s))

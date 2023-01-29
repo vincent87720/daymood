@@ -11,14 +11,14 @@ import (
 	"github.com/vincent87720/daymood/app/internal/usecases"
 )
 
-func SetupPurchaseDetailRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*gin.Engine, error) {
+func SetupPurchaseDetailRouters(router *gin.RouterGroup, db *sql.DB, s settings.Settings) (*gin.RouterGroup, error) {
 
-	router.GET("/purchaseDetails", GetAllPurchaseDetailsHandler(db))
-	router.POST("/purchaseDetails/multiple", PostPurchaseDetailsHandler(db))
-	router.GET("/purchases/:id/purchaseDetails", GetPurchaseDetailsHandler(db))
-	router.POST("/purchaseDetails", PostPurchaseDetailHandler(db))
-	router.PUT("/purchaseDetails/:id", PutPurchaseDetailHandler(db))
-	router.DELETE("/purchaseDetails/:id", DeletePurchaseDetailHandler(db))
+	router.GET("/api/purchaseDetails", GetAllPurchaseDetailsHandler(db))
+	router.POST("/api/purchaseDetails/multiple", PostPurchaseDetailsHandler(db))
+	router.GET("/api/purchases/:id/purchaseDetails", GetPurchaseDetailsHandler(db))
+	router.POST("/api/purchaseDetails", PostPurchaseDetailHandler(db))
+	router.PUT("/api/purchaseDetails/:id", PutPurchaseDetailHandler(db))
+	router.DELETE("/api/purchaseDetails/:id", DeletePurchaseDetailHandler(db))
 	// router.GET("/suppliers/dumping", DumpFirmHandler(db, s))
 
 	return router, nil

@@ -10,12 +10,12 @@ import (
 	usecases "github.com/vincent87720/daymood/app/internal/usecases"
 )
 
-func SetupDeliveryOrderRouters(router *gin.Engine, db *sql.DB) (*gin.Engine, error) {
-	router.GET("/deliveryOrders", GetDeliveryOrdersHandler(db))
-	router.GET("/deliveryOrders/:id", GetDeliveryOrderHandler(db))
-	router.POST("/deliveryOrders", PostDeliveryOrderHandler(db))
-	router.PUT("/deliveryOrders/:id", PutDeliveryOrderHandler(db))
-	router.DELETE("/deliveryOrders/:id", DeleteDeliveryOrderHandler(db))
+func SetupDeliveryOrderRouters(router *gin.RouterGroup, db *sql.DB) (*gin.RouterGroup, error) {
+	router.GET("/api/deliveryOrders", GetDeliveryOrdersHandler(db))
+	router.GET("/api/deliveryOrders/:id", GetDeliveryOrderHandler(db))
+	router.POST("/api/deliveryOrders", PostDeliveryOrderHandler(db))
+	router.PUT("/api/deliveryOrders/:id", PutDeliveryOrderHandler(db))
+	router.DELETE("/api/deliveryOrders/:id", DeleteDeliveryOrderHandler(db))
 
 	return router, nil
 }

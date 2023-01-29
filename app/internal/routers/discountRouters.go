@@ -11,12 +11,12 @@ import (
 	usecases "github.com/vincent87720/daymood/app/internal/usecases"
 )
 
-func SetupDiscountRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*gin.Engine, error) {
+func SetupDiscountRouters(router *gin.RouterGroup, db *sql.DB, s settings.Settings) (*gin.RouterGroup, error) {
 
-	router.GET("/deliveryOrders/:id/discounts", GetDiscountsHandler(db))
-	router.POST("/discounts", PostDiscountHandler(db, s))
-	router.PUT("/discounts/:id", PutDiscountHandler(db))
-	router.DELETE("/discounts/:id", DeleteDiscountHandler(db))
+	router.GET("/api/deliveryOrders/:id/discounts", GetDiscountsHandler(db))
+	router.POST("/api/discounts", PostDiscountHandler(db, s))
+	router.PUT("/api/discounts/:id", PutDiscountHandler(db))
+	router.DELETE("/api/discounts/:id", DeleteDiscountHandler(db))
 
 	return router, nil
 }

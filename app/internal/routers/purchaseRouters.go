@@ -11,13 +11,13 @@ import (
 	"github.com/vincent87720/daymood/app/internal/usecases"
 )
 
-func SetupPurchaseRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*gin.Engine, error) {
+func SetupPurchaseRouters(router *gin.RouterGroup, db *sql.DB, s settings.Settings) (*gin.RouterGroup, error) {
 
-	router.GET("/purchases", GetPurchasesHandler(db))
-	router.GET("/purchases/:id", GetPurchaseHandler(db))
-	router.POST("/purchases", PostPurchaseHandler(db))
-	router.PUT("/purchases/:id", PutPurchaseHandler(db))
-	router.DELETE("/purchases/:id", DeletePurchaseHandler(db))
+	router.GET("/api/purchases", GetPurchasesHandler(db))
+	router.GET("/api/purchases/:id", GetPurchaseHandler(db))
+	router.POST("/api/purchases", PostPurchaseHandler(db))
+	router.PUT("/api/purchases/:id", PutPurchaseHandler(db))
+	router.DELETE("/api/purchases/:id", DeletePurchaseHandler(db))
 	// router.GET("/suppliers/dumping", DumpFirmHandler(db, s))
 
 	return router, nil

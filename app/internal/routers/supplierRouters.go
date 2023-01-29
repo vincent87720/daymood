@@ -11,12 +11,12 @@ import (
 	"github.com/vincent87720/daymood/app/internal/usecases"
 )
 
-func SetupSupplierRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*gin.Engine, error) {
+func SetupSupplierRouters(router *gin.RouterGroup, db *sql.DB, s settings.Settings) (*gin.RouterGroup, error) {
 
-	router.GET("/suppliers", GetSuppliersHandler(db))
-	router.POST("/suppliers", PostSupplierHandler(db))
-	router.PUT("/suppliers/:id", PutSupplierHandler(db))
-	router.DELETE("/suppliers/:id", DeleteSupplierHandler(db))
+	router.GET("/api/suppliers", GetSuppliersHandler(db))
+	router.POST("/api/suppliers", PostSupplierHandler(db))
+	router.PUT("/api/suppliers/:id", PutSupplierHandler(db))
+	router.DELETE("/api/suppliers/:id", DeleteSupplierHandler(db))
 	// router.GET("/suppliers/dumping", DumpFirmHandler(db, s))
 
 	return router, nil

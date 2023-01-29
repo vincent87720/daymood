@@ -8,9 +8,9 @@ import (
 	usecases "github.com/vincent87720/daymood/app/internal/usecases"
 )
 
-func SetupReportRouters(router *gin.Engine, db *sql.DB) (*gin.Engine, error) {
+func SetupReportRouters(router *gin.RouterGroup, db *sql.DB) (*gin.RouterGroup, error) {
 
-	router.GET("/reports/balances", GetBalancesHandler(db))
+	router.GET("/api/reports/balances", GetBalancesHandler(db))
 
 	return router, nil
 }

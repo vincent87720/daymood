@@ -9,10 +9,10 @@ import (
 	usecases "github.com/vincent87720/daymood/app/internal/usecases"
 )
 
-func SetupSettingsRouters(router *gin.Engine, db *sql.DB, s *settings.Settings) (*gin.Engine, error) {
+func SetupSettingsRouters(router *gin.RouterGroup, db *sql.DB, s *settings.Settings) (*gin.RouterGroup, error) {
 
-	router.GET("/tradings", GetTradingsHandler(db, s))
-	router.PUT("/tradings", PutTradingsHandler(db, s))
+	router.GET("/api/tradings", GetTradingsHandler(db, s))
+	router.PUT("/api/tradings", PutTradingsHandler(db, s))
 
 	return router, nil
 }
