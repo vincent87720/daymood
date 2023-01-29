@@ -6,10 +6,11 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/vincent87720/daymood/app/internal/settings"
 )
 
-func SetSession() gin.HandlerFunc {
-	store := cookie.NewStore([]byte("secret"))
+func SetSession(s settings.Settings) gin.HandlerFunc {
+	store := cookie.NewStore([]byte(s.GetSessionSecret()))
 	store.Options(sessions.Options{
 		MaxAge:   60 * 60 * 24,
 		HttpOnly: true,

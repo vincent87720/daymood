@@ -12,9 +12,9 @@ func SetupRouters(db *sql.DB, s settings.Settings) (*gin.Engine, error) {
 
 	router := gin.Default()
 	// router.Use(CORSMiddleware())
-	router.Use(SetSession())
+	router.Use(SetSession(s))
 	routerGroup := router.Group("")
-	routerGroup.Use(SetSession())
+	routerGroup.Use(SetSession(s))
 	routerGroup.Use(AuthSession())
 
 	SetupSupplierRouters(routerGroup, db, s)

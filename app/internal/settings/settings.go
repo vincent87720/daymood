@@ -50,6 +50,9 @@ type Settings struct {
 		username string
 		password string
 	}
+	session struct {
+		secret string
+	}
 }
 
 func Init() Settings {
@@ -72,6 +75,7 @@ func (s *Settings) setEnvVar() {
 	s.database.password = os.Getenv("DB_PASSWORD")
 	s.easypick.username = os.Getenv("EZSTORE_USERNAME")
 	s.easypick.password = os.Getenv("EZSTORE_PASSWORD")
+	s.session.secret = os.Getenv("SESSION_SECRET")
 }
 
 func (s *Settings) setPath() {
@@ -154,6 +158,10 @@ func (s *Settings) GetEasyPickAddr() string {
 
 func (s *Settings) GetDBConnectionString() string {
 	return "postgresql://" + s.database.username + ":" + s.database.password + "@" + s.database.host + "/" + s.database.db + "?sslmode=disable"
+}
+
+func (s *Settings) GetSessionSecret() string {
+	return s.session.secret
 }
 
 func (s *Settings) GetTradingSettings() (Trading, error) {
