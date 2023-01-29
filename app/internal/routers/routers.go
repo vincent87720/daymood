@@ -11,7 +11,11 @@ import (
 func SetupRouters(db *sql.DB, s settings.Settings) (*gin.Engine, error) {
 
 	router := gin.Default()
-	router.Use(CORSMiddleware())
+	// router.Use(CORSMiddleware())
+	router.Use(SetSession())
+	routerGroup := router.Group("")
+	routerGroup.Use(SetSession())
+	routerGroup.Use(AuthSession())
 
 	SetupSupplierRouters(router, db, s)
 	SetupPurchaseRouters(router, db, s)
@@ -32,9 +36,9 @@ func SetupRouters(db *sql.DB, s settings.Settings) (*gin.Engine, error) {
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:8001")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With, Cookie")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
 
 		if c.Request.Method == "OPTIONS" {
@@ -72,6 +76,14 @@ var typeError = func(varName string) gin.H {
 		"role":    "router",
 		"code":    2,
 		"message": "Invalid type: " + varName,
+	}
+}
+var validationError = func() gin.H {
+	return gin.H{
+		"status":  "FAIL",
+		"role":    "router",
+		"code":    4,
+		"message": "validation error",
 	}
 }
 var modelError = func(modelErr *model.ModelError) gin.H {
