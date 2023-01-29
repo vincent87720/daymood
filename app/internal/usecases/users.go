@@ -68,6 +68,28 @@ func (user *User) Update(db *sql.DB) *model.ModelError {
 	return nil
 }
 
+func (user *User) UpdatePassword(db *sql.DB, old string, new string) error {
+
+	user.Model.Password = old
+	valid, err := user.Login(db)
+	if err != nil || valid == false {
+		return err
+	}
+
+	hashedPassword, err := hashPassword(new)
+	if err != nil {
+		return &model.ModelError{Model: "userUsecase", Code: 1, Message: "PasswordHashError"}
+	}
+	user.Model.Password = hashedPassword
+
+	modelError := user.Model.UpdatePassword(db)
+	if modelError != nil {
+		return modelError
+	}
+
+	return nil
+}
+
 func (user *User) Delete(db *sql.DB) *model.ModelError {
 
 	modelErr := model.Delete(user.Model, db)

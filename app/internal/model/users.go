@@ -146,6 +146,20 @@ func (user *User) Update(db *sql.DB) (modelErr *ModelError) {
 	return nil
 }
 
+func (user *User) UpdatePassword(db *sql.DB) (modelErr *ModelError) {
+	err := db.Ping()
+	if err != nil {
+		return &ModelError{Model: "users", Code: 0, Message: err.Error()}
+	}
+
+	_, err = db.Exec("CALL updateUserPasswords($1,$2)", user.ID, user.Password)
+	if err != nil {
+		return &ModelError{Model: "users", Code: 0, Message: err.Error()}
+	}
+
+	return nil
+}
+
 func (user *User) Delete(db *sql.DB) (modelErr *ModelError) {
 	err := db.Ping()
 	if err != nil {

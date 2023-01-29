@@ -6,19 +6,18 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vincent87720/daymood/app/internal/model"
-	"github.com/vincent87720/daymood/app/internal/settings"
 	"github.com/vincent87720/daymood/app/internal/usecases"
 )
 
-func SetupAuthRouters(router *gin.Engine, db *sql.DB, s settings.Settings) (*gin.Engine, error) {
+func SetupAuthRouters(router *gin.Engine, db *sql.DB) (*gin.Engine, error) {
 
-	router.POST("/api/login", UserLoginHandler(db, s))
-	router.POST("/api/logout", UserLogoutHandler(db, s))
+	router.POST("/api/login", UserLoginHandler(db))
+	router.POST("/api/logout", UserLogoutHandler(db))
 
 	return router, nil
 }
 
-func UserLoginHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
+func UserLoginHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
 		userModel := &model.User{}
@@ -40,7 +39,7 @@ func UserLoginHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 		}
 
 		user := usecases.NewUser(userModel)
-		valid, err := usecases.Login(user, db, s)
+		valid, err := usecases.Login(user, db)
 		if err != nil || valid == false {
 			context.JSON(http.StatusBadRequest, validationError())
 			return
@@ -57,7 +56,7 @@ func UserLoginHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 	return gin.HandlerFunc(fn)
 }
 
-func UserLogoutHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
+func UserLogoutHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
 		ClearSession(context)

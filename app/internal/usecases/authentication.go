@@ -3,11 +3,10 @@ package usecases
 import (
 	"database/sql"
 
-	"github.com/vincent87720/daymood/app/internal/settings"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (user *User) Login(db *sql.DB, s settings.Settings) (valid bool, err error) {
+func (user *User) Login(db *sql.DB) (valid bool, err error) {
 	userXi, modelErr := user.Model.ReadByUsername(db)
 	if modelErr != nil {
 		return false, modelErr

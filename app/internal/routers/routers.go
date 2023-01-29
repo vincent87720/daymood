@@ -28,7 +28,7 @@ func SetupRouters(db *sql.DB, s settings.Settings) (*gin.Engine, error) {
 	SetupUserRouters(routerGroup, db, s)
 	SetupSettingsRouters(routerGroup, db, &s)
 	SetupSystemConfigRouters(routerGroup, s)
-	SetupAuthRouters(router, db, s)
+	SetupAuthRouters(router, db)
 
 	exePath := s.GetExeFilePath()
 	router.Static("/daymood", exePath+"/daymoodui")
@@ -63,6 +63,14 @@ var generalError = gin.H{
 	"status": "FAIL",
 	"role":   "router",
 	"code":   0,
+}
+var returnError = func(err error) gin.H {
+	return gin.H{
+		"status":  "FAIL",
+		"role":    "router",
+		"code":    3,
+		"message": err.Error(),
+	}
 }
 var emptyError = func(varName string) gin.H {
 	return gin.H{
