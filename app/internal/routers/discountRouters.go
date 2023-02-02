@@ -24,18 +24,22 @@ func SetupDiscountRouters(router *gin.RouterGroup, db *sql.DB, s settings.Settin
 func GetDiscountsHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 		deliveryOrderID := context.Param("id")
-		if checkEmpty(deliveryOrderID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
+
+		discountModel := &model.Discount{}
+
+		checkList := []Field{
+			{Key: "id", Val: deliveryOrderID},
+		}
+		err := checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		deliveryOrderIDVal, err := strconv.ParseInt(deliveryOrderID, 10, 64)
+		discountModel.ID, err = strconv.ParseInt(deliveryOrderID, 10, 64)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
-		}
-		discountModel := &model.Discount{
-			DeliveryOrderID: deliveryOrderIDVal,
 		}
 
 		discount := usecases.NewDiscount(discountModel)
@@ -86,26 +90,28 @@ func PutDiscountHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 		discountID := context.Param("id")
 
-		if checkEmpty(discountID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
-			return
-		}
-
-		discountIDVal, err := strconv.ParseInt(discountID, 10, 64)
-		if err != nil {
-			context.JSON(http.StatusBadRequest, typeError("id"))
-			return
-		}
-
 		discountModel := &model.Discount{}
 
-		err = context.BindJSON(&discountModel)
+		err := context.BindJSON(&discountModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		discountModel.ID = discountIDVal
+		checkList := []Field{
+			{Key: "id", Val: discountID},
+		}
+		err = checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
+			return
+		}
+
+		discountModel.ID, err = strconv.ParseInt(discountID, 10, 64)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, typeError("id"))
+			return
+		}
 
 		discount := usecases.NewDiscount(discountModel)
 		modelErr := usecases.Update(discount, db)
@@ -128,19 +134,21 @@ func DeleteDiscountHandler(db *sql.DB) gin.HandlerFunc {
 
 		discountID := context.Param("id")
 
-		if checkEmpty(discountID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
+		discountModel := &model.Discount{}
+
+		checkList := []Field{
+			{Key: "id", Val: discountID},
+		}
+		err := checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		discountIDVal, err := strconv.ParseInt(discountID, 10, 64)
+		discountModel.ID, err = strconv.ParseInt(discountID, 10, 64)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
-		}
-
-		discountModel := &model.Discount{
-			ID: discountIDVal,
 		}
 
 		discount := usecases.NewDiscount(discountModel)

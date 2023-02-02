@@ -2,6 +2,7 @@ package routers
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vincent87720/daymood/app/internal/model"
@@ -55,11 +56,29 @@ func CORSMiddleware() gin.HandlerFunc {
 	}
 }
 
-func checkEmpty(s string) bool {
-	if s == "" || len(s) <= 0 {
-		return true
+type Field struct {
+	Key string
+	Val string
+}
+
+func checkEmpty(fields []Field) error {
+	// v := reflect.ValueOf(obj)
+
+	// values := make([]interface{}, v.NumField())
+
+	// for i := 0; i < v.NumField(); i++ {
+	// 	values[i] = v.Field(i).Interface()
+	// 	if v.Field(i).Kind() != reflect.Ptr && v.Field(i).Interface() == "" {
+	// 		return fmt.Errorf("Empty field: the %s field is empty", v.Type().Field(i).Name)
+	// 	}
+	// }
+	for _, field := range fields {
+		if field.Val == "" || len(field.Val) <= 0 {
+			return fmt.Errorf("Empty field: the %s field is empty", field.Key)
+		}
 	}
-	return false
+
+	return nil
 }
 
 var generalError = gin.H{
@@ -75,12 +94,12 @@ var returnError = func(err error) gin.H {
 		"message": err.Error(),
 	}
 }
-var emptyError = func(varName string) gin.H {
+var emptyError = func(err error) gin.H {
 	return gin.H{
 		"status":  "FAIL",
 		"role":    "router",
 		"code":    1,
-		"message": varName + " field should not be empty",
+		"message": err.Error(),
 	}
 }
 var typeError = func(varName string) gin.H {

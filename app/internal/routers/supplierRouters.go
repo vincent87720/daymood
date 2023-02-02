@@ -54,8 +54,12 @@ func PostSupplierHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		if checkEmpty(supplierModel.Name) == true {
-			context.JSON(http.StatusBadRequest, emptyError("name"))
+		checkList := []Field{
+			{Key: "Name", Val: supplierModel.Name},
+		}
+		err = checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
@@ -79,31 +83,29 @@ func PutSupplierHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 		supplierID := context.Param("id")
 
-		if checkEmpty(supplierID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
-			return
-		}
-
-		supplierIDVal, err := strconv.ParseInt(supplierID, 10, 64)
-		if err != nil {
-			context.JSON(http.StatusBadRequest, typeError("id"))
-			return
-		}
-
 		supplierModel := &model.Supplier{}
 
-		err = context.BindJSON(&supplierModel)
+		err := context.BindJSON(&supplierModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		if checkEmpty(supplierModel.Name) == true {
-			context.JSON(http.StatusBadRequest, emptyError("name"))
+		checkList := []Field{
+			{Key: "id", Val: supplierID},
+			{Key: "Name", Val: supplierModel.Name},
+		}
+		err = checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		supplierModel.ID = supplierIDVal
+		supplierModel.ID, err = strconv.ParseInt(supplierID, 10, 64)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, typeError("id"))
+			return
+		}
 
 		supplier := usecases.NewSupplier(supplierModel)
 		modelErr := usecases.Update(supplier, db)
@@ -123,22 +125,23 @@ func PutSupplierHandler(db *sql.DB) gin.HandlerFunc {
 
 func DeleteSupplierHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
-
 		supplierID := context.Param("id")
 
-		if checkEmpty(supplierID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
+		supplierModel := &model.Supplier{}
+
+		checkList := []Field{
+			{Key: "id", Val: supplierID},
+		}
+		err := checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		supplierIDVal, err := strconv.ParseInt(supplierID, 10, 64)
+		supplierModel.ID, err = strconv.ParseInt(supplierID, 10, 64)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
-		}
-
-		supplierModel := &model.Supplier{
-			ID: supplierIDVal,
 		}
 
 		supplier := usecases.NewSupplier(supplierModel)

@@ -56,8 +56,12 @@ func PostPurchaseDetailsHandler(db *sql.DB) gin.HandlerFunc {
 		}
 
 		for _, val := range purchaseDetailXi {
-			if checkEmpty(val.Name) == true {
-				context.JSON(http.StatusBadRequest, emptyError("name"))
+			checkList := []Field{
+				{Key: "Name", Val: val.Name},
+			}
+			err = checkEmpty(checkList)
+			if err != nil {
+				context.JSON(http.StatusBadRequest, emptyError(err))
 				return
 			}
 		}
@@ -81,19 +85,24 @@ func PostPurchaseDetailsHandler(db *sql.DB) gin.HandlerFunc {
 func GetPurchaseDetailsHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 		purchaseID := context.Param("id")
-		if checkEmpty(purchaseID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
+
+		purchaseDetailModel := &model.PurchaseDetail{}
+
+		checkList := []Field{
+			{Key: "id", Val: purchaseID},
+		}
+		err := checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		purchaseIDVal, err := strconv.ParseInt(purchaseID, 10, 64)
+		purchaseDetailModel.PurchaseID, err = strconv.ParseInt(purchaseID, 10, 64)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
 		}
-		purchaseDetailModel := &model.PurchaseDetail{
-			PurchaseID: purchaseIDVal,
-		}
+
 		purchaseDetail := usecases.NewPurchaseDetail(purchaseDetailModel)
 		purchaseDetailXi, modelErr := usecases.Read(purchaseDetail, db)
 		if modelErr != nil {
@@ -122,8 +131,12 @@ func PostPurchaseDetailHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		if checkEmpty(purchaseDetailModel.Name) == true {
-			context.JSON(http.StatusBadRequest, emptyError("name"))
+		checkList := []Field{
+			{Key: "Name", Val: purchaseDetailModel.Name},
+		}
+		err = checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
@@ -147,31 +160,29 @@ func PutPurchaseDetailHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 		purchaseDetailID := context.Param("id")
 
-		if checkEmpty(purchaseDetailID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
-			return
-		}
-
-		purchaseDetailIDVal, err := strconv.ParseInt(purchaseDetailID, 10, 64)
-		if err != nil {
-			context.JSON(http.StatusBadRequest, typeError("id"))
-			return
-		}
-
 		purchaseDetailModel := &model.PurchaseDetail{}
 
-		err = context.BindJSON(&purchaseDetailModel)
+		err := context.BindJSON(&purchaseDetailModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		if checkEmpty(purchaseDetailModel.Name) == true {
-			context.JSON(http.StatusBadRequest, emptyError("name"))
+		checkList := []Field{
+			{Key: "id", Val: purchaseDetailID},
+			{Key: "Name", Val: purchaseDetailModel.Name},
+		}
+		err = checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		purchaseDetailModel.ID = purchaseDetailIDVal
+		purchaseDetailModel.ID, err = strconv.ParseInt(purchaseDetailID, 10, 64)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, typeError("id"))
+			return
+		}
 
 		purchaseDetail := usecases.NewPurchaseDetail(purchaseDetailModel)
 		modelErr := usecases.Update(purchaseDetail, db)
@@ -194,19 +205,21 @@ func DeletePurchaseDetailHandler(db *sql.DB) gin.HandlerFunc {
 
 		purchaseDetailID := context.Param("id")
 
-		if checkEmpty(purchaseDetailID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
+		purchaseDetailModel := &model.PurchaseDetail{}
+
+		checkList := []Field{
+			{Key: "id", Val: purchaseDetailID},
+		}
+		err := checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		purchaseDetailIDVal, err := strconv.ParseInt(purchaseDetailID, 10, 64)
+		purchaseDetailModel.ID, err = strconv.ParseInt(purchaseDetailID, 10, 64)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
-		}
-
-		purchaseDetailModel := &model.PurchaseDetail{
-			ID: purchaseDetailIDVal,
 		}
 
 		purchaseDetail := usecases.NewPurchaseDetail(purchaseDetailModel)

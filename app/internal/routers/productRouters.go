@@ -59,8 +59,12 @@ func PostProductHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 			return
 		}
 
-		if checkEmpty(productModel.Name) == true {
-			context.JSON(http.StatusBadRequest, emptyError("name"))
+		checkList := []Field{
+			{Key: "Name", Val: productModel.Name},
+		}
+		err = checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
@@ -92,8 +96,12 @@ func PostProductsHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 		}
 
 		for _, val := range productXi {
-			if checkEmpty(val.Name) == true {
-				context.JSON(http.StatusBadRequest, emptyError("name"))
+			checkList := []Field{
+				{Key: "Name", Val: val.Name},
+			}
+			err = checkEmpty(checkList)
+			if err != nil {
+				context.JSON(http.StatusBadRequest, emptyError(err))
 				return
 			}
 		}
@@ -119,31 +127,29 @@ func PutProductHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 
 		productID := context.Param("id")
 
-		if checkEmpty(productID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
-			return
-		}
-
-		productIDVal, err := strconv.ParseInt(productID, 10, 64)
-		if err != nil {
-			context.JSON(http.StatusBadRequest, typeError("id"))
-			return
-		}
-
 		productModel := &model.Product{}
 
-		err = context.BindJSON(&productModel)
+		err := context.BindJSON(&productModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		if checkEmpty(productModel.Name) == true {
-			context.JSON(http.StatusBadRequest, emptyError("name"))
+		checkList := []Field{
+			{Key: "id", Val: productID},
+			{Key: "Name", Val: productModel.Name},
+		}
+		err = checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		productModel.ID = productIDVal
+		productModel.ID, err = strconv.ParseInt(productID, 10, 64)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, typeError("id"))
+			return
+		}
 
 		product := usecases.NewProduct(productModel)
 		modelErr := usecases.Update(product, db)
@@ -166,12 +172,18 @@ func DeleteProductHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 
 		productID := context.Param("id")
 
-		if checkEmpty(productID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
+		productModel := &model.Product{}
+
+		checkList := []Field{
+			{Key: "id", Val: productID},
+		}
+		err := checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		productIDVal, err := strconv.ParseInt(productID, 10, 64)
+		productModel.ID, err = strconv.ParseInt(productID, 10, 64)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, gin.H{
 				"status":  "FAIL",
@@ -179,10 +191,6 @@ func DeleteProductHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 				"message": "Invalid input",
 			})
 			return
-		}
-
-		productModel := &model.Product{
-			ID: productIDVal,
 		}
 
 		product := usecases.NewProduct(productModel)
@@ -204,20 +212,26 @@ func DeleteProductHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 func GetProductPurchaseHistoriesHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 		productID := context.Param("id")
-		if checkEmpty(productID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
+
+		productModel := &model.Product{}
+
+		checkList := []Field{
+			{Key: "id", Val: productID},
+		}
+		err := checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		productIDVal, err := strconv.ParseInt(productID, 10, 64)
+		productModel.ID, err = strconv.ParseInt(productID, 10, 64)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
 		}
 
-		productModel := &model.Product{}
 		product := usecases.NewProduct(productModel)
-		historyXi, modelErr := product.ReadPurchaseHistories(db, productIDVal)
+		historyXi, modelErr := product.ReadPurchaseHistories(db, productModel.ID)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return
@@ -236,20 +250,26 @@ func GetProductPurchaseHistoriesHandler(db *sql.DB) gin.HandlerFunc {
 func GetProductDeliveryHistoriesHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 		productID := context.Param("id")
-		if checkEmpty(productID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
+
+		productModel := &model.Product{}
+
+		checkList := []Field{
+			{Key: "id", Val: productID},
+		}
+		err := checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		productIDVal, err := strconv.ParseInt(productID, 10, 64)
+		productModel.ID, err = strconv.ParseInt(productID, 10, 64)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
 		}
 
-		productModel := &model.Product{}
 		product := usecases.NewProduct(productModel)
-		historyXi, modelErr := product.ReadDeliveryHistories(db, productIDVal)
+		historyXi, modelErr := product.ReadDeliveryHistories(db, productModel.ID)
 		if modelErr != nil {
 			context.JSON(http.StatusBadRequest, modelError(modelErr))
 			return

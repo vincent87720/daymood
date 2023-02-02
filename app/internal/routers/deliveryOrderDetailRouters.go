@@ -75,19 +75,24 @@ func PostDeliveryOrderDetailsHandler(db *sql.DB, s settings.Settings) gin.Handle
 func GetDeliveryOrderDetailsHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 		deliveryOrderID := context.Param("id")
-		if checkEmpty(deliveryOrderID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
+
+		deliveryOrderDetailModel := &model.DeliveryOrderDetail{}
+
+		checkList := []Field{
+			{Key: "id", Val: deliveryOrderID},
+		}
+		err := checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		deliveryOrderIDVal, err := strconv.ParseInt(deliveryOrderID, 10, 64)
+		deliveryOrderDetailModel.DeliveryOrderID, err = strconv.ParseInt(deliveryOrderID, 10, 64)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
 		}
-		deliveryOrderDetailModel := &model.DeliveryOrderDetail{
-			DeliveryOrderID: deliveryOrderIDVal,
-		}
+
 		deliveryOrderDetail := usecases.NewDeliveryOrderDetail(deliveryOrderDetailModel)
 		deliveryOrderDetailXi, modelErr := usecases.Read(deliveryOrderDetail, db)
 		if modelErr != nil {
@@ -137,26 +142,28 @@ func PutDeliveryOrderDetailHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 		deliveryOrderDetailID := context.Param("id")
 
-		if checkEmpty(deliveryOrderDetailID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
-			return
-		}
-
-		deliveryOrderDetailIDVal, err := strconv.ParseInt(deliveryOrderDetailID, 10, 64)
-		if err != nil {
-			context.JSON(http.StatusBadRequest, typeError("id"))
-			return
-		}
-
 		deliveryOrderDetailModel := &model.DeliveryOrderDetail{}
 
-		err = context.BindJSON(&deliveryOrderDetailModel)
+		err := context.BindJSON(&deliveryOrderDetailModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		deliveryOrderDetailModel.ID = deliveryOrderDetailIDVal
+		checkList := []Field{
+			{Key: "id", Val: deliveryOrderDetailID},
+		}
+		err = checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
+			return
+		}
+
+		deliveryOrderDetailModel.ID, err = strconv.ParseInt(deliveryOrderDetailID, 10, 64)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, typeError("id"))
+			return
+		}
 
 		deliveryOrderDetail := usecases.NewDeliveryOrderDetail(deliveryOrderDetailModel)
 		modelErr := usecases.Update(deliveryOrderDetail, db)
@@ -179,19 +186,21 @@ func DeleteDeliveryOrderDetailHandler(db *sql.DB) gin.HandlerFunc {
 
 		deliveryOrderDetailID := context.Param("id")
 
-		if checkEmpty(deliveryOrderDetailID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
+		deliveryOrderDetailModel := &model.DeliveryOrderDetail{}
+
+		checkList := []Field{
+			{Key: "id", Val: deliveryOrderDetailID},
+		}
+		err := checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		deliveryOrderDetailIDVal, err := strconv.ParseInt(deliveryOrderDetailID, 10, 64)
+		deliveryOrderDetailModel.ID, err = strconv.ParseInt(deliveryOrderDetailID, 10, 64)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
-		}
-
-		deliveryOrderDetailModel := &model.DeliveryOrderDetail{
-			ID: deliveryOrderDetailIDVal,
 		}
 
 		deliveryOrderDetail := usecases.NewDeliveryOrderDetail(deliveryOrderDetailModel)

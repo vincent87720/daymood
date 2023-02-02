@@ -28,13 +28,13 @@ func UserLoginHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		if checkEmpty(userModel.Username) == true {
-			context.JSON(http.StatusBadRequest, emptyError("username"))
-			return
+		checkList := []Field{
+			{Key: "Username", Val: userModel.Username},
+			{Key: "Password", Val: userModel.Password},
 		}
-
-		if checkEmpty(userModel.Password) == true {
-			context.JSON(http.StatusBadRequest, emptyError("password"))
+		err = checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 

@@ -48,18 +48,21 @@ func GetPurchaseHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 		purchaseID := context.Param("id")
 
-		if checkEmpty(purchaseID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
+		purchaseModel := &model.Purchase{}
+
+		checkList := []Field{
+			{Key: "id", Val: purchaseID},
+		}
+		err := checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		purchaseIDVal, err := strconv.ParseInt(purchaseID, 10, 64)
+		purchaseModel.ID, err = strconv.ParseInt(purchaseID, 10, 64)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
-		}
-		purchaseModel := &model.Purchase{
-			ID: purchaseIDVal,
 		}
 
 		purchase := usecases.NewPurchase(purchaseModel)
@@ -90,8 +93,12 @@ func PostPurchaseHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		if checkEmpty(purchaseModel.Name) == true {
-			context.JSON(http.StatusBadRequest, emptyError("name"))
+		checkList := []Field{
+			{Key: "Name", Val: purchaseModel.Name},
+		}
+		err = checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
@@ -113,33 +120,31 @@ func PostPurchaseHandler(db *sql.DB) gin.HandlerFunc {
 
 func PutPurchaseHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
-		supplierID := context.Param("id")
-
-		if checkEmpty(supplierID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
-			return
-		}
-
-		supplierIDVal, err := strconv.ParseInt(supplierID, 10, 64)
-		if err != nil {
-			context.JSON(http.StatusBadRequest, typeError("id"))
-			return
-		}
+		purchaseID := context.Param("id")
 
 		purchaseModel := &model.Purchase{}
 
-		err = context.BindJSON(&purchaseModel)
+		err := context.BindJSON(&purchaseModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		if checkEmpty(purchaseModel.Name) == true {
-			context.JSON(http.StatusBadRequest, emptyError("name"))
+		checkList := []Field{
+			{Key: "id", Val: purchaseID},
+			{Key: "Name", Val: purchaseModel.Name},
+		}
+		err = checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		purchaseModel.ID = supplierIDVal
+		purchaseModel.ID, err = strconv.ParseInt(purchaseID, 10, 64)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, typeError("id"))
+			return
+		}
 
 		purchase := usecases.NewPurchase(purchaseModel)
 		modelErr := usecases.Update(purchase, db)
@@ -162,19 +167,21 @@ func DeletePurchaseHandler(db *sql.DB) gin.HandlerFunc {
 
 		purchaseID := context.Param("id")
 
-		if checkEmpty(purchaseID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
+		purchaseModel := &model.Purchase{}
+
+		checkList := []Field{
+			{Key: "id", Val: purchaseID},
+		}
+		err := checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		purchaseIDVal, err := strconv.ParseInt(purchaseID, 10, 64)
+		purchaseModel.ID, err = strconv.ParseInt(purchaseID, 10, 64)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
-		}
-
-		purchaseModel := &model.Purchase{
-			ID: purchaseIDVal,
 		}
 
 		purchase := usecases.NewPurchase(purchaseModel)

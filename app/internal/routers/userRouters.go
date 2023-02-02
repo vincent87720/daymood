@@ -55,18 +55,21 @@ func GetUserHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 		userID := context.Param("id")
 
-		if checkEmpty(userID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
+		userModel := &model.User{}
+
+		checkList := []Field{
+			{Key: "id", Val: userID},
+		}
+		err := checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		userIDVal, err := strconv.ParseInt(userID, 10, 64)
+		userModel.ID, err = strconv.ParseInt(userID, 10, 64)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
-		}
-		userModel := &model.User{
-			ID: userIDVal,
 		}
 
 		user := usecases.NewUser(userModel)
@@ -97,13 +100,13 @@ func PostUserHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		if checkEmpty(userModel.Username) == true {
-			context.JSON(http.StatusBadRequest, emptyError("username"))
-			return
+		checkList := []Field{
+			{Key: "Username", Val: userModel.Username},
+			{Key: "Password", Val: userModel.Password},
 		}
-
-		if checkEmpty(userModel.Password) == true {
-			context.JSON(http.StatusBadRequest, emptyError("password"))
+		err = checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
@@ -127,31 +130,29 @@ func PutUserHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 		userID := context.Param("id")
 
-		if checkEmpty(userID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
-			return
-		}
-
-		userIDVal, err := strconv.ParseInt(userID, 10, 64)
-		if err != nil {
-			context.JSON(http.StatusBadRequest, typeError("id"))
-			return
-		}
-
 		userModel := &model.User{}
 
-		err = context.BindJSON(&userModel)
+		err := context.BindJSON(&userModel)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		if checkEmpty(userModel.Name) == true {
-			context.JSON(http.StatusBadRequest, emptyError("name"))
+		checkList := []Field{
+			{Key: "id", Val: userID},
+			{Key: "Name", Val: userModel.Name},
+		}
+		err = checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		userModel.ID = userIDVal
+		userModel.ID, err = strconv.ParseInt(userID, 10, 64)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, typeError("id"))
+			return
+		}
 
 		user := usecases.NewUser(userModel)
 		modelErr := usecases.Update(user, db)
@@ -173,29 +174,33 @@ func PatchUserPasswordHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 		userID := context.Param("id")
 
-		if checkEmpty(userID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
-			return
-		}
-
-		userIDVal, err := strconv.ParseInt(userID, 10, 64)
-		if err != nil {
-			context.JSON(http.StatusBadRequest, typeError("id"))
-			return
-		}
+		userModel := &model.User{}
 
 		passwordReq := &PatchUserPasswordReqBody{}
-
-		err = context.BindJSON(&passwordReq)
+		err := context.BindJSON(&passwordReq)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError(err.Error()))
 			return
 		}
 
-		userModel := &model.User{
-			ID:       userIDVal,
-			Username: passwordReq.Username,
+		checkList := []Field{
+			{Key: "id", Val: userID},
+			{Key: "Username", Val: passwordReq.Username},
+			{Key: "OldPassword", Val: passwordReq.OldPassword},
+			{Key: "NewPassword", Val: passwordReq.NewPassword},
 		}
+		err = checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
+			return
+		}
+
+		userModel.ID, err = strconv.ParseInt(userID, 10, 64)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, typeError("id"))
+			return
+		}
+		userModel.Username = passwordReq.Username
 
 		user := usecases.NewUser(userModel)
 		err = user.UpdatePassword(db, passwordReq.OldPassword, passwordReq.NewPassword)
@@ -218,19 +223,21 @@ func DeleteUserHandler(db *sql.DB) gin.HandlerFunc {
 
 		userID := context.Param("id")
 
-		if checkEmpty(userID) == true {
-			context.JSON(http.StatusBadRequest, emptyError("id"))
+		userModel := &model.User{}
+
+		checkList := []Field{
+			{Key: "id", Val: userID},
+		}
+		err := checkEmpty(checkList)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, emptyError(err))
 			return
 		}
 
-		userIDVal, err := strconv.ParseInt(userID, 10, 64)
+		userModel.ID, err = strconv.ParseInt(userID, 10, 64)
 		if err != nil {
 			context.JSON(http.StatusBadRequest, typeError("id"))
 			return
-		}
-
-		userModel := &model.User{
-			ID: userIDVal,
 		}
 
 		user := usecases.NewUser(userModel)
