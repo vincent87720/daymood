@@ -10,9 +10,9 @@
                                 <img src="@/assets/8467417.png" width="240" />
                             </div>
                             <v-text-field v-model="user.Username" color="#796956" label="帳號" filled outlined
-                                dense v-on:keydown.enter.prevent="onClick_login()"></v-text-field>
+                                dense v-on:keydown.enter.prevent="onClick_login()" persistent-placeholder></v-text-field>
                             <v-text-field v-model="user.Password" color="#796956" label="密碼" filled outlined dense
-                                type="password" v-on:keydown.enter.prevent="onClick_login()"></v-text-field>
+                                type="password" v-on:keydown.enter.prevent="onClick_login()" persistent-placeholder></v-text-field>
                             <v-btn block outlined color="#796956" class="c-btn-login mt-2"
                                 @click="onClick_login()">登入</v-btn>
                         </v-card>
