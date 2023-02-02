@@ -5,6 +5,7 @@ import store from "@/vuex/store";
 Vue.use(VueRouter);
 
 const routes = [
+  { path: '/', redirect: { name: 'Login' } },
   {
     path: "/login",
     name: "Login",
