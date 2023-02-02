@@ -30,11 +30,11 @@ func SetupRouters(db *sql.DB, s settings.Settings) (*gin.Engine, error) {
 	SetupSystemConfigRouters(routerGroup, s)
 	SetupAuthRouters(router, db)
 
-	exePath := s.GetExeFilePath()
-	router.Static("/daymood", exePath+"/daymoodui")
-	router.NoRoute(func(c *gin.Context) {
-		c.File("./daymoodui/index.html")
-	})
+	// exePath := s.GetExeFilePath()
+	// router.Static("/daymood", exePath+"/daymoodui")
+	// router.NoRoute(func(c *gin.Context) {
+	// 	c.File("./daymoodui/index.html")
+	// })
 
 	return router, nil
 }
