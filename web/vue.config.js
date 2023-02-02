@@ -20,5 +20,5 @@ module.exports = {
       theme_color: "#E2DDD3",
     },
     themeColor: "#E2DDD3",
-  },
+  }
 }
