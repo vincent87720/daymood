@@ -9,7 +9,7 @@ import (
 	"github.com/vincent87720/daymood/app/internal/settings"
 )
 
-func SetupRouters(db *sql.DB, s settings.Settings) (*gin.Engine, error) {
+func SetupRouters(db *sql.DB, s *settings.Settings) *gin.Engine {
 
 	router := gin.Default()
 	// router.Use(CORSMiddleware())
@@ -18,16 +18,16 @@ func SetupRouters(db *sql.DB, s settings.Settings) (*gin.Engine, error) {
 	routerGroup.Use(SetSession(s))
 	routerGroup.Use(AuthSession())
 
-	SetupSupplierRouters(routerGroup, db, s)
-	SetupPurchaseRouters(routerGroup, db, s)
-	SetupPurchaseDetailRouters(routerGroup, db, s)
-	SetupProductRouters(routerGroup, db, s)
+	SetupSupplierRouters(routerGroup, db)
+	SetupPurchaseRouters(routerGroup, db)
+	SetupPurchaseDetailRouters(routerGroup, db)
+	SetupProductRouters(routerGroup, db)
 	SetupDeliveryOrderRouters(routerGroup, db)
-	SetupDeliveryOrderDetailRouters(routerGroup, db, s)
-	SetupDiscountRouters(routerGroup, db, s)
+	SetupDeliveryOrderDetailRouters(routerGroup, db)
+	SetupDiscountRouters(routerGroup, db)
 	SetupReportRouters(routerGroup, db)
-	SetupUserRouters(routerGroup, db, s)
-	SetupSettingsRouters(routerGroup, db, &s)
+	SetupUserRouters(routerGroup, db)
+	SetupSettingsRouters(routerGroup, db, s)
 	SetupSystemConfigRouters(routerGroup, s)
 	SetupAuthRouters(router, db)
 
@@ -37,7 +37,7 @@ func SetupRouters(db *sql.DB, s settings.Settings) (*gin.Engine, error) {
 	// 	c.File("./daymoodui/index.html")
 	// })
 
-	return router, nil
+	return router
 }
 
 func CORSMiddleware() gin.HandlerFunc {

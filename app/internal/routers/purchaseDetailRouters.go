@@ -7,11 +7,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vincent87720/daymood/app/internal/model"
-	"github.com/vincent87720/daymood/app/internal/settings"
 	"github.com/vincent87720/daymood/app/internal/usecases"
 )
 
-func SetupPurchaseDetailRouters(router *gin.RouterGroup, db *sql.DB, s settings.Settings) (*gin.RouterGroup, error) {
+func SetupPurchaseDetailRouters(router *gin.RouterGroup, db *sql.DB) *gin.RouterGroup {
 
 	router.GET("/api/purchaseDetails", GetAllPurchaseDetailsHandler(db))
 	router.POST("/api/purchaseDetails/multiple", PostPurchaseDetailsHandler(db))
@@ -21,7 +20,7 @@ func SetupPurchaseDetailRouters(router *gin.RouterGroup, db *sql.DB, s settings.
 	router.DELETE("/api/purchaseDetails/:id", DeletePurchaseDetailHandler(db))
 	// router.GET("/suppliers/dumping", DumpFirmHandler(db, s))
 
-	return router, nil
+	return router
 }
 
 func GetAllPurchaseDetailsHandler(db *sql.DB) gin.HandlerFunc {

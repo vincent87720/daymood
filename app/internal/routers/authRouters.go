@@ -9,12 +9,12 @@ import (
 	"github.com/vincent87720/daymood/app/internal/usecases"
 )
 
-func SetupAuthRouters(router *gin.Engine, db *sql.DB) (*gin.Engine, error) {
+func SetupAuthRouters(router *gin.Engine, db *sql.DB) *gin.Engine {
 
 	router.POST("/api/login", UserLoginHandler(db))
 	router.POST("/api/logout", UserLogoutHandler(db))
 
-	return router, nil
+	return router
 }
 
 func UserLoginHandler(db *sql.DB) gin.HandlerFunc {

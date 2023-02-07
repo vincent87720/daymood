@@ -28,15 +28,5 @@ func (tradings *Tradings) Update(trading settings.Trading) error {
 	if err != nil {
 		return err
 	}
-
-	err = tradings.Settings.MarshalSettings()
-	if err != nil {
-		return err
-	}
-
-	err = tradings.Settings.WriteFile()
-	if err != nil {
-		return err
-	}
 	return nil
 }

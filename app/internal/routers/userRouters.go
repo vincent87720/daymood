@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vincent87720/daymood/app/internal/model"
-	"github.com/vincent87720/daymood/app/internal/settings"
 	"github.com/vincent87720/daymood/app/internal/usecases"
 )
 
@@ -18,7 +17,7 @@ type PatchUserPasswordReqBody struct {
 	NewPassword string
 }
 
-func SetupUserRouters(router *gin.RouterGroup, db *sql.DB, s settings.Settings) (*gin.RouterGroup, error) {
+func SetupUserRouters(router *gin.RouterGroup, db *sql.DB) *gin.RouterGroup {
 
 	router.GET("/api/users", GetUsersHandler(db))
 	router.GET("/api/users/:id", GetUserHandler(db))
@@ -27,7 +26,7 @@ func SetupUserRouters(router *gin.RouterGroup, db *sql.DB, s settings.Settings) 
 	router.PATCH("/api/users/:id/passwords", PatchUserPasswordHandler(db))
 	router.DELETE("/api/users/:id", DeleteUserHandler(db))
 
-	return router, nil
+	return router
 }
 
 func GetUsersHandler(db *sql.DB) gin.HandlerFunc {

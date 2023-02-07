@@ -2,9 +2,7 @@ package settings
 
 import (
 	"encoding/csv"
-	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -55,13 +53,27 @@ type Settings struct {
 	}
 }
 
-func Init() Settings {
-	s := Settings{}
+func Init() (*Settings, error) {
+	s := &Settings{}
+
 	s.setEnvVar()
-	s.setPath()
-	s.ReadFile()
-	s.UnmarshalSettings()
-	return s
+
+	err := s.setPath()
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.readFile()
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.UnmarshalSettings()
+	if err != nil {
+		return nil, err
+	}
+
+	return s, nil
 }
 
 func (s *Settings) setEnvVar() {
@@ -78,66 +90,19 @@ func (s *Settings) setEnvVar() {
 	s.session.secret = os.Getenv("SESSION_SECRET")
 }
 
-func (s *Settings) setPath() {
+func (s *Settings) setPath() error {
 	if s.mode == "DEV" {
 		s.rootPath = "."
 	} else {
 		ex, err := os.Executable()
 		if err != nil {
-			panic(err)
+			return err
 		}
 		exPath := filepath.Dir(ex)
 		s.rootPath = exPath
 	}
 	s.yamlPath = s.rootPath + "/settings.yaml"
-
-}
-
-func (s *Settings) ReadFile() {
-	ya, err := ioutil.ReadFile(s.yamlPath)
-	if err != nil {
-		log.Fatalf("ERROR: %v", err)
-		return
-	}
-	s.yamlByteXi = ya
-}
-
-func (s *Settings) WriteCSV(filepath string, preparecsv [][]string) error {
-	// if _, err := os.Stat(s.binaryPath + "/product.csv"); errors.Is(err, os.ErrNotExist) {
-
-	// }
-	file, err := os.Create(filepath)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	file.WriteString("\xef\xbb\xbf") //加上BOM頭讓Excel可以正確讀取
-
-	writer := csv.NewWriter(file)
-
-	for _, val := range preparecsv {
-		writer.Write(val)
-	}
-	writer.Flush()
 	return nil
-}
-
-func (s *Settings) UnmarshalSettings() {
-
-	s.y = Y{}
-	err := yaml.Unmarshal(s.yamlByteXi, &s.y)
-	if err != nil {
-		log.Fatalf("ERROR: %v", err)
-	}
-	// fmt.Printf("settings: %+v\n", s.t)
-}
-
-func (s *Settings) Print() {
-	fmt.Println(s.y.Trading.Ajeossi)
-	fmt.Println(s.y.Trading.ShippingFee)
-	fmt.Println(s.y.Trading.ExchangeRate)
-	fmt.Println(s.y.Trading.Tariff)
 }
 
 func (s *Settings) GetExeFilePath() string {
@@ -170,18 +135,30 @@ func (s *Settings) GetTradingSettings() (Trading, error) {
 
 func (s *Settings) SetTradingSettings(trading Trading) error {
 	s.y.Trading = trading
-	return nil
-}
 
-func (s *Settings) WriteFile() error {
-	err := ioutil.WriteFile(s.yamlPath, s.yamlByteXi, os.ModePerm)
+	err := s.marshalSettings()
+	if err != nil {
+		return err
+	}
+
+	err = s.writeFile()
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *Settings) MarshalSettings() error {
+func (s *Settings) UnmarshalSettings() error {
+
+	s.y = Y{}
+	err := yaml.Unmarshal(s.yamlByteXi, &s.y)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Settings) marshalSettings() error {
 
 	var byteXi []byte
 	byteXi, err := yaml.Marshal(s.y)
@@ -189,5 +166,43 @@ func (s *Settings) MarshalSettings() error {
 		return err
 	}
 	s.yamlByteXi = byteXi
+	return nil
+}
+
+func (s *Settings) readFile() error {
+	ya, err := ioutil.ReadFile(s.yamlPath)
+	if err != nil {
+		return err
+	}
+	s.yamlByteXi = ya
+	return nil
+}
+
+func (s *Settings) writeFile() error {
+	err := ioutil.WriteFile(s.yamlPath, s.yamlByteXi, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Settings) WriteCSV(filepath string, preparecsv [][]string) error {
+	// if _, err := os.Stat(s.binaryPath + "/product.csv"); errors.Is(err, os.ErrNotExist) {
+
+	// }
+	file, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	file.WriteString("\xef\xbb\xbf") //加上BOM頭讓Excel可以正確讀取
+
+	writer := csv.NewWriter(file)
+
+	for _, val := range preparecsv {
+		writer.Write(val)
+	}
+	writer.Flush()
 	return nil
 }

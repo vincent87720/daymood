@@ -15,10 +15,18 @@ import (
 )
 
 func Launch() {
-	s := settings.Init()
+	s, err := settings.Init()
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
 
 	if s.GetAppMode() == "DEV" || s.GetAppMode() == "PROD" {
-		runApp(s)
+		err = runApp(s)
+		if err != nil {
+			log.Fatalln(err)
+			return
+		}
 	} else {
 		//production
 		// nsAppInit(s)
@@ -91,24 +99,22 @@ func Launch() {
 // 	app.Run()
 // }
 
-func runApp(s settings.Settings) {
-	connStr := s.GetDBConnectionString()
-	backendAddr := s.GetBackendAddr()
+func runApp(s *settings.Settings) error {
 
 	// Connect to database
-	db, err := sql.Open("postgres", connStr)
+	db, err := sql.Open("postgres", s.GetDBConnectionString())
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer db.Close()
 
-	router, err := routers.SetupRouters(db, s)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	router := routers.SetupRouters(db, s)
 
-	router.Run(backendAddr)
+	err = router.Run(s.GetBackendAddr())
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func openbrowser(url string) {

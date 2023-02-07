@@ -9,7 +9,7 @@ import (
 	"github.com/vincent87720/daymood/app/internal/settings"
 )
 
-func SetSession(s settings.Settings) gin.HandlerFunc {
+func SetSession(s *settings.Settings) gin.HandlerFunc {
 	store := cookie.NewStore([]byte(s.GetSessionSecret()))
 	store.Options(sessions.Options{
 		MaxAge:   60 * 60 * 24,

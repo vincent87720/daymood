@@ -7,18 +7,17 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vincent87720/daymood/app/internal/model"
-	"github.com/vincent87720/daymood/app/internal/settings"
 	usecases "github.com/vincent87720/daymood/app/internal/usecases"
 )
 
-func SetupDiscountRouters(router *gin.RouterGroup, db *sql.DB, s settings.Settings) (*gin.RouterGroup, error) {
+func SetupDiscountRouters(router *gin.RouterGroup, db *sql.DB) *gin.RouterGroup {
 
 	router.GET("/api/deliveryOrders/:id/discounts", GetDiscountsHandler(db))
-	router.POST("/api/discounts", PostDiscountHandler(db, s))
+	router.POST("/api/discounts", PostDiscountHandler(db))
 	router.PUT("/api/discounts/:id", PutDiscountHandler(db))
 	router.DELETE("/api/discounts/:id", DeleteDiscountHandler(db))
 
-	return router, nil
+	return router
 }
 
 func GetDiscountsHandler(db *sql.DB) gin.HandlerFunc {
@@ -59,7 +58,7 @@ func GetDiscountsHandler(db *sql.DB) gin.HandlerFunc {
 	return gin.HandlerFunc(fn)
 }
 
-func PostDiscountHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
+func PostDiscountHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
 		discountModel := &model.Discount{}

@@ -8,24 +8,23 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vincent87720/daymood/app/internal/model"
-	"github.com/vincent87720/daymood/app/internal/settings"
 	"github.com/vincent87720/daymood/app/internal/usecases"
 )
 
-func SetupProductRouters(router *gin.RouterGroup, db *sql.DB, s settings.Settings) (*gin.RouterGroup, error) {
+func SetupProductRouters(router *gin.RouterGroup, db *sql.DB) *gin.RouterGroup {
 
 	router.GET("/api/products", GetProductsHandler(db))
-	router.POST("/api/products", PostProductHandler(db, s))
-	router.POST("/api/products/multiple", PostProductsHandler(db, s))
-	router.PUT("/api/products/:id", PutProductHandler(db, s))
-	router.DELETE("/api/products/:id", DeleteProductHandler(db, s))
+	router.POST("/api/products", PostProductHandler(db))
+	router.POST("/api/products/multiple", PostProductsHandler(db))
+	router.PUT("/api/products/:id", PutProductHandler(db))
+	router.DELETE("/api/products/:id", DeleteProductHandler(db))
 	router.GET("/api/products/:id/purchaseHistories", GetProductPurchaseHistoriesHandler(db))
 	router.GET("/api/products/:id/deliveryHistories", GetProductDeliveryHistoriesHandler(db))
 	// router.GET("/products/dumping", DumpProductHandler(db, s))
 	// router.POST("/stocks/:id", PostStocksHandler(db)) //新增庫存
 	// router.GET("/products/images/:id", GetProductImgHandler(db, s))
 
-	return router, nil
+	return router
 }
 
 func GetProductsHandler(db *sql.DB) gin.HandlerFunc {
@@ -48,7 +47,7 @@ func GetProductsHandler(db *sql.DB) gin.HandlerFunc {
 	return gin.HandlerFunc(fn)
 }
 
-func PostProductHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
+func PostProductHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
 		productModel := &model.Product{}
@@ -84,7 +83,7 @@ func PostProductHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 	return gin.HandlerFunc(fn)
 }
 
-func PostProductsHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
+func PostProductsHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
 		var productXi []model.Product
@@ -122,7 +121,7 @@ func PostProductsHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 	return gin.HandlerFunc(fn)
 }
 
-func PutProductHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
+func PutProductHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
 		productID := context.Param("id")
@@ -167,7 +166,7 @@ func PutProductHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
 	return gin.HandlerFunc(fn)
 }
 
-func DeleteProductHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
+func DeleteProductHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
 		productID := context.Param("id")

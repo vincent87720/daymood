@@ -9,14 +9,14 @@ import (
 	"github.com/vincent87720/daymood/app/internal/settings"
 )
 
-func SetupSystemConfigRouters(router *gin.RouterGroup, s settings.Settings) (*gin.RouterGroup, error) {
+func SetupSystemConfigRouters(router *gin.RouterGroup, s *settings.Settings) *gin.RouterGroup {
 
 	router.GET("/api/systemConfigs", GetSystemConfigsHandler(s))
 
-	return router, nil
+	return router
 }
 
-func GetSystemConfigsHandler(s settings.Settings) gin.HandlerFunc {
+func GetSystemConfigsHandler(s *settings.Settings) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 		sysConf, err := ioutil.ReadFile(s.GetExeFilePath() + "/assets/systemConfigs.json")
 		if err != nil {

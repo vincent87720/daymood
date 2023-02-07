@@ -7,20 +7,19 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vincent87720/daymood/app/internal/model"
-	"github.com/vincent87720/daymood/app/internal/settings"
 	usecases "github.com/vincent87720/daymood/app/internal/usecases"
 )
 
-func SetupDeliveryOrderDetailRouters(router *gin.RouterGroup, db *sql.DB, s settings.Settings) (*gin.RouterGroup, error) {
+func SetupDeliveryOrderDetailRouters(router *gin.RouterGroup, db *sql.DB) *gin.RouterGroup {
 
 	router.GET("/api/deliveryOrderDetails", GetAllDeliveryOrderDetailsHandler(db))
-	router.POST("/api/deliveryOrderDetails/multiple", PostDeliveryOrderDetailsHandler(db, s))
+	router.POST("/api/deliveryOrderDetails/multiple", PostDeliveryOrderDetailsHandler(db))
 	router.GET("/api/deliveryOrders/:id/deliveryOrderDetails", GetDeliveryOrderDetailsHandler(db))
-	router.POST("/api/deliveryOrderDetails", PostDeliveryOrderDetailHandler(db, s))
+	router.POST("/api/deliveryOrderDetails", PostDeliveryOrderDetailHandler(db))
 	router.PUT("/api/deliveryOrderDetails/:id", PutDeliveryOrderDetailHandler(db))
 	router.DELETE("/api/deliveryOrderDetails/:id", DeleteDeliveryOrderDetailHandler(db))
 
-	return router, nil
+	return router
 }
 
 func GetAllDeliveryOrderDetailsHandler(db *sql.DB) gin.HandlerFunc {
@@ -45,7 +44,7 @@ func GetAllDeliveryOrderDetailsHandler(db *sql.DB) gin.HandlerFunc {
 	return gin.HandlerFunc(fn)
 }
 
-func PostDeliveryOrderDetailsHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
+func PostDeliveryOrderDetailsHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
 		var deliveryOrderDetailXi []model.DeliveryOrderDetail
@@ -110,7 +109,7 @@ func GetDeliveryOrderDetailsHandler(db *sql.DB) gin.HandlerFunc {
 	return gin.HandlerFunc(fn)
 }
 
-func PostDeliveryOrderDetailHandler(db *sql.DB, s settings.Settings) gin.HandlerFunc {
+func PostDeliveryOrderDetailHandler(db *sql.DB) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
 
 		deliveryOrderDetailModel := &model.DeliveryOrderDetail{}
