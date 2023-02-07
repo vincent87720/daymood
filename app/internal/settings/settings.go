@@ -27,12 +27,14 @@ type Y struct {
 }
 
 type Settings struct {
-	yamlByteXi []byte
-	rootPath   string
-	yamlPath   string
-	mode       string //DEV: development, PROD: production, BIN: binary
-	y          Y
-	backend    struct {
+	rootPath            string
+	yamlByteXi          []byte
+	yamlPath            string
+	systemConfigsByteXi []byte
+	systemConfigsPath   string
+	mode                string //DEV: development, PROD: production, BIN: binary
+	y                   Y
+	backend             struct {
 		host string
 		port string
 	}
@@ -63,12 +65,17 @@ func Init() (*Settings, error) {
 		return nil, err
 	}
 
-	err = s.readFile()
+	err = s.readYAMLFile()
 	if err != nil {
 		return nil, err
 	}
 
 	err = s.UnmarshalSettings()
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.readSystemConfigsFile()
 	if err != nil {
 		return nil, err
 	}
@@ -102,6 +109,7 @@ func (s *Settings) setPath() error {
 		s.rootPath = exPath
 	}
 	s.yamlPath = s.rootPath + "/settings.yaml"
+	s.systemConfigsPath = s.rootPath + "/systemConfigs.json"
 	return nil
 }
 
@@ -129,6 +137,10 @@ func (s *Settings) GetSessionSecret() string {
 	return s.session.secret
 }
 
+func (s *Settings) GetSystemConfigs() []byte {
+	return s.systemConfigsByteXi
+}
+
 func (s *Settings) GetTradingSettings() (Trading, error) {
 	return s.y.Trading, nil
 }
@@ -141,7 +153,7 @@ func (s *Settings) SetTradingSettings(trading Trading) error {
 		return err
 	}
 
-	err = s.writeFile()
+	err = s.writeYAMLFile()
 	if err != nil {
 		return err
 	}
@@ -169,7 +181,7 @@ func (s *Settings) marshalSettings() error {
 	return nil
 }
 
-func (s *Settings) readFile() error {
+func (s *Settings) readYAMLFile() error {
 	ya, err := ioutil.ReadFile(s.yamlPath)
 	if err != nil {
 		return err
@@ -178,11 +190,20 @@ func (s *Settings) readFile() error {
 	return nil
 }
 
-func (s *Settings) writeFile() error {
+func (s *Settings) writeYAMLFile() error {
 	err := ioutil.WriteFile(s.yamlPath, s.yamlByteXi, os.ModePerm)
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (s *Settings) readSystemConfigsFile() error {
+	configs, err := ioutil.ReadFile(s.systemConfigsPath)
+	if err != nil {
+		return err
+	}
+	s.systemConfigsByteXi = configs
 	return nil
 }
 

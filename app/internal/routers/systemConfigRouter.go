@@ -1,8 +1,6 @@
 package routers
 
 import (
-	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -18,11 +16,7 @@ func SetupSystemConfigRouters(router *gin.RouterGroup, s *settings.Settings) *gi
 
 func GetSystemConfigsHandler(s *settings.Settings) gin.HandlerFunc {
 	fn := func(context *gin.Context) {
-		sysConf, err := ioutil.ReadFile(s.GetExeFilePath() + "/assets/systemConfigs.json")
-		if err != nil {
-			log.Fatalf("ERROR: %v", err)
-			return
-		}
+		sysConf := s.GetSystemConfigs()
 		context.Data(http.StatusOK, "application/json", sysConf)
 		return
 	}
