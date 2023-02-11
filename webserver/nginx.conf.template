@@ -1,0 +1,17 @@
+include    mime.types;
+upstream app {
+    server ${APP_HOST}:${APP_PORT};
+}
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${SERVER_HOST};
+    location /api {
+            proxy_pass http://app/api;
+    }
+    location / {
+        root   /web;
+        index  index.html;
+        try_files $uri $uri/ /index.html;
+    }
+}
