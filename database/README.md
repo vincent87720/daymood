@@ -1,9 +1,12 @@
 # Daymood Database
 
 - [版本資訊](#版本資訊)
-- [指令](#指令)
-- [建置](#建置dockerimages)
+- [啟動](#啟動)
+    - [使用 Docker 執行 PostgreSQL](#使用-docker-執行-postgresql)
+    - [使用 DockerCompose 執行 Daymood 的所有服務](#使用-dockercompose-執行-daymood-的所有服務)
+- [查看狀態指令](#查看狀態指令)
 - [初始化資料庫](#初始化資料庫)
+- [連線到資料庫](#連線到資料庫)
 - [建立通用函式](#建立通用函式)
 - [廠商（suppliers）](#廠商suppliers)
 - [採購（purchases）](#採購（purchases）)
@@ -16,36 +19,37 @@
 - [折扣（discounts）](#折扣（discounts）)
 - [使用者（users）](#使用者（users）)
 - [報表（reports）](#報表（reports）)
+- [匯出](#匯出)
+- [建置](#建置)
 
 ## 版本資訊
 - psql (PostgreSQL) 15.1 (Debian 15.1-1.pgdg110+1)
 
-## 指令
-
+## 啟動
 ### 使用 Docker 執行 PostgreSQL
 ```sh
 make dockerrun
 ```
+### 使用 DockerCompose 執行 Daymood 的所有服務
+返回daymood目錄後執行以下命令
+```sh
+docker-compose up
+```
 
-### 使用 Docker 建立 PostgreSQL 資料庫
-
-```bash
-
+## 查看狀態指令
+```sh
 #查看所安裝的 PostgreSQL 版本
-docker exec daymood-database psql -V
+docker exec <填入Docker的Container名稱或ID> psql -V
 
 #查看當前存在的 Database Name
 #-U：指定使用者
 #-l：列出資料庫名稱
-docker exec daymood-database psql -U postgres -l
+docker exec <填入Docker的Container名稱或ID> psql -U postgres -l
 
 #進入 PostgreSQL 的 CLI 命令列介面
 #輸入\q離開
-docker exec -it daymood-database psql -U postgres
+docker exec -it <填入Docker的Container名稱或ID> psql -U postgres
 ```
-
-### 查看狀態指令
-
 ```sql
 --show database list
 \l
@@ -61,14 +65,29 @@ docker exec -it daymood-database psql -U postgres
 ```
 
 ## 初始化資料庫
+在database目錄下不存在postgers目錄時，需要進行初始化
 
 ```sql
 --create user
-CREATE USER daymood WITH PASSWORD 'daymooddev';
+CREATE USER daymood WITH PASSWORD 'daymood';
 
 --create database
 CREATE DATABASE daymood WITH OWNER daymood;
 ```
+
+## 連線到資料庫
+
+開啟pgAdmin，點擊Register > Server新增連線
+![](/database/assets/img/0.0.png)
+
+輸入任意字串到Name欄位，命名資料庫所在機器的名稱
+![](/database/assets/img/0.1.png)
+
+將Database、Username及Password指定為**daymood**
+![](/database/assets/img/0.2.png)
+
+儲存後若成功登入會在Databases顯示daymood資料庫
+![](/database/assets/img/0.3.png)
 
 ## 建立通用函式
 
@@ -732,10 +751,11 @@ BEGIN
 END
 $func$;
 ```
-## 匯出
+
+### 匯出
 ```
 make dump
 ```
 
-## 建置
-[DaymoodReadme#Build](../README.md#建置)
+### 建置
+請參閱daymood目錄下READNE檔案的[#建置](../README.md#建置)
