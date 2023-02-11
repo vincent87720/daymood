@@ -1,7 +1,8 @@
-# DaymoodPostgresDatabase
+# Daymood Database
 
 - [版本資訊](#版本資訊)
 - [指令](#指令)
+- [建置](#建置dockerimages)
 - [初始化資料庫](#初始化資料庫)
 - [建立通用函式](#建立通用函式)
 - [廠商（suppliers）](#廠商suppliers)
@@ -17,27 +18,30 @@
 - [報表（reports）](#報表（reports）)
 
 ## 版本資訊
-
-psql (PostgreSQL) 15.1 (Debian 15.1-1.pgdg110+1)
+- psql (PostgreSQL) 15.1 (Debian 15.1-1.pgdg110+1)
 
 ## 指令
 
-### 使用 Docker 建立 PostgreSQL 資料庫指令
+### 使用 Docker 執行 PostgreSQL
+```sh
+make dockerrun
+```
+
+### 使用 Docker 建立 PostgreSQL 資料庫
 
 ```bash
-docker run -d -v /Users/vincent/Desktop/daymood/database:/var/lib/postgresql/data --name daymood_postgres -p 5432:5432 -e POSTGRES_PASSWORD=admin postgres
 
 #查看所安裝的 PostgreSQL 版本
-docker exec daymood_postgres psql -V
+docker exec daymood-database psql -V
 
 #查看當前存在的 Database Name
 #-U：指定使用者
 #-l：列出資料庫名稱
-docker exec daymood_postgres psql -U postgres -l
+docker exec daymood-database psql -U postgres -l
 
 #進入 PostgreSQL 的 CLI 命令列介面
 #輸入\q離開
-docker exec -it daymood_postgres psql -U postgres
+docker exec -it daymood-database psql -U postgres
 ```
 
 ### 查看狀態指令
@@ -728,3 +732,10 @@ BEGIN
 END
 $func$;
 ```
+## 匯出
+```
+make dump
+```
+
+## 建置
+[DaymoodReadme#Build](../README.md#建置)
