@@ -2,17 +2,23 @@ version: "3.9"
 
 services:
   web:
-    build:
-      context: './web'
-      dockerfile: 'Dockerfile.development'
+    # build:
+    #   context: './web'
+    #   dockerfile: 'Dockerfile.development'
+    image: node:19.2.0
+    working_dir: /web
+    command: npm run serve -- --port "8001"
     ports:
       - '8001:8001'
     volumes:
-      - ./web:/app
+      - ./web:/web
   app:
-    build:
-      context: './app'
-      dockerfile: 'Dockerfile.development'
+    # build:
+    #   context: './app'
+    #   dockerfile: 'Dockerfile.development'
+    image: golang:1.19
+    working_dir: /app
+    command: go run github.com/vincent87720/daymood/app/cmd/daymood
     ports:
       - '8000:8000'
     volumes:
@@ -20,7 +26,7 @@ services:
     depends_on:
       - database
   database:
-    image: postgres:latest
+    image: postgres:15.1
     environment:
       POSTGRES_PASSWORD: admin
     ports:
