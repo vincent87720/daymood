@@ -9,6 +9,7 @@ import (
 
 type DeliveryOrder struct {
 	ID                int64   //流水號
+	Name              string  //出貨名稱
 	Status            int64   //採購狀態
 	DeliveryType      *int64  //出貨方式
 	DeliveryStatus    *int64  //出貨狀態
@@ -42,7 +43,7 @@ func (deliveryOrder *DeliveryOrder) ReadAll(db *sql.DB) (deliveryOrderXi []inter
 	var deliveryOrderRow DeliveryOrder
 	for row.Next() {
 		err := row.Scan(
-			&deliveryOrderRow.ID, &deliveryOrderRow.Status, &deliveryOrderRow.DeliveryType, &deliveryOrderRow.DeliveryStatus,
+			&deliveryOrderRow.ID, &deliveryOrderRow.Name, &deliveryOrderRow.Status, &deliveryOrderRow.DeliveryType, &deliveryOrderRow.DeliveryStatus,
 			&deliveryOrderRow.DeliveryFeeStatus, &deliveryOrderRow.PaymentType, &deliveryOrderRow.PaymentStatus,
 			&deliveryOrderRow.TotalOriginal, &deliveryOrderRow.Discount, &deliveryOrderRow.TotalDiscounted,
 			&deliveryOrderRow.Remark, &deliveryOrderRow.DataOrder, &deliveryOrderRow.OrderAt,
@@ -73,7 +74,7 @@ func (deliveryOrder *DeliveryOrder) Read(db *sql.DB) (deliveryOrderXi []interfac
 	var deliveryOrderRow DeliveryOrder
 	for row.Next() {
 		err := row.Scan(
-			&deliveryOrderRow.ID, &deliveryOrderRow.Status, &deliveryOrderRow.DeliveryType, &deliveryOrderRow.DeliveryStatus,
+			&deliveryOrderRow.ID, &deliveryOrderRow.Name, &deliveryOrderRow.Status, &deliveryOrderRow.DeliveryType, &deliveryOrderRow.DeliveryStatus,
 			&deliveryOrderRow.DeliveryFeeStatus, &deliveryOrderRow.PaymentType, &deliveryOrderRow.PaymentStatus,
 			&deliveryOrderRow.TotalOriginal, &deliveryOrderRow.Discount, &deliveryOrderRow.TotalDiscounted,
 			&deliveryOrderRow.Remark, &deliveryOrderRow.DataOrder, &deliveryOrderRow.OrderAt,
@@ -97,12 +98,12 @@ func (deliveryOrder *DeliveryOrder) Create(db *sql.DB) (modelErr *ModelError) {
 	}
 
 	qryString := `INSERT INTO deliveryOrders(
-		status, delivery_type, delivery_status, delivery_fee_status,
+		name, status, delivery_type, delivery_status, delivery_fee_status,
 		payment_type, payment_status, total_original,
 		discount, total_discounted, remark,
 		data_order, order_at, send_at,
 		arrive_at
-	) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14);`
+	) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15);`
 
 	stmt, err := db.Prepare(qryString)
 	if err != nil {
@@ -111,7 +112,7 @@ func (deliveryOrder *DeliveryOrder) Create(db *sql.DB) (modelErr *ModelError) {
 	defer stmt.Close()
 
 	res, err := stmt.Exec(
-		deliveryOrder.Status, deliveryOrder.DeliveryType, deliveryOrder.DeliveryStatus,
+		deliveryOrder.Name, deliveryOrder.Status, deliveryOrder.DeliveryType, deliveryOrder.DeliveryStatus,
 		deliveryOrder.DeliveryFeeStatus, deliveryOrder.PaymentType, deliveryOrder.PaymentStatus,
 		deliveryOrder.TotalOriginal, deliveryOrder.Discount, deliveryOrder.TotalDiscounted,
 		deliveryOrder.Remark, deliveryOrder.DataOrder, deliveryOrder.OrderAt,
@@ -135,8 +136,8 @@ func (deliveryOrder *DeliveryOrder) Update(db *sql.DB) (modelErr *ModelError) {
 	}
 
 	_, err = db.Exec(
-		"CALL updateDeliveryOrders($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)",
-		deliveryOrder.ID, deliveryOrder.Status, deliveryOrder.DeliveryType, deliveryOrder.DeliveryStatus,
+		"CALL updateDeliveryOrders($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)",
+		deliveryOrder.ID, deliveryOrder.Name, deliveryOrder.Status, deliveryOrder.DeliveryType, deliveryOrder.DeliveryStatus,
 		deliveryOrder.DeliveryFeeStatus, deliveryOrder.PaymentType, deliveryOrder.PaymentStatus,
 		deliveryOrder.TotalOriginal, deliveryOrder.Discount, deliveryOrder.TotalDiscounted,
 		deliveryOrder.Remark, deliveryOrder.DataOrder, deliveryOrder.OrderAt,

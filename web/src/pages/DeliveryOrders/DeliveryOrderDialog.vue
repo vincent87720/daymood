@@ -14,6 +14,8 @@
                         </v-btn-toggle>
                         <v-form ref="form" v-model="validator">
                             <div v-show="toggle_form == 0">
+                                <v-text-field label="出貨單名稱" v-model="deliveryOrderItem.Name"
+                                    prepend-icon="mdi-text-short"></v-text-field>
                                 <v-select class="overflow-hidden" label="出貨單狀態" v-model="deliveryOrderItem.Status"
                                     prepend-icon="mdi-toggle-switch" :items="systemConfigs.DeliveryOrderStatus"
                                     item-text="value" item-value="key"></v-select>

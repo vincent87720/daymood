@@ -490,8 +490,9 @@ $$;
 
 ```sql
 CREATE TABLE deliveryOrders (
-    id SERIAL PRIMARY KEY,--出貨明細編號
-    status INTEGER NOT NULL,--處理狀態
+    id SERIAL PRIMARY KEY,--流水號
+    name VARCHAR(256) NOT NULL,--出貨名稱
+    status INTEGER NOT NULL,--處理狀態（0:處理中, 1:結案）
     delivery_type INTEGER ,--出貨方式（0:宅配, 1:7-11, 2:全家, 3:萊爾富）
     delivery_status INTEGER,--出貨狀態（0:未出貨, 1:已出貨）
     delivery_fee_status INTEGER,--運費狀態（0:運費由平台支付, 1:運費由賣家支付, 2:運費由買家支付）
@@ -516,6 +517,7 @@ CREATE TRIGGER delivery_orders_update_at BEFORE UPDATE ON deliveryOrders FOR EAC
 ```sql
 CREATE OR REPLACE PROCEDURE updateDeliveryOrders(
     id INTEGER,
+    name TEXT,
     status INTEGER,
     delivery_type INTEGER,
     delivery_status INTEGER,
@@ -535,7 +537,8 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     UPDATE deliveryOrders
-       SET status = COALESCE(updateDeliveryOrders.status, deliveryOrders.status),
+       SET name = COALESCE(updateDeliveryOrders.name, deliveryOrders.name),
+           status = COALESCE(updateDeliveryOrders.status, deliveryOrders.status),
            delivery_type = COALESCE(updateDeliveryOrders.delivery_type, deliveryOrders.delivery_type),
            delivery_status = COALESCE(updateDeliveryOrders.delivery_status, deliveryOrders.delivery_status),
            delivery_fee_status = COALESCE(updateDeliveryOrders.delivery_fee_status, deliveryOrders.delivery_fee_status),

@@ -101,6 +101,7 @@ import {
 
 class DeliveryOrder {
     ID = undefined;//流水號
+    Name = undefined;//出貨名稱
     DeliveryType = undefined;//出貨方式
     DeliveryStatus = undefined;//出貨狀態
     DeliveryFeeStatus = undefined;//運費狀態
@@ -152,7 +153,7 @@ export default {
             deliveryOrderDialog: false,
             deliveryOrders: [],
             deliveryOrderHeader: [
-                { text: '流水號', value: 'ID' },
+                { text: '出貨單名稱', value: 'Name' },
                 { text: '出貨單狀態', value: 'Status', align: 'center' },
                 { text: '出貨狀態', value: 'DeliveryStatus', align: 'center' },
                 { text: '出貨方式', value: 'DeliveryType' },
@@ -167,7 +168,7 @@ export default {
                 { text: '', value: 'actions', sortable: false, width: "10%" },
             ],
             deliveryOrderHeaderLess: [
-                { text: '流水號', value: 'ID' },
+                { text: '出貨單名稱', value: 'Name' },
                 { text: '出貨單狀態', value: 'Status', align: 'center' },
                 { text: '原價', value: 'TotalOriginal' },
                 { text: '折扣', value: 'Discount' },

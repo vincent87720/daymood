@@ -126,27 +126,6 @@ $$;
 ALTER FUNCTION public.selectproductpurchasehistories(product_id integer) OWNER TO daymood;
 
 --
--- Name: truncatetables(character varying); Type: FUNCTION; Schema: public; Owner: daymood
---
-
-CREATE FUNCTION public.truncatetables(username character varying) RETURNS void
-    LANGUAGE plpgsql
-    AS $$
-DECLARE
-    statements CURSOR FOR
-        SELECT tablename FROM pg_tables
-        WHERE tableowner = username AND schemaname = 'public';
-BEGIN
-    FOR stmt IN statements LOOP
-        EXECUTE 'TRUNCATE TABLE ' || quote_ident(stmt.tablename) || ' CASCADE;';
-    END LOOP;
-END;
-$$;
-
-
-ALTER FUNCTION public.truncatetables(username character varying) OWNER TO daymood;
-
---
 -- Name: updatedeliveryorderdetails(integer, real, real, integer, real, text, integer, integer, integer); Type: PROCEDURE; Schema: public; Owner: daymood
 --
 
@@ -171,34 +150,35 @@ $$;
 ALTER PROCEDURE public.updatedeliveryorderdetails(IN id integer, IN retail_price real, IN cost real, IN qty integer, IN subtotal real, IN remark text, IN data_order integer, IN delivery_order_id integer, IN product_id integer) OWNER TO daymood;
 
 --
--- Name: updatedeliveryorders(integer, integer, integer, integer, integer, integer, integer, real, real, real, text, integer, timestamp without time zone, timestamp without time zone, timestamp without time zone); Type: PROCEDURE; Schema: public; Owner: daymood
+-- Name: updatedeliveryorders(integer, text, integer, integer, integer, integer, integer, integer, real, real, real, text, integer, timestamp without time zone, timestamp without time zone, timestamp without time zone); Type: PROCEDURE; Schema: public; Owner: daymood
 --
 
-CREATE PROCEDURE public.updatedeliveryorders(IN id integer, IN status integer, IN delivery_type integer, IN delivery_status integer, IN delivery_fee_status integer, IN payment_type integer, IN payment_status integer, IN total_original real, IN discount real, IN total_discounted real, IN remark text, IN data_order integer, IN order_at timestamp without time zone, IN send_at timestamp without time zone, IN arrive_at timestamp without time zone)
+CREATE PROCEDURE public.updatedeliveryorders(IN id integer, IN name text, IN status integer, IN delivery_type integer, IN delivery_status integer, IN delivery_fee_status integer, IN payment_type integer, IN payment_status integer, IN total_original real, IN discount real, IN total_discounted real, IN remark text, IN data_order integer, IN order_at timestamp without time zone, IN send_at timestamp without time zone, IN arrive_at timestamp without time zone)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     UPDATE deliveryOrders
-       SET status                     = COALESCE(updateDeliveryOrders.status, deliveryOrders.status),
-           delivery_type              = COALESCE(updateDeliveryOrders.delivery_type, deliveryOrders.delivery_type),
-           delivery_status            = COALESCE(updateDeliveryOrders.delivery_status, deliveryOrders.delivery_status),
-           delivery_fee_status        = COALESCE(updateDeliveryOrders.delivery_fee_status, deliveryOrders.delivery_fee_status),
-           payment_type               = COALESCE(updateDeliveryOrders.payment_type, deliveryOrders.payment_type),
-           payment_status             = COALESCE(updateDeliveryOrders.payment_status, deliveryOrders.payment_status),
-           total_original             = COALESCE(updateDeliveryOrders.total_original, deliveryOrders.total_original),
-           discount                   = COALESCE(updateDeliveryOrders.discount, deliveryOrders.discount),
-           total_discounted           = COALESCE(updateDeliveryOrders.total_discounted, deliveryOrders.total_discounted),
-           remark                     = COALESCE(updateDeliveryOrders.remark, deliveryOrders.remark),
-           data_order                 = COALESCE(updateDeliveryOrders.data_order, deliveryOrders.data_order),
-           order_at                   = COALESCE(updateDeliveryOrders.order_at, deliveryOrders.order_at),
-           send_at                    = COALESCE(updateDeliveryOrders.send_at, deliveryOrders.send_at),
-           arrive_at                  = COALESCE(updateDeliveryOrders.arrive_at, deliveryOrders.arrive_at)
+       SET name = COALESCE(updateDeliveryOrders.name, deliveryOrders.name),
+           status = COALESCE(updateDeliveryOrders.status, deliveryOrders.status),
+           delivery_type = COALESCE(updateDeliveryOrders.delivery_type, deliveryOrders.delivery_type),
+           delivery_status = COALESCE(updateDeliveryOrders.delivery_status, deliveryOrders.delivery_status),
+           delivery_fee_status = COALESCE(updateDeliveryOrders.delivery_fee_status, deliveryOrders.delivery_fee_status),
+           payment_type = COALESCE(updateDeliveryOrders.payment_type, deliveryOrders.payment_type),
+           payment_status = COALESCE(updateDeliveryOrders.payment_status, deliveryOrders.payment_status),
+           total_original = COALESCE(updateDeliveryOrders.total_original, deliveryOrders.total_original),
+           discount = COALESCE(updateDeliveryOrders.discount, deliveryOrders.discount),
+           total_discounted = COALESCE(updateDeliveryOrders.total_discounted, deliveryOrders.total_discounted),
+           remark = COALESCE(updateDeliveryOrders.remark, deliveryOrders.remark),
+           data_order = COALESCE(updateDeliveryOrders.data_order, deliveryOrders.data_order),
+           order_at = COALESCE(updateDeliveryOrders.order_at, deliveryOrders.order_at),
+           send_at = COALESCE(updateDeliveryOrders.send_at, deliveryOrders.send_at),
+           arrive_at = COALESCE(updateDeliveryOrders.arrive_at, deliveryOrders.arrive_at)
      WHERE deliveryOrders.id = updateDeliveryOrders.id;
 END;
 $$;
 
 
-ALTER PROCEDURE public.updatedeliveryorders(IN id integer, IN status integer, IN delivery_type integer, IN delivery_status integer, IN delivery_fee_status integer, IN payment_type integer, IN payment_status integer, IN total_original real, IN discount real, IN total_discounted real, IN remark text, IN data_order integer, IN order_at timestamp without time zone, IN send_at timestamp without time zone, IN arrive_at timestamp without time zone) OWNER TO daymood;
+ALTER PROCEDURE public.updatedeliveryorders(IN id integer, IN name text, IN status integer, IN delivery_type integer, IN delivery_status integer, IN delivery_fee_status integer, IN payment_type integer, IN payment_status integer, IN total_original real, IN discount real, IN total_discounted real, IN remark text, IN data_order integer, IN order_at timestamp without time zone, IN send_at timestamp without time zone, IN arrive_at timestamp without time zone) OWNER TO daymood;
 
 --
 -- Name: updatediscounts(integer, text, real, integer, text, integer, integer); Type: PROCEDURE; Schema: public; Owner: daymood
@@ -574,6 +554,7 @@ ALTER SEQUENCE public.deliveryorderdetails_id_seq OWNED BY public.deliveryorderd
 
 CREATE TABLE public.deliveryorders (
     id integer NOT NULL,
+    name character varying(256) NOT NULL,
     status integer NOT NULL,
     delivery_type integer,
     delivery_status integer,
