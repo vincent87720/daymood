@@ -1,0 +1,1 @@
+insert into public.users(username, password, name, email) VALUES('daymood','$2a$14$FM8MLP3wimZ/S8KQCcnA9uGE85wKnBn751bv2gkeGbKY5YvBwauGq','daymood','daymood@gmail.com');
