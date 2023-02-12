@@ -4,6 +4,8 @@ run:
 build: builddb buildapp buildserver
 
 builddb:
+	rm -f database/init.sql
+	docker exec -i daymood-database-1 pg_dump -U daymood --schema-only daymood >> database/init.sql
 	docker buildx build --push --rm --platform linux/amd64,linux/arm64 -t vincent87720/daymood-database:latest -f database/Dockerfile .
 
 buildapp:
