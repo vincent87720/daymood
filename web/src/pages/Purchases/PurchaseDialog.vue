@@ -8,7 +8,7 @@
                 <v-row>
                     <v-col xs="12" sm="6" class="ml-auto mr-auto">
                         <v-btn-toggle v-model="toggle_form" rounded mandatory dense
-                            class="d-flex justify-sm-center mb-3">
+                            class="d-flex justify-center mb-3">
                             <v-btn> 基本資訊 </v-btn>
                             <v-btn> 貨運資訊 </v-btn>
                             <v-btn> 費用資訊 </v-btn>

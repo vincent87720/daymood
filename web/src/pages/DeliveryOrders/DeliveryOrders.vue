@@ -1,8 +1,8 @@
 <template>
     <div>
-        <v-container fluid class="d-none d-lg-block">
+        <v-container fluid>
             <v-row class="ma-0">
-                <v-col class="pa-0 d-flex justify-end">
+                <v-col class="pa-0 d-flex justify-center justify-sm-end">
                     <c-btn-add @click="onClick_newButton"></c-btn-add>
                     <c-btn-download @click="onClick_download"></c-btn-download>
                     <c-btn-setting></c-btn-setting>
@@ -15,12 +15,6 @@
                 <v-col xs="12" sm="6" class="mr-auto ml-auto mt-2 d-flex align-center">
                     <v-text-field dark solo ref="searchField" hide-details v-model="search" class="mx-4" label="Search"
                         clearable></v-text-field>
-                    <div class="hidden-lg-and-up">
-                        <c-btn-add @click="onClick_newButton"></c-btn-add>
-                        <c-btn-download @click="onClick_download"></c-btn-download>
-                        <c-btn-setting></c-btn-setting>
-                        <c-btn-logout></c-btn-logout>
-                    </div>
                 </v-col>
             </v-row>
             <v-row>
@@ -242,7 +236,7 @@ export default {
             this.confirmTarget = item;
         },
         onClick_checkoutDeliveryOrderInfo(item) {
-            this.text_cardTitle = "出貨單" + item.ID;
+            this.text_cardTitle = "出貨單" + item.Name;
             this.text_confirmBtn = "";
             this.deliveryOrder = item;
             this.deliveryOrderInfoDialog = true;

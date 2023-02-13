@@ -1,8 +1,8 @@
 <template>
     <div>
-        <v-container fluid class="d-none d-lg-block">
+        <v-container fluid>
                 <v-row class="ma-0">
-                    <v-col class="pa-0 d-flex justify-end">
+                    <v-col class="pa-0 d-flex justify-center justify-sm-end">
                         <c-btn-setting></c-btn-setting>
                         <c-btn-logout></c-btn-logout>
                     </v-col>
