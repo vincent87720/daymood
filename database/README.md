@@ -1,6 +1,7 @@
 # Daymood Database
 
 - [版本資訊](#版本資訊)
+- [ER Diagram](#er-diagram)
 - [啟動](#啟動)
     - [使用 Docker 執行 PostgreSQL](#使用-docker-執行-postgresql)
     - [使用 DockerCompose 執行 Daymood 的所有服務](#使用-dockercompose-執行-daymood-的所有服務)
@@ -24,6 +25,9 @@
 
 ## 版本資訊
 - psql (PostgreSQL) 15.1 (Debian 15.1-1.pgdg110+1)
+
+## ER Diagram
+![](./ER%20Diagram/Daymood.svg)
 
 ## 啟動
 ### 使用 Docker 執行 PostgreSQL
