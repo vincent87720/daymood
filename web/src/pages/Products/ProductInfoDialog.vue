@@ -38,15 +38,15 @@
                                     convertDisplayText(allSuppliersList, productItem.SupplierID)
                                 }}</span>
                             </div>
-                            <div class="d-flex justify-space-between align-center my-2">
+                            <div class="d-flex justify-space-between align-center my-2" v-if="productType ==  'products'">
                                 <span class="text-subtitle-1 font-weight-medium">商品重量(g)</span>
                                 <span class="text-subtitle-1 font-weight-bold"> {{ productItem.Weight }} g</span>
                             </div>
-                            <div class="d-flex justify-space-between align-center my-2">
+                            <div class="d-flex justify-space-between align-center my-2" v-if="productType ==  'products'">
                                 <span class="text-subtitle-1 font-weight-medium">售價</span>
                                 <span class="text-subtitle-1 font-weight-bold"> {{ productItem.RetailPrice }}</span>
                             </div>
-                            <div class="d-flex justify-space-between align-center my-2">
+                            <div class="d-flex justify-space-between align-center my-2" v-if="productType !=  'uncountable'">
                                 <span class="text-subtitle-1 font-weight-medium">庫存</span>
                                 <span class="text-subtitle-1 font-weight-bold"> {{ calcStocks() }}</span>
                             </div>
@@ -237,16 +237,20 @@ export default {
             }
         },
         purchaseHistoryHeader() {
-            return this.isMaterials ? this.historyHeader_material : this.historyHeader_product;
+            return this.productType ==  "products" ? this.historyHeader_product : this.historyHeader_material;
         },
-        isMaterials() {
+        productType() {
             let type_products = [1, 2, 3, 4, 5];//商品
             let type_materials = [6, 7, 8, 9, 10, 11, 12, 13];//耗材
+            let type_uncountable = [14, 15];//長期固定支出
             if (type_products.includes(this.productItem.ProductType)) {
-                return false;
+                return "products";
             }
             else if (type_materials.includes(this.productItem.ProductType)) {
-                return true
+                return "materials";
+            }
+            else if (type_uncountable.includes(this.productItem.ProductType)) {
+                return "uncountable";
             }
         },
         systemConfigs() {
