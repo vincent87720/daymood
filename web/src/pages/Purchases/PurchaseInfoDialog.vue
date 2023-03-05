@@ -53,9 +53,8 @@
                 </v-row>
                 <v-row>
                     <v-col xs="12" sm="12" class="ml-auto mr-auto">
-                        <c-card-rounded class="pa-3 d-flex justify-end">
-                            <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray"
-                                v-if="purchaseItem.PurchaseType == 1">
+                        <c-card-rounded class="pa-3 d-flex justify-end" v-if="purchaseItem.PurchaseType == 1">
+                            <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
                                 <h2>商品總數</h2>
                                 <h2>商品總計</h2>
                                 <v-tooltip left>
@@ -78,7 +77,7 @@
                                     <span>{{ tooltip.calc_TotalKrw }}</span>
                                 </v-tooltip>
                             </div>
-                            <div class="d-flex flex-column justify-end align-end" v-if="purchaseItem.PurchaseType == 1">
+                            <div class="d-flex flex-column justify-end align-end">
                                 <h2>{{ calc_TotalQTY }}</h2>
                                 <h2>₩ {{ calc_Subtotals }}</h2>
                                 <h2>₩ {{ calc_Ajeossi }}</h2>
@@ -87,17 +86,71 @@
                                 <h2>₩ {{ calc_TotalKrw }}</h2>
                             </div>
                             <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
-                                <h2 v-if="purchaseItem.PurchaseType == 2">商品總數</h2>
-                                <h2 v-if="purchaseItem.PurchaseType == 2">商品總計</h2>
                                 <h2>台灣運費</h2>
-                                <h2 v-if="purchaseItem.PurchaseType == 1">台灣關稅</h2>
+                                <h2>台灣關稅</h2>
                                 <h2>台幣總計</h2>
                             </div>
                             <div class="d-flex flex-column justify-end align-end">
-                                <h2 v-if="purchaseItem.PurchaseType == 2">{{ calc_TotalQTY }}</h2>
-                                <h2 v-if="purchaseItem.PurchaseType == 2">{{ calc_Subtotals }}</h2>
                                 <h2>$ {{ calc_ShippingFeeTw }}</h2>
-                                <h2 v-if="purchaseItem.PurchaseType == 1">$ {{ calc_Tariff }}</h2>
+                                <h2>$ {{ calc_Tariff }}</h2>
+                                <h2>$ {{ calc_TotalTwd }}</h2>
+                            </div>
+                            <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
+                                <h2>總計</h2>
+                            </div>
+                            <div class="d-flex flex-column justify-end align-end">
+                                <h2>$ {{ calc_Total }}</h2>
+                            </div>
+                        </c-card-rounded>
+                        <c-card-rounded class="pa-3 d-flex justify-end" v-if="purchaseItem.PurchaseType == 2">
+                            <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
+                                <h2>商品總數</h2>
+                                <h2>商品總計</h2>
+                                <h2>台灣運費</h2>
+                                <h2>台幣總計</h2>
+                            </div>
+                            <div class="d-flex flex-column justify-end align-end">
+                                <h2>{{ calc_TotalQTY }}</h2>
+                                <h2>{{ calc_Subtotals }}</h2>
+                                <h2>$ {{ calc_ShippingFeeTw }}</h2>
+                                <h2>$ {{ calc_TotalTwd }}</h2>
+                            </div>
+                            <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
+                                <h2>總計</h2>
+                            </div>
+                            <div class="d-flex flex-column justify-end align-end">
+                                <h2>$ {{ calc_Total }}</h2>
+                            </div>
+                        </c-card-rounded>
+                        <c-card-rounded class="pa-3 d-flex justify-end" v-if="purchaseItem.PurchaseType == 3">
+                            <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
+                                <h2>商品總數</h2>
+                                <h2>商品總計</h2>
+                                <h2>台幣總計</h2>
+                            </div>
+                            <div class="d-flex flex-column justify-end align-end">
+                                <h2>{{ calc_TotalQTY }}</h2>
+                                <h2>{{ calc_Subtotals }}</h2>
+                                <h2>$ {{ calc_TotalTwd }}</h2>
+                            </div>
+                            <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
+                                <h2>總計</h2>
+                            </div>
+                            <div class="d-flex flex-column justify-end align-end">
+                                <h2>$ {{ calc_Total }}</h2>
+                            </div>
+                        </c-card-rounded>
+                        <c-card-rounded class="pa-3 d-flex justify-end" v-if="purchaseItem.PurchaseType == 4">
+                            <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
+                                <h2>韓圓</h2>
+                            </div>
+                            <div class="d-flex flex-column justify-end align-end">
+                                <h2>₩ {{ calc_Subtotals }}</h2>
+                            </div>
+                            <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
+                                <h2>台幣總計</h2>
+                            </div>
+                            <div class="d-flex flex-column justify-end align-end">
                                 <h2>$ {{ calc_TotalTwd }}</h2>
                             </div>
                             <div class="d-flex flex-column justify-end mr-3 ml-5" style="color: gray">
@@ -348,15 +401,18 @@ export default {
             if (this.purchaseItem.PurchaseType == 1) {
                 subtotals = parseFloat(this.calc_Subtotals);
                 ajeossi = parseFloat(this.calc_Ajeossi);
-                this.tooltip.calc_TotalKrw += `₩${subtotals}(商品總額) ＋ ₩${ajeossi}(貨運抽成) ＋ `
+                shippingFeeKr = parseFloat(this.calc_ShippingFeeKr);
+                shippingFeeKokusaiKrw = parseFloat(this.calc_ShippingFeeKokusaiKrw);
             }
-            shippingFeeKr = parseFloat(this.calc_ShippingFeeKr);
-            shippingFeeKokusaiKrw = parseFloat(this.calc_ShippingFeeKokusaiKrw);
+
             totalKrw = subtotals + ajeossi + shippingFeeKr + shippingFeeKokusaiKrw;
             if (isNaN(totalKrw) == false) {
                 result += totalKrw
             }
-            this.tooltip.calc_TotalKrw += `₩${shippingFeeKr}(韓國國內運費) ＋ ₩${shippingFeeKokusaiKrw}(國際運費) ＝ ₩${totalKrw}`
+
+            if (this.purchaseItem.PurchaseType == 1) {
+                this.tooltip.calc_TotalKrw += `₩${subtotals}(商品總額) ＋ ₩${ajeossi}(貨運抽成) ＋ ₩${shippingFeeKr}(韓國國內運費) ＋ ₩${shippingFeeKokusaiKrw}(國際運費) ＝ ₩${totalKrw}`
+            }
             return result.toFixed(2);
         },
         calc_ShippingFeeTw() {
@@ -378,11 +434,23 @@ export default {
             return result.toFixed(2);
         },
         calc_TotalTwd() {
-            //台幣總計 = 商品總計（耗材）+ 台灣國內運費 + 關稅
+            //台幣總計 = 商品總計（耗材 || 貨幣 || 長期固定開銷）+ 台灣國內運費 + 關稅
             let result = 0;
             let totalTwd = 0;
-            if (this.purchaseItem.PurchaseType == 2) {
+            if (this.purchaseItem.PurchaseType == 2 || this.purchaseItem.PurchaseType == 3) {
                 totalTwd += parseFloat(this.calc_Subtotals);
+            }
+            else if (this.purchaseItem.PurchaseType == 4) {
+                let total = 0;
+                if (this.purchaseItem.ExchangeRateKrw != null) {
+                    let totalKrw = parseFloat(this.calc_Subtotals);
+                    let exchangeRateKrw = parseFloat(this.purchaseItem.ExchangeRateKrw);
+                    let totalExchangedKrw = totalKrw / exchangeRateKrw;
+                    if (isNaN(totalExchangedKrw) == false) {
+                        total += totalExchangedKrw
+                    }
+                }
+                totalTwd += total
             }
             totalTwd += parseFloat(this.calc_ShippingFeeTw);
             totalTwd += parseFloat(this.calc_Tariff);
