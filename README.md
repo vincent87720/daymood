@@ -1,4 +1,4 @@
-# Daymood Supply Chain Management System
+# Daymood 進銷存管理系統
 Daymood進銷存管理系統提供進出貨資料紀錄功能，並提供多種歷史紀錄及報表查詢，讓營運狀況更一目瞭然。
 
 - [功能](#功能)
